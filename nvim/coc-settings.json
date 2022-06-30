@@ -1,0 +1,136 @@
+{
+	"snippets.triggerCharacters": [
+		"$"
+	],
+	"coc.preferences.extensionUpdateCheck": "daily",
+	"suggest.noselect": true,
+	"suggest.enablePreselect": false,
+	"codeLens.enable": true,
+	"coc.preferences.formatOnSaveFiletypes": [
+		"json"
+	],
+	"explorer.position": "right",
+	/*"languageserver": {*/
+		/*"ccls": {*/
+			/*"command": "ccls",*/
+			/*"filetypes": [*/
+				/*"c",*/
+				/*"cc",*/
+				/*"cpp",*/
+				/*"c++",*/
+				/*"objc",*/
+				/*"objcpp"*/
+			/*],*/
+			/*"rootPatterns": [*/
+				/*".ccls",*/
+				/*"compile_commands.json",*/
+				/*".git/",*/
+				/*".hg/"*/
+			/*],*/
+			/*"initializationOptions": {*/
+				/*"cache": {*/
+					/*"directory": "/tmp/ccls"*/
+				/*}*/
+			/*}*/
+		/*}*/
+	/*},*/
+	"languageserver": {
+   /*     "clangd": {*/
+			  /*"command": "clangd",*/
+			  /*"rootPatterns": ["compile_flags.txt", "compile_commands.json"],*/
+			  /*"filetypes": ["c", "cpp", "objc", "objcpp"]*/
+			/*}*/
+	},
+	  "clangd.arguments": [
+	      // 在后台自动分析文件（基于complie_commands)
+	      "--background-index",
+	      // 标记compelie_commands.json文件的目录位置
+	      // 关于complie_commands.json如何生成可见我上一篇文章的末尾
+	      // https://zhuanlan.zhihu.com/p/84876003
+	      "--compile-commands-dir=build",
+	      // 同时开启的任务数量
+	      "-j=12",
+	      // 告诉clangd用那个clang进行编译，路径参考which clang++的路径
+	      "--query-driver=/usr/bin/clang++",
+	      // clang-tidy功能
+	      "--clang-tidy",
+	      "--clang-tidy-checks=performance-*,bugprone-*",
+	      // 全局补全（会自动补充头文件）
+	      "--all-scopes-completion",
+	      // 更详细的补全内容
+	      "--completion-style=detailed",
+	      // 补充头文件的形式
+	      "--header-insertion=iwyu",
+	      // pch优化的位置
+	      "--pch-storage=disk"
+	    ],
+	"clangd.enabled": true,
+	"clangd.path": "clangd",
+	"jedi.enable": true,
+	"jedi.startupMessage": false,
+	"jedi.markupKindPreferred": "plaintext",
+	"jedi.trace.server": "off",
+	"jedi.jediSettings.autoImportModules": [],
+	//"jedi.executable.command": "jedi-language-server",
+	//"jedi.executable.args": [],
+	"jedi.codeAction.nameExtractFunction": "jls_extract_def",
+	"jedi.codeAction.nameExtractVariable": "jls_extract_var",
+	//"jedi.completion.disableSnippets": false,
+	//"jedi.completion.resolveEagerly": false,
+	//"jedi.diagnostics.enable": true,
+	//"jedi.diagnostics.didOpen": true,
+	//"jedi.diagnostics.didChange": true,
+	//"jedi.diagnostics.didSave": true,
+	"jedi.hover.enable": true,
+	"jedi.hover.disable.keyword.all": false,
+	"jedi.hover.disable.keyword.names": [],
+	"jedi.hover.disable.keyword.fullNames": [],
+	"jedi.workspace.extraPaths": [
+	],
+	"jedi.workspace.symbols.maxSymbols": 20,
+	"jedi.workspace.symbols.ignoreFolders": [
+		".nox",
+		".tox",
+		".venv",
+		"__pycache__",
+		"venv",
+		".venv",
+		".venv_win",
+		".venv_wsl"
+	],
+	"git.addedSign.text": "➕",
+	"git.removedSign.text": "➖",
+	"git.changedSign.text": "🔹",
+	//"git.changedSign.text": "~",
+	"git.changeRemovedSign.text": "🔛",
+	"git.signPriority": 3
+	//  "suggest.completionItemKindLabels": {
+	//"keyword": "",
+	//"variable": "",
+	//"value": "",
+	//"operator": "Ψ",
+	//"constructor": "",
+	////"function": "ƒ",
+	//"function": "📄",
+	//"reference": "渚",
+	//"constant": "",
+	//"method": "",
+	//"struct": "פּ",
+	//"class": "",
+	//"interface": "",
+	//"text": "",
+	//"enum": "",
+	//"enumMember": "",
+	//"module": "",
+	//"color": "",
+	//"property": "",
+	//"field": "料",
+	//"unit": "",
+	//"event": "鬒",
+	//"file": "",
+	//"folder": "",
+	//"snippet": "",
+	//"typeParameter": "",
+	//"default": ""
+	//}
+}
