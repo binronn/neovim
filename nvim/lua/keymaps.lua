@@ -46,7 +46,8 @@ nmap('<leader>fS',':wa<CR>')
 
 -- 关闭当前文件
 nmap('<leader>fd',':bd<CR>')
-nmap('<leader>fo',':e ')
+--nmap('<leader>fo',':e ') -- 异常
+vim.cmd 'nmap <leader>fo :e '
 
 -- 文件保存与退出
 nmap('<leader>wq',':wq<CR>')

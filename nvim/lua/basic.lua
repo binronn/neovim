@@ -109,6 +109,6 @@ vim.cmd 'colorscheme gruvbox'
 -- 强制显示侧边栏，防止时有时无
 vim.cmd 'set signcolumn=yes'
 
-
+-- 代码折叠问题
 vim.cmd "set foldmethod=indent"
 vim.cmd 'set foldlevel=99'

@@ -3,13 +3,13 @@
 ---- 顺序不可变 ----
 --------------------
 require 'basic'
-
 require 'plugins'
+require 'keymaps'
+
 vim.cmd('source ~/.config/nvim/coc_init.vim')
 vim.cmd('source ~/.config/nvim/plugins_init.vim')
 vim.cmd('source ~/.config/nvim/autocmd.vim')
 
-require 'keymaps'
 
 local fn = vim.fn
 
