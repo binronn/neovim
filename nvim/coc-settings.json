@@ -105,7 +105,7 @@
 	"git.changeRemovedSign.text": "🔛",
 	"git.signPriority": 3,
 	 "explorer.keyMappings.global": {
-    "i": true, // cancel default mapkey
+    "i": false, // cancel default mapkey
     "<c-o>": "noop",
 
     "*": "toggleSelection",
