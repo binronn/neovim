@@ -1,6 +1,5 @@
 
 
-autocmd FileType c,cpp,h,hpp nmap <leader>fh :CocCommand clangd.switchSourceHeader<CR>
 autocmd FileType c,cpp,h,hpp nmap <leader>ff :ClangFormat<CR>
 autocmd FileType c,cpp,h,hpp vmap <leader>ff :ClangFormat<CR>
 

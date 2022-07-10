@@ -10,7 +10,8 @@ let g:coc_global_extensions = [
  \ 'coc-snippets',
  \ 'coc-syntax',
  \ 'coc-marketplace',
- \ 'coc-clangd'
+ \ 'coc-clangd',
+ \ 'coc-git'
  \]
 
 "autocmd FileType json syntax match Comment +\/\/.\+$+
