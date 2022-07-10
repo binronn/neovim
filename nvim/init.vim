@@ -1,4 +1,5 @@
 lua require('init')
+"autocmd BufWrite,BufWritePre zR
 "colorscheme gruvbox
 "" let $TMPDIR = '/mnt/d/TMP'
 "" let $WINGCCPATH = 'C:\Qt\Qt5.13.2\Tools\mingw730_32\bin\'

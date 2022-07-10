@@ -18,7 +18,7 @@ require('packer').startup(function(use)
 		requires = { 'kyazdani42/nvim-web-devicons', opt = true }
       }
 	use { 'kyazdani42/nvim-web-devicons' }
-	use 'lewis6991/impatient.nvim'
+	--use 'lewis6991/impatient.nvim'
 	--use 'AGou-ops/dashboard-nvim'
 	use 'tpope/vim-sensible'
 	-- use 'octol/vim-cpp-enhanced-highlight' -- cpp 语法高亮插件

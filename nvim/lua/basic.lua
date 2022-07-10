@@ -43,8 +43,6 @@ vim.g.nocompatible=true -- 关闭vi兼容
 vim.g.backspace=indent,eol,start -- 退格键修复
 vim.g.mouse=c  -- xshell复制开启
 
-vim.g.foldmethod='indent'
-vim.g.foldlevel=99
 
 vim.g.fileformat='unix'
 -- vim环境保存与恢复
@@ -110,3 +108,7 @@ vim.cmd 'colorscheme gruvbox'
 
 -- 强制显示侧边栏，防止时有时无
 vim.cmd 'set signcolumn=yes'
+
+
+vim.cmd "set foldmethod=indent"
+vim.cmd 'set foldlevel=99'
