@@ -5,9 +5,9 @@
 require 'basic'
 
 require 'plugins'
-vim.cmd('source ~/.config/nvim/lua/coc_init.vim')
-vim.cmd('source ~/.config/nvim/lua/plugins_init.vim')
-vim.cmd('source ~/.config/nvim/lua/autocmd.vim')
+vim.cmd('source ~/.config/nvim/coc_init.vim')
+vim.cmd('source ~/.config/nvim/plugins_init.vim')
+vim.cmd('source ~/.config/nvim/autocmd.vim')
 
 require 'keymaps'
 
