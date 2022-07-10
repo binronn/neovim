@@ -45,9 +45,13 @@ require('packer').startup(function(use)
 	use 'tmhedberg/SimpylFold' -- 代码折叠
 	use 'itchyny/vim-cursorword' -- 高亮光标下单词
 	use 'honza/vim-snippets'  -- 代码片段
-	use 'bfrg/vim-cpp-modern' -- cpp 高亮？
+	-- use 'bfrg/vim-cpp-modern' -- cpp 高亮？
 	use 'jakelinnzy/autocmd-lua' -- vim cmd 提示
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
+    use {
+        'nvim-treesitter/nvim-treesitter',      -- 语法高亮
+        run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
+    }
     --use { 'alvarosevilla95/luatab.nvim', requires='kyazdani42/nvim-web-devicons' }
     --use 'marko-cerovac/material.nvim' -- 主题？
     --use { 'crusoexia/vim-monokai' }
@@ -105,3 +109,46 @@ require("bufferline").setup{
 
 --require('luatab').setup{}
 
+------------------------------------------
+---- for nvim-treesitter 语法高亮配置 ----
+------------------------------------------
+--
+vim.api.nvim_create_autocmd({'BufEnter','BufAdd','BufNew','BufNewFile','BufWinEnter'}, {
+  group = vim.api.nvim_create_augroup('TS_FOLD_WORKAROUND', {}),
+  callback = function()
+    vim.opt.foldmethod     = 'expr'
+    vim.opt.foldexpr       = 'nvim_treesitter#foldexpr()'
+  end
+})
+
+require'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all"
+  ensure_installed = { "c", "lua", "python", "cpp" , "markdown", "vim", "sql", "yaml", 
+  "bash", "cmake", "json", "javascript", "java", "kotlin", "llvm", "make", "qmljs"},
+
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
+
+  -- Automatically install missing parsers when entering buffer
+  auto_install = true,
+
+  -- List of parsers to ignore installing (for "all")
+  ignore_install = { "javascript" },
+
+  highlight = {
+    -- `false` will disable the whole extension
+    enable = true,
+
+    -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+    -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+    -- the name of the parser)
+    -- list of language that will be disabled
+    disable = { "" },
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}

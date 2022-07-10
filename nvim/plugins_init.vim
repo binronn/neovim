@@ -81,25 +81,11 @@ let g:vista_sidebar_width=40
 "语法插件高亮配置
 "----------------------------------------------------------------------------------------
 "
-let c_no_curly_error = 1
+"let c_no_curly_error = 1
 
 " 高亮插件
-let g:mwDefaultHighlightingPalette = 'extended'
-let g:mwDefaultHighlightingPalette = 'maximum'
-
-" c/cpp 高亮 vim-cpp-modern
-" Disable function highlighting (affects both C and C++ files)
-let g:cpp_function_highlight = 1
-
-" Enable highlighting of C++11 attributes
-let g:cpp_attributes_highlight = 1
-
-" Highlight struct/class member variables (affects both C and C++ files)
-let g:cpp_member_highlight = 1
-
-" Put all standard C and C++ keywords under Vim's highlight group 'Statement'
-" (affects both C and C++ files)
-let g:cpp_simple_highlight = 1
+"let g:mwDefaultHighlightingPalette = 'extended'
+"let g:mwDefaultHighlightingPalette = 'maximum'
 "----------------------------------------------------------------------------------------
 
 "----------------------------------------------------------------------------------------

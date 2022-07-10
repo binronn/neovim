@@ -134,6 +134,11 @@ _G.packer_plugins = {
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nerdcommenter",
     url = "https://github.com/scrooloose/nerdcommenter"
   },
+  ["nvim-treesitter"] = {
+    loaded = true,
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
+    url = "https://github.com/nvim-treesitter/nvim-treesitter"
+  },
   ["nvim-web-devicons"] = {
     loaded = true,
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
@@ -158,11 +163,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-clang-format",
     url = "https://github.com/rhysd/vim-clang-format"
-  },
-  ["vim-cpp-modern"] = {
-    loaded = true,
-    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-cpp-modern",
-    url = "https://github.com/bfrg/vim-cpp-modern"
   },
   ["vim-cursorword"] = {
     loaded = true,

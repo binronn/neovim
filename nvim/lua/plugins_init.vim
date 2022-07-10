@@ -290,8 +290,8 @@ nmap <leader>N :MarkClear<CR>
 " ASYNC RUN
 "----------------------------------------------------------------------------------------
 "
-nmap <leader>sa :AsyncRun 
-nmap <leader>st :AsyncStop<CR>
+nmap <leader>ar :AsyncRun 
+nmap <leader>at :AsyncStop<CR>
 "----------------------------------------------------------------------------------------
 
 
