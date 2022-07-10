@@ -89,6 +89,11 @@ _G.packer_plugins = {
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/autocmd-lua",
     url = "https://github.com/jakelinnzy/autocmd-lua"
   },
+  ["bufferline.nvim"] = {
+    loaded = true,
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/bufferline.nvim",
+    url = "https://github.com/akinsho/bufferline.nvim"
+  },
   ["coc.nvim"] = {
     loaded = true,
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/coc.nvim",
@@ -128,11 +133,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/lush.nvim",
     url = "https://github.com/rktjmp/lush.nvim"
-  },
-  ["material.nvim"] = {
-    loaded = true,
-    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/material.nvim",
-    url = "https://github.com/marko-cerovac/material.nvim"
   },
   nerdcommenter = {
     loaded = true,

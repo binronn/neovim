@@ -63,7 +63,6 @@ vim.g.nocursorcolumn=true
 vim.g.hidden=true
 vim.g.updatetime=200
 --vim.g.shortmess+=c
---vim.g.signcolumn=number
 vim.g.noerrorbells=true
 -- 禁止自动换行
 vim.g.nowrap=true
@@ -71,7 +70,7 @@ vim.g.nowrap=true
 -- 文件备份问题
 vim.g.noswapfile=true
 vim.g.nobackup=true
-vim.g.undodir='~/.vim/undodir'
+vim.g.undodir='~/.config/undodir'
 vim.g.undofile=true
 
 -- 实时显示搜索内容
@@ -106,4 +105,8 @@ vim.o.timeoutlen = 500
 -- 语法开启
 vim.g.syntax=true
 -- 主题设置
+--vim.g.material_style = "deep ocean"
 vim.cmd 'colorscheme gruvbox'
+
+-- 强制显示侧边栏，防止时有时无
+vim.cmd 'set signcolumn=yes'

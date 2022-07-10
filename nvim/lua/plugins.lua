@@ -47,7 +47,10 @@ require('packer').startup(function(use)
 	use 'honza/vim-snippets'  -- 代码片段
 	use 'bfrg/vim-cpp-modern' -- cpp 高亮？
 	use 'jakelinnzy/autocmd-lua' -- vim cmd 提示
-    use 'marko-cerovac/material.nvim' -- 主题？
+    use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
+    --use { 'alvarosevilla95/luatab.nvim', requires='kyazdani42/nvim-web-devicons' }
+    --use 'marko-cerovac/material.nvim' -- 主题？
+    --use { 'crusoexia/vim-monokai' }
 
   if packer_bootstrap then
     require('packer').sync()
@@ -85,4 +88,20 @@ require('lualine').setup {
   extensions = {}
 }
 
---require('material').set()
+require("bufferline").setup{
+  options ={
+    show_close_icon = false,
+    show_buffer_close_icons = false,
+        indicator_icon = '➡️',
+    buffer_close_icon = '',
+    modified_icon = '●',
+    close_icon = '',
+    left_trunc_marker = '',
+    right_trunc_marker = '',
+    diagnostics = 'coc'
+    --show_tab_indicators = false]]
+  }
+}
+
+--require('luatab').setup{}
+
