@@ -375,6 +375,52 @@ nmap <F12> <Plug>VimspectorPause
 
 "----------------------------------------------------------------------------------------
 
+
+"----------------------------------------------------------------------------------------
+" cscope 索引更新函数
+"----------------------------------------------------------------------------------------
+"
+function UpdateCtags()
+	set autochdir
+    let curdir=getcwd()
+    while !filereadable("./tags")
+        cd ..
+        if getcwd() == "/"
+            break
+        endif
+    endwhile
+    if filewritable("./tags")
+        :AsyncRun ctags -R
+    endif
+    execute ":cd " . curdir
+endfunction
+
+function UpdateCStags()
+	set autochdir " 将工作目录设置为当前目录
+    let curdir=getcwd()
+    while !filereadable("./cscope.out")
+        cd ..
+        if getcwd() == "/"
+            break
+        endif
+    endwhile
+    if filewritable("./cscope.out")
+		" :!touch 1
+        :AsyncRun  cscope -Rbq 
+		execute ":cclose"
+        execute ":cscope kill 0"
+        execute ":cscope add cscope.out"
+	else
+		" :!touch 2
+		set autochdir
+		:! cscope -Rbq
+        execute ":cscope add cscope.out"
+    endif
+    execute ":cd " . curdir
+endfunction
+"----------------------------------------------------------------------------------------
+
+
 "----------------------------------------------------------------------------------------
 " VIM SPECTOR 配置文件生成
 "----------------------------------------------------------------------------------------
