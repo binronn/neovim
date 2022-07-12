@@ -2,8 +2,8 @@
 --------------------
 ---- 顺序不可变 ----
 --------------------
-require 'basic'
 require 'plugins'
+require 'basic'
 require 'keymaps'
 
 vim.cmd('source ~/.config/nvim/coc_init.vim')
