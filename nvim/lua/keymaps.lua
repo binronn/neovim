@@ -67,7 +67,11 @@ nmap('<leader>sc',':set nohlsearch<CR>')
 
 -- 快速切换到行首行尾
 nmap('H', '^')
+vmap('H', '^')
+--xmap('H', '^')
 nmap('L', '$')
+vmap('L', '$')
+--xmap('L', '$')
 
 -- 批量缩进
 xmap('<', '<gv')
@@ -115,10 +119,10 @@ nmap('<leader>wJ', '<C-w>J')
 nmap('<leader>wo', ':only<CR>')
 
 -- 窗口尺寸调整
-nmap('leader>w=', '<C-w>=')
-nmap('leader>w-', '<C-w>+')
-nmap('leader>w<', '<C-w><')
-nmap('leader>w>', '<C-w>>')
+nmap('<leader>w=', '<C-w>=')
+nmap('<leader>w-', '<C-w>+')
+nmap('<leader>w<', '<C-w><')
+nmap('<leader>w>', '<C-w>>')
 nmap('<leader>ws', ':vertical resize ')
 nmap('<leader>wv', ':resize ')
 
@@ -128,6 +132,9 @@ nmap('<leader>pc', ':set nopaste<CR>')
 
 -- 复制内容到粘贴板
 vmap('<leader>C', '"+y')
+
+-- 终端映射
+nmap('<leader>\'', ':vsplit<CR>:terminal<CR>i')
 
 ---------------
 ---- VISTA ----
