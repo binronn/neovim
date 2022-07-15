@@ -152,3 +152,10 @@ require'nvim-treesitter.configs'.setup {
     additional_vim_regex_highlighting = false,
   },
 }
+
+-----------------------------------
+---- VIM MARK 高亮数量限制解除 ----
+-----------------------------------
+--
+vim.g.mwDefaultHighlightingPalette='maximum'
+
