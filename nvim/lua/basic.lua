@@ -41,7 +41,7 @@ vim.o.hidden=true
 -- vim.g.editing-mode vi
 vim.g.nocompatible=true -- 关闭vi兼容
 vim.g.backspace=indent,eol,start -- 退格键修复
-vim.g.mouse=c  -- xshell复制开启
+vim.g.mouse=a  -- xshell复制开启
 
 
 vim.g.fileformat='unix'
