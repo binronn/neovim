@@ -193,11 +193,11 @@ let g:Lf_WindowPosition = 'popup'
 " GIT coc-git
 "----------------------------------------------------------------------------------------
 " navigate chunks of current buffer
-nmap [g <Plug>(coc-git-prevchunk)
-nmap ]g <Plug>(coc-git-nextchunk)
+nmap gp <Plug>(coc-git-prevchunk)
+nmap gn <Plug>(coc-git-nextchunk)
 " navigate conflicts of current buffer
-nmap [c <Plug>(coc-git-prevconflict)
-nmap ]c <Plug>(coc-git-nextconflict)
+nmap gcp <Plug>(coc-git-prevconflict)
+nmap gcn <Plug>(coc-git-nextconflict)
 " show chunk diff at current position
 nmap gs <Plug>(coc-git-chunkinfo)
 " show commit contains current position
