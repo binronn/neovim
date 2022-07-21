@@ -316,8 +316,8 @@ omap ac <Plug>(coc-classobj-a)
 " 查找代码报错
 "----------------------------------------------------------------------------------------
 "
-"nmap <silent> [g <Plug>(coc-diagnostic-prev)
-"nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 
 "----------------------------------------------------------------------------------------
