@@ -74,3 +74,6 @@ augroup end
 
 inoremap <silent><expr> <c-o> coc#refresh()
 
+
+" COC 快速修复代码 quikfix
+nmap <leader>fx  <Plug>(coc-fix-current)
