@@ -335,7 +335,7 @@ nmap <silent> gr <Plug>(coc-references)
 "----------------------------------------------------------------------------------------
 "
 " 启用或关闭 vimspector
-" packadd! vimspector
+ packadd! vimspector
 " 查看变量内容
 "for normal mode - the word under the cursor
 nmap <Leader>di <Plug>VimspectorBalloonEval
