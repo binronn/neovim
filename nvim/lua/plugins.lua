@@ -64,7 +64,7 @@ end)
 
 require('lualine').setup {
   options = {
-    icons_enabled = true,
+    icons_enabled = false,
     theme = 'auto',
     component_separators = { left = '', right = ''},
     section_separators = { left = '', right = ''},
@@ -94,16 +94,18 @@ require('lualine').setup {
 
 require("bufferline").setup{
   options ={
+    show_buffer_icons = false,
+    show_buffer_default_icon = false,
     show_close_icon = false,
     show_buffer_close_icons = false,
-        indicator_icon = '➡️',
-    buffer_close_icon = '',
-    modified_icon = '●',
-    close_icon = '',
-    left_trunc_marker = '',
-    right_trunc_marker = '',
-    diagnostics = 'coc'
-    --show_tab_indicators = false]]
+    indicator_icon = '>>',
+    buffer_close_icon = 'B',
+    modified_icon = '*',
+    close_icon = ' ',
+    left_trunc_marker = '',
+    right_trunc_marker = '',
+    diagnostics = 'coc',
+    -- show_tab_indicators = false
   }
 }
 
