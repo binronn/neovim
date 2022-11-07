@@ -96,7 +96,8 @@ require("bufferline").setup{
   options ={
     show_close_icon = false,
     show_buffer_close_icons = false,
-        indicator_icon = '➡️',
+    -- indicator_icon = '➡️',
+    indicator = { icon = '➡️'},
     buffer_close_icon = '',
     modified_icon = '●',
     close_icon = '',

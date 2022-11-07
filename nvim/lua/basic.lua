@@ -41,7 +41,7 @@ vim.o.hidden=true
 -- vim.g.editing-mode vi
 vim.g.nocompatible=true -- 关闭vi兼容
 vim.g.backspace=indent,eol,start -- 退格键修复
-vim.g.mouse=a  -- xshell复制开启
+vim.g.mouse=false  -- xshell复制开启
 
 
 vim.g.fileformat='unix'
@@ -112,3 +112,4 @@ vim.cmd 'set signcolumn=yes'
 -- 代码折叠问题
 vim.cmd "set foldmethod=indent"
 vim.cmd 'set foldlevel=99'
+vim.cmd 'set mouse='
