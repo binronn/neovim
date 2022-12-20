@@ -5,8 +5,16 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export http_proxy="http://127.0.0.1:10808"
-export https_proxy="https://127.0.0.1:10808"
+# 添加 wsl2 代理支持
+hostdnsfile=/mnt/wsl/resolv.conf
+if [ -f "$hostdnsfile" ]; then
+    hostip=`cat /mnt/wsl/resolv.conf | grep nameserver | awk -v hostip=$2 '{print $2}'`
+else
+    hostip=127.0.0.1
+fi
+
+export http_proxy="http://$hostip:10808"
+export https_proxy="https://$hostip:10808"
 
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
@@ -69,8 +77,8 @@ zinit load romkatv/powerlevel10k
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-alias curlp="curl -x http://127.0.0.1:10808"
-alias wgetp="wget -e http_proxy='http://127.0.0.1:10808'"
+alias curlp="curl -x http://$hostip:10808"
+alias wgetp="wget -e http_proxy='http://$hostip:10808'"
 
 alias ga="git add"
 alias gaa="git add ."
