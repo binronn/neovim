@@ -8,8 +8,8 @@ require 'keymaps'
 require 'coc_init'
 
 --vim.cmd('source ~/.config/nvim/coc_init.vim')
-vim.cmd('source ~/.config/nvim/plugins_init.vim')
-vim.cmd('source ~/.config/nvim/autocmd.vim')
+vim.cmd('source ~/.config/nvim/vim/plugins_init.vim')
+vim.cmd('source ~/.config/nvim/vim/autocmd.vim')
 
 
 local fn = vim.fn
