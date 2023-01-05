@@ -10,6 +10,8 @@
 -- diagnostics appear/become resolved.
 --vim.opt.signcolumn = "yes"
 
+vim.g.coc_global_extensions = { 'coc-json', 'coc-vimlsp',  'coc-git', 'coc-explorer', 'coc-jedi', 'coc-format-json', 'coc-snippets', 'coc-syntax', 'coc-marketplace', 'coc-clangd', 'coc-git'}
+
 local keyset = vim.keymap.set
 -- Auto complete
 function _G.check_back_space()
