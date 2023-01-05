@@ -32,6 +32,7 @@ function imap(shortcut, command)
 end
 
 nmap('<Space>', '<nop>')
+vmap('<Space>', '<nop>')
 xmap('<Space>', '<nop>')
 
 ------------------
@@ -67,10 +68,14 @@ nmap('<leader>sc',':set nohlsearch<CR>')
 
 -- 快速切换到行首行尾
 nmap('H', '^')
+xmap('H', '^')
 vmap('H', '^')
+--imap('H', '^')
 --xmap('H', '^')
 nmap('L', '$')
+xmap('L', '$')
 vmap('L', '$')
+--imap('L', '$')
 --xmap('L', '$')
 
 -- 批量缩进
