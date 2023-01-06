@@ -141,6 +141,10 @@ vmap('<leader>C', '"+y')
 -- 终端映射
 nmap('<leader>\'', ':vsplit<CR>:terminal<CR>i')
 
+-- 弹出式终端
+nmap('<leader>t', '<CMD>lua require("FTerm").toggle()<CR>')
+--vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
+
 ---------------
 ---- VISTA ----
 ---------------

@@ -6,6 +6,7 @@ require 'plugins'
 require 'basic'
 require 'keymaps'
 require 'coc_init'
+require 'autocmd'
 
 --vim.cmd('source ~/.config/nvim/coc_init.vim')
 vim.cmd('source ~/.config/nvim/vim/plugins_init.vim')

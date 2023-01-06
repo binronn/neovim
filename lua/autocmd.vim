@@ -12,8 +12,8 @@ autocmd FileType c,cpp nmap <leader>dmg :wa<CR>:AsyncRun gcc "%" -g -o main<CR>
 
 autocmd FileType c,cpp nmap <leader>L :w <CR> :AsyncRun  ./main<CR>
 
-autocmd FileType python nmap <leader>l2 :w <CR> :rightbelow vert term python2 %<CR>
-autocmd FileType python nmap <leader>l3 :w <CR> :rightbelow vert term python3 %<CR>
+"autocmd FileType python nmap <leader>l2 :w <CR> :rightbelow vert term python2 %<CR>
+"autocmd FileType python nmap <leader>l3 :w <CR> :rightbelow vert term python3 %<CR>
 autocmd FileType python nmap <leader>lf3 :w <CR> :rightbelow vert term python3 
 autocmd FileType python nmap <leader>lf2 :w <CR> :rightbelow vert term python2 
 autocmd FileType python nmap <leader>L2 :w <CR> :AsyncRun python2 %<CR>

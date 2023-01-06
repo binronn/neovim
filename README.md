@@ -18,3 +18,8 @@
 
 路径参考:
 ~/.config/coc/extensions/coc-clangd-data/install/15.0.3/clangd_15.0.3/lib/clang/15.0.3/include/stddef.h
+
+# 高亮问题
+`tree-sitter CLI not found: `tree-sitter` is not executable!`
+执行命令: sudo npm install -g tree-sitter-cli
+
