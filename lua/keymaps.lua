@@ -139,11 +139,19 @@ nmap('<leader>pc', ':set nopaste<CR>')
 vmap('<leader>C', '"+y')
 
 -- 终端映射
-nmap('<leader>\'', ':vsplit<CR>:terminal<CR>i')
+--nmap('<leader>\'', ':vsplit<CR>:terminal<CR>i')
 
 -- 弹出式终端
 nmap('<leader>t', '<CMD>lua require("FTerm").toggle()<CR>')
 --vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
+
+-- GIT 命令
+nmap('<leader>gi', ':CocCommand git.chunkInfo<CR>')
+nmap('<leader>gr', ':CocCommand git.refresh<CR>')
+nmap('<leader>gp', ':CocCommand git.push')
+nmap('<leader>gs', ':CocCommand git.showCommit<CR>')
+nmap('<leader>gu', ':CocCommand git.chunkUndo<CR>')
+nmap('<leader>gd', ':CocCommand git.diffCached<CR>')
 
 ---------------
 ---- VISTA ----
