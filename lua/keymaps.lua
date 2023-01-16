@@ -188,7 +188,7 @@ nmap('<leader>sd', ':<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expan
 nmap('<leader>so', ':<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>')
 nmap('<leader>sn', ':<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>')
 nmap('<leader>sp', ':<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>')
-nmap('<leader>sg', ':Leaderf gtags --update')
+nmap('<leader>sg', ':Leaderf gtags --update<CR>')
 
 ------------------------------------------------------------------------------------------
 -- vim-mark
