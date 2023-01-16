@@ -234,3 +234,74 @@ require'FTerm'.setup({
     on_stderr = nil,
 })
 
+
+------------------------------------------------------------------------------------------
+-- 异步shell插件 窗口设置
+------------------------------------------------------------------------------------------
+--
+vim.g.asyncrun_open = 12
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-- indentLine配置
+------------------------------------------------------------------------------------------
+--
+vim.g.indentLine_enabled = 1
+vim.g.indentLine_concealcursor = 'inc'
+vim.g.indentLine_conceallevel = 2
+-- indentLine
+vim.g.indentLine_char='|'
+vim.g.indentLine_enabled = 1
+vim.cmd 'set list lcs=tab:\\|\\'
+-- clang-foarmat路径配置
+vim.g.clang_library_path = '/usr/bin/'
+vim.cmd "let g:clang_format#command = 'clang-format'"
+
+-- indentLine markdown 符号不显示问题
+--autocmd FileType json,markdown,csv let g:indentLine_conceallevel = 0
+-- vim-json json 符号 -- 不显示问题
+--autocmd FileType json,markdown,csv let g:vim_json_syntax_conceal = 0
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-- 书签保存设置
+------------------------------------------------------------------------------------------
+--
+vim.g.bookmark_save_per_working_dir = 0 -- 书签保存到工作目录
+vim.g.bookmark_auto_save = 1  -- 自动保存书签
+
+
+------------------------------------------------------------------------------------------
+-- LeaderF 配置
+------------------------------------------------------------------------------------------
+--
+vim.g.Lf_GtagsAutoGenerate = 1
+vim.g.Lf_Gtagslabel = 'native-pygments'
+
+
+-- don't show the help in normal mode
+vim.g.Lf_HideHelp = 1
+vim.g.Lf_UseCache = 0
+vim.g.Lf_UseVersionControlTool = 0
+vim.g.Lf_IgnoreCurrentBufferName = 1
+-- popup mode
+vim.g.Lf_WindowPosition = 'popup'
+vim.g.Lf_PreviewInPopup = 1
+vim.cmd 'let g:Lf_StlSeparator = { "left": "\\ue0b0", "right": "\\ue0b2", "font": "DejaVu Sans Mono for Powerline" }'
+vim.cmd 'let g:Lf_PreviewResult = {"Function": 0, "BufTag": 0 }'
+
+
+vim.g.Lf_ShortcutF = ""
+--noremap <leader>sf :LeaderfFile<CR> 
+
+--noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+--noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+-- search visually selected text literally
+--xnoremap sf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+--noremap so :<C-U>Leaderf! rg --recall<CR>
+
+-- should use `Leaderf gtags --update` first
+-- Leaderf ignore current buffer name
+

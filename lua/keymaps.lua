@@ -152,6 +152,155 @@ nmap('<leader>gp', ':CocCommand git.push')
 nmap('<leader>gs', ':CocCommand git.showCommit<CR>')
 nmap('<leader>gu', ':CocCommand git.chunkUndo<CR>')
 nmap('<leader>gd', ':CocCommand git.diffCached<CR>')
+-- navigate conflicts of current buffer
+nmap('gcp', '<Plug>(coc-git-prevconflict)')
+nmap('gcn', '<Plug>(coc-git-nextconflict)')
+--" create text object for git chunks 
+--TODO: Update
+--omap ig <Plug>(coc-git-chunk-inner)
+--xmap ig <Plug>(coc-git-chunk-inner)
+--omap ag <Plug>(coc-git-chunk-outer)
+--xmap ag <Plug>(coc-git-chunk-outer)
+
+
+
+------------------------------------------------------------------------------------------
+-- 文件窗口 coc-explorer
+------------------------------------------------------------------------------------------
+--
+nmap('<F3>', '<Cmd>CocCommand explorer --position right<CR>')
+
+------------------------------------------------------------------------------------------
+-- LeaderF 配置
+------------------------------------------------------------------------------------------
+--
+-- 取消此按键的映射
+nmap('<leader>b', '<nop>')
+nmap('<leader>f', '<nop>')
+
+nmap('<leader>sb', ':<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>')
+nmap('<leader>sm', ':<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>')
+nmap('<leader>st', ':<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>')
+nmap('<leader>sl', ':<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>')
+
+nmap('<leader>sr', ':<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>')
+nmap('<leader>sd', ':<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>')
+nmap('<leader>so', ':<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>')
+nmap('<leader>sn', ':<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>')
+nmap('<leader>sp', ':<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>')
+nmap('<leader>sg', ':Leaderf gtags --update')
+
+------------------------------------------------------------------------------------------
+-- vim-mark
+------------------------------------------------------------------------------------------
+--
+nmap('<leader>N', ':MarkClear<CR>')
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-- ASYNC RUN
+------------------------------------------------------------------------------------------
+--
+nmap('<leader>ar', ':AsyncRun ')
+nmap('<leader>as', ':AsyncStop<CR>')
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-- 格式化代码
+------------------------------------------------------------------------------------------
+--
+nmap('<leader>ff', '<Plug>(coc-format-selected) ')
+xmap('<leader>ff', '<Plug>(coc-format-selected) ')
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-- 重命名
+------------------------------------------------------------------------------------------
+--
+nmap('<leader>rn', '<Plug>(coc-rename)')
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-- 快速选中类 函数 内容 vif vic
+------------------------------------------------------------------------------------------
+--
+-- TODO: omap
+xmap('if', '<Plug>(coc-funcobj-i)')
+--omap('if', '<Plug>(coc-funcobj-i)')
+xmap('af', '<Plug>(coc-funcobj-a)')
+--omap('af', '<Plug>(coc-funcobj-a)')
+xmap('ic', '<Plug>(coc-classobj-i)')
+--omap('ic', '<Plug>(coc-classobj-i)')
+xmap('ac', '<Plug>(coc-classobj-a)')
+--omap('ac', '<Plug>(coc-classobj-a)')
+------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------
+-- 查找代码报错
+------------------------------------------------------------------------------------------
+--
+nmap('<silent>', '[g <Plug>(coc-diagnostic-prev)')
+nmap('<silent>', ']g <Plug>(coc-diagnostic-next)')
+
+
+------------------------------------------------------------------------------------------
+-- 代码导航
+------------------------------------------------------------------------------------------
+--
+nmap('<silent> gd', '<Plug>(coc-definition)')
+nmap('<silent> gt', '<Plug>(coc-type-definition)')
+nmap('<silent> gi', '<Plug>(coc-implementation)')
+nmap('<silent> gr', '<Plug>(coc-references)')
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+-- VIM SPECTOR 按键映射
+------------------------------------------------------------------------------------------
+--
+-- 启用或关闭 vimspector
+vim.cmd 'packadd! vimspector'
+-- 查看变量内容
+--for normal mode - the word under the cursor
+nmap('<Leader>di', '<Plug>VimspectorBalloonEval')
+-- for visual mode, the visually selected text
+xmap('<Leader>di', '<Plug>VimspectorBalloonEval')
+-- 退出调试器
+nmap('<leader>dq', ':VimspectorReset<CR>')
+-- 启动或者继续
+nmap('<F5>', '<Plug>VimspectorContinue')
+-- 停止调试
+nmap('<leader>ds', '<Plug>VimspectorStop')
+-- 重启调试
+nmap('<leader>dr', '<Plug>VimpectorRestart')
+-- 查看光标下的变量的内容
+nmap('<leader>de', '<Plug>VimspectorBalloonEval')
+-- 向上移动栈帧
+nmap('<leader>dku', '<Plug>VimspectorUpFrame')
+-- 向下移动栈帧
+nmap('<leader>dkd', '<Plug>VimspectorDownFrame')
+-- 条件断点
+nmap('<leader>dpi', '<Plug>VimspectorToggleConditionalBreakpoint')
+-- 添加函数断点
+nmap('<leader>dpf', '<Plug>VimspectorAddFunctionBreakpoint')
+-- 添加监视变量
+nmap('<leader>dw', ':VimspectorWatch ')
+-- 运行到光标处
+nmap('<F4>', '<Plug>VimspectorRunToCursor')
+-- 步过
+nmap('<F8>', '<Plug>VimspectorStepOver')
+-- 步入
+nmap('<F7>', '<Plug>VimspectorStepInto')
+-- 切换断点
+nmap('<F9>', '<Plug>VimspectorToggleBreakpoint')
+-- 中断调试器
+nmap('<F12>', '<Plug>VimspectorPause')
+
+------------------------------------------------------------------------------------------
+
 
 ---------------
 ---- VISTA ----

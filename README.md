@@ -16,8 +16,11 @@
 手动安装 clangd 插件，要拷贝目录至 插件目录，否则将出现找不到头文件的情况
 或使用 coc 安装最新的 clangd :CocCommand clangd.install
 
-路径参考:
-~/.config/coc/extensions/coc-clangd-data/install/15.0.3/clangd_15.0.3/lib/clang/15.0.3/include/stddef.h
+路径在 coc-setting.json 中，可手动下载复制
+
+# LeaderF 问题
+使用之前需先编译，编译时需要 python3.x-dev 包，编译命令: LeaderfInstallCExtension
+若编译失败，需进入到插件目录内，修改 install.sh 中的 python2 代码块后 重新编译
 
 # 高亮问题
 `tree-sitter CLI not found: `tree-sitter` is not executable!`
