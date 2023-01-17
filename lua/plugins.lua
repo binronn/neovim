@@ -269,7 +269,7 @@ vim.cmd "let g:clang_format#command = 'clang-format'"
 -- 书签保存设置
 ------------------------------------------------------------------------------------------
 --
-vim.g.bookmark_save_per_working_dir = 0 -- 书签保存到工作目录
+vim.g.bookmark_save_per_working_dir = 1 -- 书签保存到工作目录
 vim.g.bookmark_auto_save = 1  -- 自动保存书签
 
 
@@ -279,6 +279,7 @@ vim.g.bookmark_auto_save = 1  -- 自动保存书签
 --
 vim.g.Lf_GtagsAutoGenerate = 1
 vim.g.Lf_Gtagslabel = 'native-pygments'
+--vim.g.Lf_Gtagsconf = '~/.config/nvim/gtags.conf'
 
 
 -- don't show the help in normal mode

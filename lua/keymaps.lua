@@ -27,6 +27,10 @@ function xmap(shortcut, command)
   map('x', shortcut, command)
 end
 
+function cmap(shortcut, command)
+  map('c', shortcut, command)
+end
+
 function imap(shortcut, command)
   map('i', shortcut, command)
 end
@@ -34,6 +38,8 @@ end
 nmap('<Space>', '<nop>')
 vmap('<Space>', '<nop>')
 xmap('<Space>', '<nop>')
+
+--cmap('CC', 'CocCommand ')
 
 ------------------
 ---- VIM 相关 ----
@@ -182,13 +188,21 @@ nmap('<leader>sb', ':<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>')
 nmap('<leader>sm', ':<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>')
 nmap('<leader>st', ':<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>')
 nmap('<leader>sl', ':<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>')
+nmap('<leader>sf', ':<C-U><C-R>=printf("Leaderf file --nameOnly %s", "")<CR><CR>')
+-- search visually selected text literally
+xmap('<leader>sl', ':<C-U><C-R>=printf("Leaderf! rg --current-buffer -F -e %s ", leaderf#Rg#visual())<CR><CR>')
+xmap('<leader>sL', ':<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR><CR>')
+
+--noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+--noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+
 
 nmap('<leader>sr', ':<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>')
 nmap('<leader>sd', ':<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>')
 nmap('<leader>so', ':<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>')
 nmap('<leader>sn', ':<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>')
 nmap('<leader>sp', ':<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>')
-nmap('<leader>sg', ':Leaderf gtags --update<CR>')
+nmap('<leader>sg', ':<C-U><C-R>=printf("Leaderf gtags --update %s", "")<CR><CR>')
 
 ------------------------------------------------------------------------------------------
 -- vim-mark
