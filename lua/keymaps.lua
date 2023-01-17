@@ -191,6 +191,8 @@ nmap('<leader>sl', ':<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>')
 nmap('<leader>sW', ':<C-U><C-R>=printf("Leaderf gtags %s", "")<CR><CR>')
 nmap('<leader>sw', ':<C-U><C-R>=printf("Leaderf gtags --current-buffer %s", "")<CR><CR>')
 nmap('<leader>sf', ':<C-U><C-R>=printf("Leaderf file --nameOnly %s", "")<CR><CR>')
+--nmap('<leader>sS', ':Leaderf rg -g *.{} ') 搜索指定的文件类型，待完善
+--示例 Leaderf! rg -g *.{h,cpp} 
 -- search visually selected text literally
 xmap('<leader>sw', ':<C-U><C-R>=printf("Leaderf! rg --current-buffer -F -e %s ", leaderf#Rg#visual())<CR><CR>')
 xmap('<leader>sW', ':<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR><CR>')
