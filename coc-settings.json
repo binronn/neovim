@@ -201,6 +201,10 @@
     "<<": "gitStage",
     ">>": "gitUnstage"
   },
+  "snippets.ultisnips.directories": [
+	"~/.config/nvim/ultisnips"
+  ],
+  "snippets.userSnippetsDirectory": "~/.config/nvim/ultisnips",
   "snippets.ultisnips.pythonPrompt": false
 	//  "suggest.completionItemKindLabels": {
 	//"keyword": "",
