@@ -188,10 +188,12 @@ nmap('<leader>sb', ':<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>')
 nmap('<leader>sm', ':<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>')
 nmap('<leader>st', ':<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>')
 nmap('<leader>sl', ':<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>')
+nmap('<leader>sW', ':<C-U><C-R>=printf("Leaderf gtags %s", "")<CR><CR>')
+nmap('<leader>sw', ':<C-U><C-R>=printf("Leaderf gtags --current-buffer %s", "")<CR><CR>')
 nmap('<leader>sf', ':<C-U><C-R>=printf("Leaderf file --nameOnly %s", "")<CR><CR>')
 -- search visually selected text literally
-xmap('<leader>sl', ':<C-U><C-R>=printf("Leaderf! rg --current-buffer -F -e %s ", leaderf#Rg#visual())<CR><CR>')
-xmap('<leader>sL', ':<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR><CR>')
+xmap('<leader>sw', ':<C-U><C-R>=printf("Leaderf! rg --current-buffer -F -e %s ", leaderf#Rg#visual())<CR><CR>')
+xmap('<leader>sW', ':<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR><CR>')
 
 --noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
 --noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
