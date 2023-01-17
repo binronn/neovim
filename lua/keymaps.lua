@@ -39,7 +39,8 @@ nmap('<Space>', '<nop>')
 vmap('<Space>', '<nop>')
 xmap('<Space>', '<nop>')
 
---cmap('CC', 'CocCommand ')
+cmap('CC', 'CocCommand')
+cmap('SS', 'Leaderf! rg -g *.{}')
 
 ------------------
 ---- VIM 相关 ----
@@ -161,6 +162,9 @@ nmap('<leader>gd', ':CocCommand git.diffCached<CR>')
 -- navigate conflicts of current buffer
 nmap('gcp', '<Plug>(coc-git-prevconflict)')
 nmap('gcn', '<Plug>(coc-git-nextconflict)')
+
+-- COC 快捷呼出
+nmap('<leader>cx', ':CocList commands<CR>')
 --" create text object for git chunks 
 --TODO: Update
 --omap ig <Plug>(coc-git-chunk-inner)
