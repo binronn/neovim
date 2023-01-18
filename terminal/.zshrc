@@ -1,3 +1,4 @@
+#source ~/.bashrc
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -56,15 +57,17 @@ zinit snippet OMZ::lib/completion.zsh
 zinit snippet OMZ::lib/history.zsh
 zinit snippet OMZ::lib/theme-and-appearance.zsh
 zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
-zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+#zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 
 bindkey '^P' history-search-backward
 bindkey '^N' history-search-forward
 #
 zinit load zdharma/history-search-multi-word
-
 zinit load djui/alias-tips
-zinit load romkatv/powerlevel10k
+
+# 终端美化
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
 
 #zinit wait lucid light-mode \
 	  #atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
