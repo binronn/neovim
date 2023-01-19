@@ -26,3 +26,16 @@
 `tree-sitter CLI not found: `tree-sitter` is not executable!`
 执行命令: sudo npm install -g tree-sitter-cli
 
+# Vista 安装
+sudo apt-get install libjansson-dev
+
+then compile and install universal-ctags.
+
+NOTE: Don't use `sudo apt install ctags`, which will install exuberant-ctags and it's not guaranteed to work with vista.vim.
+
+git clone https://github.com/universal-ctags/ctags.git --depth=1
+cd ctags
+./autogen.sh
+./configure
+make
+sudo make install
