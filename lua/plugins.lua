@@ -290,7 +290,7 @@ vim.g.Lf_IgnoreCurrentBufferName = 1
 -- popup mode
 vim.g.Lf_WindowPosition = 'popup'
 vim.g.Lf_PreviewInPopup = 1
-vim.cmd 'let g:Lf_StlSeparator = { "left": "\\ue0b0", "right": "\\ue0b2", "font": "DejaVu Sans Mono for Powerline" }'
+vim.cmd 'let g:Lf_StlSeparator = { "left": "\\ue0b0", "right": "\\ue0b2", "font": "Fira Code" }'
 vim.cmd 'let g:Lf_PreviewResult = {"Function": 0, "BufTag": 0 }'
 
 
@@ -306,3 +306,16 @@ vim.g.Lf_ShortcutF = ""
 -- should use `Leaderf gtags --update` first
 -- Leaderf ignore current buffer name
 
+------------------------------------------------------------------------------------------
+-- Vista 配置
+------------------------------------------------------------------------------------------
+--
+-- How each level is indented and what to prepend.
+-- This could make the display more compact or more spacious.
+-- e.g., more compact: ["▸ ", ""]
+-- Note: this option only works for the kind renderer, not the tree renderer.
+vim.g.vista_icon_indent = {"╰─▸ ", "├─▸ "}
+
+-- Executive used when opening vista sidebar without specifying it.
+-- See all the avaliable executives via `:echo g:vista#executives`.
+vim.g.vista_default_executive = 'ctags'
