@@ -3,7 +3,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.g.background=dark
-vim.g.encoding = "utf-8"
 vim.g.ambiwidth=double
 
 -- 设置中文提示
@@ -113,3 +112,5 @@ vim.cmd 'set signcolumn=yes'
 vim.cmd "set foldmethod=indent"
 vim.cmd 'set foldlevel=99'
 vim.cmd 'set mouse='
+-- 多编码支持
+vim.cmd 'set fileencodings=utf-8,gbk'

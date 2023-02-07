@@ -53,7 +53,7 @@ nmap('<leader>fs',':w<CR>')
 nmap('<leader>fS',':wa<CR>')
 
 -- 关闭当前文件
-nmap('<leader>fd',':bd<CR>')
+nmap('<leader>fd',': bp | bd #<CR>')
 --nmap('<leader>fo',':e ') -- 异常
 vim.cmd 'nmap <leader>fo :e '
 
