@@ -47,6 +47,7 @@ require('packer').startup(function(use)
 	use 'honza/vim-snippets'  -- 代码片段
 	-- use 'bfrg/vim-cpp-modern' -- cpp 高亮？
 	use 'jakelinnzy/autocmd-lua' -- vim cmd 提示
+    --use 'nvim-treesitter/nvim-treesitter'      -- 语法高亮
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {
         'nvim-treesitter/nvim-treesitter',      -- 语法高亮
@@ -126,8 +127,9 @@ vim.api.nvim_create_autocmd({'BufEnter','BufAdd','BufNew','BufNewFile','BufWinEn
 
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "c", "lua", "python", "cpp" , "markdown", "vim", "sql", "yaml", 
-  "bash", "cmake", "json", "javascript", "java", "kotlin", "llvm", "make", "qmljs"},
+  ensure_installed = { "c", "lua", "python", "cpp" , "markdown", "vim", "sql"} ,
+  --ensure_installed = { "c", "lua", "python", "cpp" , "markdown", "vim", "sql", "yaml", 
+  --"bash", "cmake", "json", "javascript", "java", "kotlin", "llvm", "make", "qmljs"},
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
