@@ -15,7 +15,7 @@ else
 fi
 
 export http_proxy="http://$hostip:10808"
-export https_proxy="https://$hostip:10808"
+export https_proxy="http://$hostip:10808"
 
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
@@ -53,16 +53,22 @@ zinit ice lucid wait='0'
 zinit light zsh-users/zsh-completions
 
 # 加载 OMZ 框架及部分插件
+zinit ice lucid wait='0'
 zinit snippet OMZ::lib/completion.zsh
+zinit ice lucid wait='0'
 zinit snippet OMZ::lib/history.zsh
+zinit ice lucid wait='0'
 zinit snippet OMZ::lib/theme-and-appearance.zsh
+zinit ice lucid wait='0'
 zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
-#zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 
 bindkey '^P' history-search-backward
 bindkey '^N' history-search-forward
 #
+zinit ice lucid wait='0'
 zinit load zdharma/history-search-multi-word
+zinit ice lucid wait='0'
 zinit load djui/alias-tips
 
 # 终端美化
@@ -80,8 +86,8 @@ zinit light romkatv/powerlevel10k
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-alias curlp="curl -x http://$hostip:10808"
-alias wgetp="wget -e http_proxy='http://$hostip:10808'"
+# alias curlp="curl -x http://$hostip:10808"
+# alias wgetp="wget -e http_proxy='http://$hostip:10808'"
 
 alias ga="git add"
 alias gaa="git add ."
