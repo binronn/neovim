@@ -11,7 +11,7 @@ autocmd FileType c,cpp nmap <leader>dmm :wa<CR>:AsyncRun make & read<CR>
 autocmd FileType c,cpp nmap <leader>dmg :wa<CR>:AsyncRun gcc "%" -g -o main<CR> 
 
 "autocmd FileType c,cpp nmap <leader>L :w <CR> :AsyncRun  ./main<CR>
-autocmd FileType c,cpp nmap <leader>L :w <CR> :lua require('FTerm').run('./main')<CR>
+autocmd FileType c,cpp nmap <leader>L :cclose <CR> :w <CR> :lua require('FTerm').run('./main')<CR>
 
 autocmd FileType python nmap <leader>l2 :w <CR> :lua require('FTerm').run('python2 ' .. vim.fn.expand('%'))<CR>
 autocmd FileType python nmap <leader>l3 :w <CR> :lua require('FTerm').run('python3 ' .. vim.fn.expand('%'))<CR>
