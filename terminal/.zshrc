@@ -14,6 +14,9 @@ else
     hostip=127.0.0.1
 fi
 
+# Add to PATH
+export PATH=$PATH:$(pwd)/.local/bin
+
 export http_proxy="http://$hostip:10808"
 export https_proxy="http://$hostip:10808"
 
