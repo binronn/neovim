@@ -105,6 +105,7 @@ alias gbh="git branch"
 alias grt="git remote"
 alias gdf="git diff"
 alias gl="git log"
+alias gcl="git clone"
 alias vim=nvim
 #alias grmadd="git remote add origin https://yuanbi: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@github.com/"
 #alias grmadd="git remote add origin https://biyuan:PqJuwFA_ZNwS7d3s6GL8@git.51gonggui.com/"
