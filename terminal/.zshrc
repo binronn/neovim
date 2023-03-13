@@ -56,13 +56,9 @@ zinit ice lucid wait='0'
 zinit light zsh-users/zsh-completions
 
 # 加载 OMZ 框架及部分插件
-zinit ice lucid wait='0'
 zinit snippet OMZ::lib/completion.zsh
-zinit ice lucid wait='0'
 zinit snippet OMZ::lib/history.zsh
-zinit ice lucid wait='0'
 zinit snippet OMZ::lib/theme-and-appearance.zsh
-zinit ice lucid wait='0'
 zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
 zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 
@@ -80,12 +76,13 @@ zinit light romkatv/powerlevel10k
 
 #zinit wait lucid light-mode \
 	  #atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
-		#for marlonrichert/zsh-autocomplete
+        #for marlonrichert/zsh-autocomplete
 
 #zinit wait lucid light-mode \
 	  #atinit"zstyle ':autocomplete:*' groups 'always'" \
-		#atinit"zstyle ':autocomplete:(slash|space):*' magic 'off'" \
-		  #for marlonrichert/zsh-autocomplete
+        #atinit"zstyle ':autocomplete:(slash|space):*' magic 'off'" \
+          #for marlonrichert/zsh-autocomplete
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
