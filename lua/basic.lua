@@ -31,6 +31,12 @@ vim.o.tabstop=4
 vim.bo.tabstop=4
 vim.o.softtabstop=4
 
+vim.cmd 'set ts=4'
+vim.cmd 'set softtabstop=4'
+vim.cmd 'set shiftwidth=4'
+vim.cmd 'set expandtab'
+vim.cmd 'set autoindent'
+
 -- 禁止将tab替换为空格
 --vim.o.noexpandtab=true
 
