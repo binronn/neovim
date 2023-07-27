@@ -8,6 +8,8 @@ end
 require('packer').startup(function(use)
   -- 有意思的是，packer可以用自己管理自己。
 	use 'wbthomason/packer.nvim'
+    use { 'nvim-tree/nvim-tree.lua' }
+    use { "zbirenbaum/copilot.lua" }
   -- your plugins here
     use {
         "ellisonleao/gruvbox.nvim",
@@ -48,7 +50,7 @@ require('packer').startup(function(use)
 	-- use 'bfrg/vim-cpp-modern' -- cpp 高亮？
 	use 'jakelinnzy/autocmd-lua' -- vim cmd 提示
     --use 'nvim-treesitter/nvim-treesitter'      -- 语法高亮
-    use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
+    use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {
         'nvim-treesitter/nvim-treesitter',      -- 语法高亮
         run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
@@ -94,15 +96,20 @@ require('lualine').setup {
   extensions = {}
 }
 
+------------------------------------------
+----     bufferline 语法高亮配置      ----
+------------------------------------------
+
 require("bufferline").setup{
   options ={
+    separator_style = 'thick',
     show_close_icon = false,
     show_buffer_close_icons = false,
     show_buffer_icons = false,
     -- indicator_icon = '➡️',
-    indicator = { icon = '➡️'},
+    indicator = { icon = ' ●'},
     buffer_close_icon = '',
-    modified_icon = '●',
+    modified_icon = '[+]',
     close_icon = '',
     left_trunc_marker = '',
     right_trunc_marker = '',
@@ -297,6 +304,7 @@ vim.cmd 'let g:Lf_PreviewResult = {"Function": 0, "BufTag": 0 }'
 
 
 vim.g.Lf_ShortcutF = ""
+
 --noremap <leader>sf :LeaderfFile<CR> 
 
 --noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
@@ -321,3 +329,69 @@ vim.g.vista_icon_indent = {"╰─▸ ", "├─▸ "}
 -- Executive used when opening vista sidebar without specifying it.
 -- See all the avaliable executives via `:echo g:vista#executives`.
 vim.g.vista_default_executive = 'ctags'
+------------------------------------------------------------------------------------------
+-- Copilot 配置
+------------------------------------------------------------------------------------------
+require('copilot').setup({
+  panel = {
+    enabled = true,
+    auto_refresh = false,
+    keymap = {
+      jump_prev = "[[]",
+      jump_next = "]]",
+      accept = "<CR>",
+      refresh = "gr",
+      open = "<M-CR>"
+    },
+    layout = {
+      position = "bottom", -- | top | left | right
+      ratio = 0.4
+    },
+  },
+  suggestion = {
+    enabled = true,
+    auto_trigger = false,
+    debounce = 75,
+    keymap = {
+      accept = "<TAB>",
+      accept_word = false,
+      accept_line = false,
+      next = "<M-]>",
+      prev = "<M-[>",
+      dismiss = "<C-]>",
+    },
+  },
+  filetypes = {
+    yaml = false,
+    markdown = false,
+    help = false,
+    gitcommit = false,
+    gitrebase = false,
+    hgcommit = false,
+    svn = false,
+    cvs = false,
+    ["."] = false,
+  },
+  copilot_node_command = 'node', -- Node.js version must be > 16.x
+  server_opts_overrides = {},
+})
+
+
+
+------------------------------------------------------------------------------------------
+-- nvim-tree 配置
+------------------------------------------------------------------------------------------
+
+--require("nvim-tree").setup({
+  --sort_by = "case_sensitive",
+  --view = {
+    --width = 40,
+    --side = "right",
+  --},
+  --renderer = {
+    --group_empty = true,
+  --},
+  --filters = {
+    --dotfiles = true,
+  --},
+--})
