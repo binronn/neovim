@@ -122,3 +122,4 @@ vim.cmd 'set mouse='
 -- 多编码支持
 vim.cmd 'set fileencodings=utf-8,gbk'
 
+vim.g.mw_no_mappings=true

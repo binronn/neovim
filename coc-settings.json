@@ -6,34 +6,7 @@
 	"suggest.noselect": true,
 	"suggest.enablePreselect": false,
 	"codeLens.enable": true,
-	"coc.preferences.formatOnSaveFiletypes": [
-		"json"
-	],
 	"explorer.position": "right",
-	/*"languageserver": {*/
-		/*"ccls": {*/
-			/*"command": "ccls",*/
-			/*"filetypes": [*/
-				/*"c",*/
-				/*"cc",*/
-				/*"cpp",*/
-				/*"c++",*/
-				/*"objc",*/
-				/*"objcpp"*/
-			/*],*/
-			/*"rootPatterns": [*/
-				/*".ccls",*/
-				/*"compile_commands.json",*/
-				/*".git/",*/
-				/*".hg/"*/
-			/*],*/
-			/*"initializationOptions": {*/
-				/*"cache": {*/
-					/*"directory": "/tmp/ccls"*/
-				/*}*/
-			/*}*/
-		/*}*/
-	/*},*/
 	"languageserver": {
 		"coc-clangd": {
 			  "command": "clangd",
@@ -80,7 +53,7 @@
 	"clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/17.0.3/clangd_17.0.3/bin/clangd",
 	"jedi.enable": true,
 	"jedi.startupMessage": false,
-	"jedi.markupKindPreferred": "plaintext",
+	//"jedi.markupKindPreferred": "string",
 	"jedi.trace.server": "off",
 	"jedi.jediSettings.autoImportModules": [],
 	//"jedi.executable.command": "jedi-language-server",
