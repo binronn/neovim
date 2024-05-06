@@ -105,7 +105,7 @@ vim.o.listchars = "space:·,tab:··"
 vim.o.updatetime = 300
 -- 设置 timeoutlen 为等待键盘快捷键连击时间500毫秒，可根据需要设置
 -- 遇到问题详见：https://github.com/nshen/learn-neovim-lua/issues/1
-vim.o.timeoutlen = 1500
+vim.o.timeoutlen = 500
 -- 语法开启
 vim.g.syntax=true
 -- 主题设置
@@ -123,3 +123,18 @@ vim.cmd 'set mouse='
 vim.cmd 'set fileencodings=utf-8,gbk'
 
 vim.g.mw_no_mappings=true
+
+
+------------------------------------------------------------------------------------------
+-- lazygit 配置
+------------------------------------------------------------------------------------------
+vim.g.lazygit_floating_window_winblend = 0 -- transparency of floating window
+vim.g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
+vim.g.lazygit_floating_window_border_chars = {'╭','─', '╮', '│', '╯','─', '╰', '│'} -- customize lazygit popup window border characters
+vim.g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
+vim.g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+
+vim.g.lazygit_use_custom_config_file_path = 0 -- config file path is evaluated if this value is 1
+vim.g.lazygit_config_file_path = '' -- custom config file path
+-- OR
+vim.g.lazygit_config_file_path = {} -- table of custom config file paths

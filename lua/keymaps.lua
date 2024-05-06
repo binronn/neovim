@@ -339,6 +339,15 @@ nmap('<leader>n', '<Plug>MarkClear')
 xmap('<leader>n', '<Plug>MarkClear')
 vmap('<leader>n', '<Plug>MarkClear')
 
+
+------------------------------------------------------------------------------------------
+-- lazygit 配置
+------------------------------------------------------------------------------------------
+nmap('<leader>gg', ':LazyGit<CR>')
+nmap('<leader>gc', ':LazyGitCurrentFile<CR>')
+nmap('<leader>gf', ':LazyGitFilter<CR>')
+nmap('<leader>gfc', ':LazyGitFilterCurrentFile<CR>')
+
 ---------------
 ---- VISTA ----
 ---------------

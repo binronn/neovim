@@ -74,6 +74,11 @@ end
 time([[try_loadstring definition]], false)
 time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
+  ["Comment.nvim"] = {
+    loaded = true,
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/Comment.nvim",
+    url = "https://github.com/numToStr/Comment.nvim"
+  },
   ["FTerm.nvim"] = {
     loaded = true,
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/FTerm.nvim",
@@ -134,10 +139,15 @@ _G.packer_plugins = {
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/gruvbox.nvim",
     url = "https://github.com/ellisonleao/gruvbox.nvim"
   },
-  indentLine = {
+  ["indent-blankline.nvim"] = {
     loaded = true,
-    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/indentLine",
-    url = "https://github.com/Yggdroot/indentLine"
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim",
+    url = "https://github.com/lukas-reineke/indent-blankline.nvim"
+  },
+  ["lazygit.nvim"] = {
+    loaded = true,
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/lazygit.nvim",
+    url = "https://github.com/kdheepak/lazygit.nvim"
   },
   ["lualine.nvim"] = {
     loaded = true,
@@ -148,11 +158,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/lush.nvim",
     url = "https://github.com/rktjmp/lush.nvim"
-  },
-  nerdcommenter = {
-    loaded = true,
-    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nerdcommenter",
-    url = "https://github.com/scrooloose/nerdcommenter"
   },
   ["nvim-tree.lua"] = {
     loaded = true,
@@ -183,11 +188,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/yuan/.local/share/nvim/site/pack/packer/start/space-vim-theme",
     url = "https://github.com/liuchengxu/space-vim-theme"
-  },
-  ["todo-comments.nvim"] = {
-    loaded = true,
-    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/todo-comments.nvim",
-    url = "https://github.com/folke/todo-comments.nvim"
   },
   ["vim-bookmarks"] = {
     loaded = true,

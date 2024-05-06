@@ -2,6 +2,7 @@
 --------------------
 ---- 顺序不可变 ----
 --------------------
+vim.g.mapleader = " "
 require 'plugins'
 require 'basic'
 require 'keymaps'

@@ -35,7 +35,8 @@ require('packer').startup(function(use)
       'neoclide/coc.nvim',
       branch = "release"
     }
-	use 'scrooloose/nerdcommenter' -- 注释插件
+	--use 'scrooloose/nerdcommenter' -- 注释插件
+    use 'numToStr/Comment.nvim'
 	-- use 'sbdchd/neoformat'
 	use 'MattesGroeger/vim-bookmarks' -- 书签
 	use 'skywind3000/asyncrun.vim' -- 异步执行命令插件
@@ -58,6 +59,8 @@ require('packer').startup(function(use)
     use "numToStr/FTerm.nvim"
     use "sindrets/diffview.nvim" -- GIT DIFF MERGE WINDOW
     use "lukas-reineke/indent-blankline.nvim"
+    use { "kdheepak/lazygit.nvim", requires="nvim-lua/plenary.nvim" }
+
     --use {"folke/todo-comments.nvim", requires= 'nvim-lua/plenary.nvim'}
     --use { 'alvarosevilla95/luatab.nvim', requires='kyazdani42/nvim-web-devicons' }
     --use 'marko-cerovac/material.nvim' -- 主题？
@@ -621,6 +624,56 @@ require("ibl").setup({
       whitespace = { highlight = { "Whitespace", "NonText" }, remove_blankline_trail=false },
 	  scope = { exclude = { language = { "" } }, show_start=false, show_end=false, show_exact_scope=true },
   })
+
+
+------------------------------------------------------------------------------------------
+-- 注释插件 Comment 配置
+------------------------------------------------------------------------------------------
+require('Comment').setup({
+        ---Add a space b/w comment and the line
+    padding = true,
+    ---Whether the cursor should stay at its position
+    sticky = true,
+    ---Lines to be ignored while (un)comment
+    ignore = '^$',
+    ---LHS of toggle mappings in NORMAL mode
+    toggler = {
+        ---Line-comment toggle keymap
+        line = '<leader>cc',
+        ---Block-comment toggle keymap
+        block = '<leader>cb',
+    },
+    ---LHS of operator-pending mappings in NORMAL and VISUAL mode
+    opleader = {
+        ---Line-comment keymap
+        line = '<leader>cc',
+        ---Block-comment keymap
+        block = '<leadercb>',
+    },
+    ---LHS of extra mappings
+    extra = {
+        ---Add comment on the line above
+        above = '<leader>cO',
+        ---Add comment on the line below
+        below = '<leader>gco',
+        ---Add comment at the end of line
+        eol = '<leader>gcA',
+    },
+    ---Enable keybindings
+    ---NOTE: If given `false` then the plugin won't create any mappings
+    mappings = {
+        ---Operator-pending mapping; `gcc` `gbc` `gc[count]{motion}` `gb[count]{motion}`
+        basic = true,
+        ---Extra mapping; `gco`, `gcO`, `gcA`
+        extra = true,
+    },
+    ---Function to call before (un)comment
+    pre_hook = nil,
+    ---Function to call after (un)comment
+    post_hook = nil,
+
+  })
+
 
 ------------------------------------------------------------------------------------------
 -- nvim-tree 配置

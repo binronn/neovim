@@ -89,6 +89,7 @@
 	//"git.changedSign.text": "~",
 	"git.changeRemovedSign.text": "🔛",
 	"git.signPriority": 3,
+	"explorer.git.enable": true,
 	 "explorer.keyMappings.global": {
     "i": false, // cancel default mapkey
     "<c-o>": "noop",
