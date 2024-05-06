@@ -49,8 +49,8 @@ local function save_profiles(threshold)
 end
 
 time([[Luarocks path setup]], true)
-local package_path_str = "/home/yuanbi/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?.lua;/home/yuanbi/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?/init.lua;/home/yuanbi/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?.lua;/home/yuanbi/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?/init.lua"
-local install_cpath_pattern = "/home/yuanbi/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/lua/5.1/?.so"
+local package_path_str = "/home/yuan/.cache/nvim/packer_hererocks/2.1.1692716794/share/lua/5.1/?.lua;/home/yuan/.cache/nvim/packer_hererocks/2.1.1692716794/share/lua/5.1/?/init.lua;/home/yuan/.cache/nvim/packer_hererocks/2.1.1692716794/lib/luarocks/rocks-5.1/?.lua;/home/yuan/.cache/nvim/packer_hererocks/2.1.1692716794/lib/luarocks/rocks-5.1/?/init.lua"
+local install_cpath_pattern = "/home/yuan/.cache/nvim/packer_hererocks/2.1.1692716794/lib/lua/5.1/?.so"
 if not string.find(package.path, package_path_str, 1, true) then
   package.path = package.path .. ';' .. package_path_str
 end
@@ -76,157 +76,172 @@ time([[Defining packer_plugins]], true)
 _G.packer_plugins = {
   ["FTerm.nvim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/FTerm.nvim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/FTerm.nvim",
     url = "https://github.com/numToStr/FTerm.nvim"
   },
   LeaderF = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/LeaderF",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/LeaderF",
     url = "https://github.com/Yggdroot/LeaderF"
   },
   SimpylFold = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/SimpylFold",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/SimpylFold",
     url = "https://github.com/tmhedberg/SimpylFold"
   },
   ["asyncrun.vim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/asyncrun.vim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/asyncrun.vim",
     url = "https://github.com/skywind3000/asyncrun.vim"
   },
   ["autocmd-lua"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/autocmd-lua",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/autocmd-lua",
     url = "https://github.com/jakelinnzy/autocmd-lua"
   },
   ["bufferline.nvim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/bufferline.nvim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/bufferline.nvim",
     url = "https://github.com/akinsho/bufferline.nvim"
   },
   ["coc.nvim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/coc.nvim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/coc.nvim",
     url = "https://github.com/neoclide/coc.nvim"
   },
   ["copilot.lua"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/copilot.lua",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/copilot.lua",
     url = "https://github.com/zbirenbaum/copilot.lua"
   },
   delimitMate = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/delimitMate",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/delimitMate",
     url = "https://github.com/Raimondi/delimitMate"
+  },
+  ["diffview.nvim"] = {
+    loaded = true,
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/diffview.nvim",
+    url = "https://github.com/sindrets/diffview.nvim"
   },
   gruvbox = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/gruvbox",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/gruvbox",
     url = "https://github.com/morhetz/gruvbox"
   },
   ["gruvbox.nvim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/gruvbox.nvim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/gruvbox.nvim",
     url = "https://github.com/ellisonleao/gruvbox.nvim"
   },
   indentLine = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/indentLine",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/indentLine",
     url = "https://github.com/Yggdroot/indentLine"
   },
   ["lualine.nvim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/lualine.nvim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/lualine.nvim",
     url = "https://github.com/nvim-lualine/lualine.nvim"
   },
   ["lush.nvim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/lush.nvim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/lush.nvim",
     url = "https://github.com/rktjmp/lush.nvim"
   },
   nerdcommenter = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/nerdcommenter",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nerdcommenter",
     url = "https://github.com/scrooloose/nerdcommenter"
   },
   ["nvim-tree.lua"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
     url = "https://github.com/nvim-tree/nvim-tree.lua"
   },
   ["nvim-treesitter"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
     url = "https://github.com/nvim-treesitter/nvim-treesitter"
   },
   ["nvim-web-devicons"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
     url = "https://github.com/kyazdani42/nvim-web-devicons"
   },
   ["packer.nvim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/packer.nvim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
+  },
+  ["plenary.nvim"] = {
+    loaded = true,
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/plenary.nvim",
+    url = "https://github.com/nvim-lua/plenary.nvim"
   },
   ["space-vim-theme"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/space-vim-theme",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/space-vim-theme",
     url = "https://github.com/liuchengxu/space-vim-theme"
+  },
+  ["todo-comments.nvim"] = {
+    loaded = true,
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/todo-comments.nvim",
+    url = "https://github.com/folke/todo-comments.nvim"
   },
   ["vim-bookmarks"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-bookmarks",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-bookmarks",
     url = "https://github.com/MattesGroeger/vim-bookmarks"
   },
   ["vim-clang-format"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-clang-format",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-clang-format",
     url = "https://github.com/rhysd/vim-clang-format"
   },
   ["vim-cursorword"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-cursorword",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-cursorword",
     url = "https://github.com/itchyny/vim-cursorword"
   },
   ["vim-ingo-library"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-ingo-library",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-ingo-library",
     url = "https://github.com/inkarkat/vim-ingo-library"
   },
   ["vim-mark"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-mark",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-mark",
     url = "https://github.com/inkarkat/vim-mark"
   },
   ["vim-polyglot"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-polyglot",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-polyglot",
     url = "https://github.com/sheerun/vim-polyglot"
   },
   ["vim-sensible"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-sensible",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-sensible",
     url = "https://github.com/tpope/vim-sensible"
   },
   ["vim-snippets"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-snippets",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-snippets",
     url = "https://github.com/honza/vim-snippets"
   },
   ["vim-startify"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vim-startify",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vim-startify",
     url = "https://github.com/mhinz/vim-startify"
   },
   vimspector = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vimspector",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vimspector",
     url = "https://github.com/puremourning/vimspector"
   },
   ["vista.vim"] = {
     loaded = true,
-    path = "/home/yuanbi/.local/share/nvim/site/pack/packer/start/vista.vim",
+    path = "/home/yuan/.local/share/nvim/site/pack/packer/start/vista.vim",
     url = "https://github.com/liuchengxu/vista.vim"
   }
 }

@@ -9,6 +9,9 @@ vim.g.ambiwidth=double
 --language messages zh_CN.utf-8
 -- 设置中文帮助
 vim.g.helplang=cn
+
+vim.opt.termguicolors = true
+vim.g.termguicolors = true
 ------------------------------------------------------------------------------------------
 -- jkhl 移动时光标周围保留4行
 vim.o.scrolloff=4
@@ -24,7 +27,7 @@ vim.wo.relativenumber=true -- 相对行
 
 vim.o.cindent=true
 vim.o.smartindent=true
---vim.g.t_Co=256 -- required
+vim.g.t_Co=256 --required
 
 -- 缩进4个空格等于一个Tab
 vim.o.tabstop=4
@@ -53,7 +56,7 @@ vim.g.fileformat='unix'
 -- vim环境保存与恢复
 vim.g.sessionoptions='blank,buffers,globals,localoptions,tabpages,sesdir,folds,help,options,resize,winpos,winsize'
 -- 保存 undo 历史
-vim.g.undodir='~/.undo_history/'
+vim.g.undodir='~/.local/shared/nvim/.undo_history/'
 vim.g.undofile=true
 ------------------------------------------------------------------------------------------
 -- 卡顿解决  有效
@@ -73,8 +76,6 @@ vim.g.nowrap=true
 -- 文件备份问题
 vim.g.noswapfile=true
 vim.g.nobackup=true
-vim.g.undodir='~/.config/undodir'
-vim.g.undofile=true
 
 -- 实时显示搜索内容
 vim.g.incsearch=true
@@ -120,3 +121,4 @@ vim.cmd 'set foldlevel=99'
 vim.cmd 'set mouse='
 -- 多编码支持
 vim.cmd 'set fileencodings=utf-8,gbk'
+
