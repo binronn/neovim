@@ -9,9 +9,9 @@
 	"explorer.position": "right",
 	"languageserver": {
 		"coc-clangd": {
-			  "command": "clangd",
+			  "command": "~/.config/coc/extensions/coc-clangd-data/install/17.0.3/clangd_17.0.3/bin/clangd",
 			  "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
-			  /*"filetypes": ["c", "cpp", "objc", "objcpp, h, hpp"]*/
+			  "filetypes": ["c", "cpp", "objc", "objcpp, h, hpp"]
 			}
 	},
 	"clangd.arguments": [

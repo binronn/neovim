@@ -26,7 +26,7 @@ require('packer').startup(function(use)
 	-- use 'octol/vim-cpp-enhanced-highlight' -- cpp 语法高亮插件
 	use 'sheerun/vim-polyglot' -- 高亮配置
      use 'mhinz/vim-startify'
-	use 'Yggdroot/indentLine' -- tab 竖线
+	--use 'Yggdroot/indentLine' -- tab 竖线
 	use 'liuchengxu/vista.vim' -- 类窗口
 	use 'inkarkat/vim-mark' -- 高亮
 	use 'inkarkat/vim-ingo-library'
@@ -57,6 +57,7 @@ require('packer').startup(function(use)
     }
     use "numToStr/FTerm.nvim"
     use "sindrets/diffview.nvim" -- GIT DIFF MERGE WINDOW
+    use "lukas-reineke/indent-blankline.nvim"
     --use {"folke/todo-comments.nvim", requires= 'nvim-lua/plenary.nvim'}
     --use { 'alvarosevilla95/luatab.nvim', requires='kyazdani42/nvim-web-devicons' }
     --use 'marko-cerovac/material.nvim' -- 主题？
@@ -611,6 +612,15 @@ require("diffview").setup({
   },
 })
 
+------------------------------------------------------------------------------------------
+-- indent-blankline 配置
+------------------------------------------------------------------------------------------
+require("ibl").setup({
+      debounce = 100,
+      indent = { char = "¦" },
+      whitespace = { highlight = { "Whitespace", "NonText" }, remove_blankline_trail=false },
+	  scope = { exclude = { language = { "" } }, show_start=false, show_end=false, show_exact_scope=true },
+  })
 
 ------------------------------------------------------------------------------------------
 -- nvim-tree 配置
