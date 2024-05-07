@@ -1,3 +1,5 @@
+utils = require('nv_utils')
+
 -- Some servers have issues with backup files, see #649.false
 --vim.opt.backup = false
 --vim.opt.writebackup = false

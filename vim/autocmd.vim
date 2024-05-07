@@ -16,12 +16,12 @@ autocmd FileType c,cpp nmap <leader>dmg :wa<CR>:AsyncRun gcc "%" -g -o main<CR>
 
 autocmd FileType c,cpp nmap <leader>L :w <CR> :cclose <CR> :lua require('FTerm').run({'./main'})<CR>
 
-autocmd FileType python nmap <leader>l2 :lua require('FTerm').run({'python2', vim.fn.expand("%:p")})<CR>
-autocmd FileType python nmap <leader>l3 :lua require('FTerm').run({'python3', vim.fn.expand("%:p")})<CR>
-autocmd FileType python nmap <leader>lp :lua require('FTerm').run({'python', vim.fn.expand("%:p")})<CR>
+autocmd FileType python nmap <leader>l2 :lua require('FTerm').run({'python2', vim.fn.expand('%:p')})<CR>
+autocmd FileType python nmap <leader>l3 :lua require('FTerm').run({'python3', vim.fn.expand('%:p')})<CR>
+autocmd FileType python nmap <leader>lp :lua require('FTerm').run({'python', vim.fn.expand('%:p')})<CR>
 "autocmd FileType python nmap <leader>lf3 :w <CR> :rightbelow vert term python3 
 "autocmd FileType python nmap <leader>lf2 :w <CR> :rightbelow vert term python2 
-autocmd FileType bash nmap <leader>L :w <CR> :lua require('FTerm').run({'bash', vim.fn.expand("%:p")})<CR>
+autocmd FileType bash nmap <leader>L :w <CR> :lua require('FTerm').run({'bash', vim.fn.expand('%:p')})<CR>
 
 
 "----------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ autocmd FileType c,cpp,h,hpp nmap <leader>fh :CocCommand clangd.switchSourceHead
 " 并在 Windows 中的 python 中 安装 Pillow 库
 autocmd FileType md,markdown nnoremap <leader>ip :let @a = system('~/.vim/BlogImg/save_screen_img.py %')<CR>"ap
 autocmd FileType md,markdown nnoremap <leader>ir :%s/\/img\//https:\/\/gitee.com\/imgset\/img\/raw\/master\//g<CR>
-autocmd FileType md,markdown nnoremap <leader>is :AsyncRun cd img&&git add .&&git commit -m "img"&&git push origin master<CR>
+autocmd FileType md,markdown nnoremap <leader>is :AsyncRun cd img&&git add .&&git commit -m 'img'&&git push origin master<CR>
 "----------------------------------------------------------------------------------------
 
 "----------------------------------------------------------------------------------------
