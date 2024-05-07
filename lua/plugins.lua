@@ -51,7 +51,8 @@ require('packer').startup(function(use)
 	-- use 'bfrg/vim-cpp-modern' -- cpp 高亮？
 	use 'jakelinnzy/autocmd-lua' -- vim cmd 提示
     use 'nvim-treesitter/nvim-treesitter'      -- 语法高亮
-    use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'kyazdani42/nvim-web-devicons'}
+    -- use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'kyazdani42/nvim-web-devicons'}
+    use {'akinsho/bufferline.nvim', tag = "v4.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {
         'nvim-treesitter/nvim-treesitter',      -- 语法高亮
         run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
