@@ -46,6 +46,7 @@ vmap('<Space>', '<nop>')
 xmap('<Space>', '<nop>')
 
 cmap('CC', 'CocCommand')
+cmap('lf', 'Leaderf')
 cmap('SS', 'Leaderf! rg -g *.{}')
 
 ------------------
@@ -353,7 +354,7 @@ nmap('<leader>gfc', ':LazyGitFilterCurrentFile<CR>')
 ------------------------------------------------------------------------------------------
 nmap('<leader>gn', '<Plug>(coc-git-nextchunk)')
 nmap('<leader>gp', '<Plug>(coc-git-prevchunk)')
-nmap('[g', '<Plug>(prevconflict)')
+nmap('[g', '<Plug>(coc-git-prevconflict)')
 nmap(']g', '<Plug>(coc-git-nextconflict)')
 nmap('<leader>gkc', '<Plug>(coc-git-keepcurrent)')
 nmap('<leader>gki', '<Plug>(coc-git-keepincoming)')
