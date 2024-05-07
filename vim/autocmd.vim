@@ -1,7 +1,7 @@
 
 
-"autocmd FileType c,cpp,h,hpp nmap <leader>ff :ClangFormat<CR>
-"autocmd FileType c,cpp,h,hpp vmap <leader>ff :ClangFormat<CR>
+autocmd FileType c,cpp,h,hpp nmap <leader>ff :ClangFormat<CR>
+autocmd FileType c,cpp,h,hpp vmap <leader>ff :ClangFormat<CR>
 
 "autocmd FileType cpp nmap <leader>dmm :wa<CR>:!make && read<CR> 
 "autocmd FileType cpp nmap <leader>dmg :wa<CR>:!g++ "%" -g -o main && read<CR> 

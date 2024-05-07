@@ -220,10 +220,16 @@ nmap('<leader>sp', ':<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR
 nmap('<leader>sg', ':<C-U><C-R>=printf("Leaderf gtags --update %s", "")<CR><CR>')
 
 ------------------------------------------------------------------------------------------
--- vim-mark
+-- MARK 高亮
 ------------------------------------------------------------------------------------------
 --
 nmap('<leader>N', ':MarkClear<CR>')
+nmap('<leader>m', '<Plug>MarkSet')
+xmap('<leader>m', '<Plug>MarkSet')
+vmap('<leader>m', '<Plug>MarkSet')
+nmap('<leader>n', '<Plug>MarkClear')
+xmap('<leader>n', '<Plug>MarkClear')
+vmap('<leader>n', '<Plug>MarkClear')
 ------------------------------------------------------------------------------------------
 
 
@@ -235,55 +241,6 @@ nmap('<leader>ar', ':AsyncRun ')
 nmap('<leader>as', ':AsyncStop<CR>')
 ------------------------------------------------------------------------------------------
 
-
-------------------------------------------------------------------------------------------
--- 格式化代码
-------------------------------------------------------------------------------------------
---
-nmap('<leader>ff', '<Plug>(coc-format-selected) ')
-xmap('<leader>ff', '<Plug>(coc-format-selected) ')
-------------------------------------------------------------------------------------------
-
-
-------------------------------------------------------------------------------------------
--- 重命名
-------------------------------------------------------------------------------------------
---
-nmap('<leader>rn', '<Plug>(coc-rename)')
-------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------
--- 快速选中类 函数 内容 vif vic
-------------------------------------------------------------------------------------------
---
--- TODO: omap
-xmap('if', '<Plug>(coc-funcobj-i)')
---omap('if', '<Plug>(coc-funcobj-i)')
-xmap('af', '<Plug>(coc-funcobj-a)')
---omap('af', '<Plug>(coc-funcobj-a)')
-xmap('ic', '<Plug>(coc-classobj-i)')
---omap('ic', '<Plug>(coc-classobj-i)')
-xmap('ac', '<Plug>(coc-classobj-a)')
---omap('ac', '<Plug>(coc-classobj-a)')
-------------------------------------------------------------------------------------------
-
-
-------------------------------------------------------------------------------------------
--- 查找代码报错
-------------------------------------------------------------------------------------------
-
-nmap('<silent>', '[g <Plug>(coc-diagnostic-prev)')
-nmap('<silent>', ']g <Plug>(coc-diagnostic-next)')
-
-------------------------------------------------------------------------------------------
--- 代码导航
-------------------------------------------------------------------------------------------
---
-nmap('<silent> gd', '<Plug>(coc-definition)')
-nmap('<silent> gt', '<Plug>(coc-type-definition)')
-nmap('<silent> gi', '<Plug>(coc-implementation)')
-nmap('<silent> gr', '<Plug>(coc-references)')
-------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------
 -- VIM SPECTOR 按键映射
@@ -329,18 +286,6 @@ nmap('<F12>', '<Plug>VimspectorPause')
 
 ------------------------------------------------------------------------------------------
 
-
--------------------
----- MARK 高亮 ----
--------------------
-nmap('<leader>m', '<Plug>MarkSet')
-xmap('<leader>m', '<Plug>MarkSet')
-vmap('<leader>m', '<Plug>MarkSet')
-nmap('<leader>n', '<Plug>MarkClear')
-xmap('<leader>n', '<Plug>MarkClear')
-vmap('<leader>n', '<Plug>MarkClear')
-
-
 ------------------------------------------------------------------------------------------
 -- lazygit 配置
 ------------------------------------------------------------------------------------------
@@ -354,103 +299,10 @@ nmap('<leader>gfc', ':LazyGitFilterCurrentFile<CR>')
 ------------------------------------------------------------------------------------------
 nmap('<leader>gn', '<Plug>(coc-git-nextchunk)')
 nmap('<leader>gp', '<Plug>(coc-git-prevchunk)')
-nmap('[g', '<Plug>(coc-git-prevconflict)')
-nmap(']g', '<Plug>(coc-git-nextconflict)')
 nmap('<leader>gkc', '<Plug>(coc-git-keepcurrent)')
 nmap('<leader>gki', '<Plug>(coc-git-keepincoming)')
 nmap('<leader>gkb', '<Plug>(coc-git-keepboth)')
 
----------------
----- VISTA ----
----------------
---
---类窗口
---nmap('<F2>', '<Cmd>Vista!!<CR>')
-
-
--- 终端映射
---nmap <leader>' :rightbelow vert term<CR>
---nmap <leader>--:term<CR>
-
--------------
----- COC ----
--------------
---
--- Ctrl-O 调出补全
---imap('<silent><expr> <c-o>', 'coc#refresh()')
-
--- 查找代码报错
- --nmap('<silent> [g', '<Plug>(coc-diagnostic-prev)')
- --nmap('<silent> ]g', '<Plug>(coc-diagnostic-next)')
-
--- 代码导航
---[[nmap('<silent> gd', '<Plug>(coc-definition)')]]
---[[nmap('<silent> gt', '<Plug>(coc-type-definition)')]]
---[[nmap('<silent> gi', '<Plug>(coc-implementation)')]]
---[[nmap('<silent> gr', '<Plug>(coc-references)')]]
-
--- 代码定义速览 TODO
---nmap('<silent> K', ':call <SID>show_documentation()<CR>')
-
--- 格式化代码
---nmap('<leader>ff', '<Plug>(coc-format-selected)')
-
--- 选中后格式化代码
---map('x', '<leader>ff', '<Plug>(coc-format-selected)')
-
--- 重命名
---nmap('<leader>rn', '<Plug>(coc-rename)')
-
--- 快速选中类 函数 内容 vif vic
---[[map('x', 'if', '<Plug>(coc-funcobj-i)')]]
---[[map('o', 'if', '<Plug>(coc-funcobj-i)')]]
---[[map('x', 'af', '<Plug>(coc-funcobj-a)')]]
---[[map('o', 'af', '<Plug>(coc-funcobj-a)')]]
---[[map('x', 'ic', '<Plug>(coc-classobj-i)')]]
---[[map('o', 'ic', '<Plug>(coc-classobj-i)')]]
---[[map('x', 'ac', '<Plug>(coc-classobj-a)')]]
---[[map('o', 'ac', '<Plug>(coc-classobj-a)')]]
-
--- 选中代码后创建代码片段
---map('x', '<leader>x', '<Plug>(coc-convert-snippet)')
-
--- 文件窗口
---nmap('<F3>', '<Cmd>CocCommand explorer --position right<CR>')
-
------------------
----- LeaderF ----
------------------
---
-
--- 取消 LeaderF 默认映射
---nmap('<leader>b', '<nop>')
---nmap('<leader>f', '<nop>')
-
--- LeaderF 映射
---nmap('<leader>sb', ':<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>')
---nmap('<leader>sm', ':<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>')
---nmap('<leader>st', ':<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>')
---nmap('<leader>sl', ':<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>')
-
--- LeaderF Gtags 映射
---nmap('<leader>sr', ':<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>')
---nmap('<leader>sd', ':<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>')
---nmap('<leader>so', ':<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>')
---nmap('<leader>sn', ':<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>')
---nmap('<leader>sp', ':<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>')
-
-------------------
----- vim-mark ----
-------------------
---
---nmap('<leader>N', ':MarkClear<CR>')
-
-----------------------
----- 异步执行命令 ----
-----------------------
---
- --nmap('<leader>sa', ':AsyncRun ')
- --nmap('<leader>st', ':AsyncStop<CR>')
 
 ---------------------
 ---- VIM SPECTOR ----

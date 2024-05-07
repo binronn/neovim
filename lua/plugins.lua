@@ -9,7 +9,7 @@ require('packer').startup(function(use)
   -- 有意思的是，packer可以用自己管理自己。
 	use 'wbthomason/packer.nvim'
     use { 'nvim-tree/nvim-tree.lua' }
-    use { "zbirenbaum/copilot.lua" }
+    -- use { "zbirenbaum/copilot.lua" }
   -- your plugins here
     use {
         "ellisonleao/gruvbox.nvim",
@@ -50,7 +50,7 @@ require('packer').startup(function(use)
 	use 'honza/vim-snippets'  -- 代码片段
 	-- use 'bfrg/vim-cpp-modern' -- cpp 高亮？
 	use 'jakelinnzy/autocmd-lua' -- vim cmd 提示
-    --use 'nvim-treesitter/nvim-treesitter'      -- 语法高亮
+    use 'nvim-treesitter/nvim-treesitter'      -- 语法高亮
     use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {
         'nvim-treesitter/nvim-treesitter',      -- 语法高亮
@@ -302,14 +302,14 @@ vim.g.bookmark_auto_save = 1  -- 自动保存书签
 ------------------------------------------------------------------------------------------
 -- LeaderF 配置
 ------------------------------------------------------------------------------------------
---
+
 vim.g.Lf_GtagsAutoGenerate = 1
 vim.g.Lf_Gtagslabel = 'native-pygments'
 --vim.g.Lf_Gtagsconf = '~/.config/nvim/gtags.conf'
 
 
 -- don't show the help in normal mode
-vim.g.Lf_HideHelp = 1
+vim.g.Lf_HideHelp = 0
 vim.g.Lf_UseCache = 0
 vim.g.Lf_UseVersionControlTool = 0
 vim.g.Lf_IgnoreCurrentBufferName = 1
@@ -320,7 +320,7 @@ vim.cmd 'let g:Lf_StlSeparator = { "left": "\\ue0b0", "right": "\\ue0b2", "font"
 vim.cmd 'let g:Lf_PreviewResult = {"Function": 0, "BufTag": 0 }'
 
 
-vim.g.Lf_ShortcutF = ""
+vim.g.Lf_ShortcutF = "<leader>ff"
 
 --noremap <leader>sf :LeaderfFile<CR> 
 
@@ -349,49 +349,49 @@ vim.g.vista_default_executive = 'ctags'
 ------------------------------------------------------------------------------------------
 -- Copilot 配置
 ------------------------------------------------------------------------------------------
-require('copilot').setup({
-  panel = {
-    enabled = true,
-    auto_refresh = false,
-    keymap = {
-      jump_prev = "[[]",
-      jump_next = "]]",
-      accept = "<CR>",
-      refresh = "gr",
-      open = "<M-CR>"
-    },
-    layout = {
-      position = "bottom", -- | top | left | right
-      ratio = 0.4
-    },
-  },
-  suggestion = {
-    enabled = true,
-    auto_trigger = false,
-    debounce = 75,
-    keymap = {
-      accept = "<TAB>",
-      accept_word = false,
-      accept_line = false,
-      next = "<M-]>",
-      prev = "<M-[>",
-      dismiss = "<C-]>",
-    },
-  },
-  filetypes = {
-    yaml = false,
-    markdown = false,
-    help = false,
-    gitcommit = false,
-    gitrebase = false,
-    hgcommit = false,
-    svn = false,
-    cvs = false,
-    ["."] = false,
-  },
-  copilot_node_command = 'node', -- Node.js version must be > 16.x
-  server_opts_overrides = {},
-})
+-- require('copilot').setup({
+--   panel = {
+--     enabled = true,
+--     auto_refresh = false,
+--     keymap = {
+--       jump_prev = "[[]",
+--       jump_next = "]]",
+--       accept = "<CR>",
+--       refresh = "gr",
+--       open = "<M-CR>"
+--     },
+--     layout = {
+--       position = "bottom", -- | top | left | right
+--       ratio = 0.4
+--     },
+--   },
+--   suggestion = {
+--     enabled = true,
+--     auto_trigger = false,
+--     debounce = 75,
+--     keymap = {
+--       accept = "<TAB>",
+--       accept_word = false,
+--       accept_line = false,
+--       next = "<M-]>",
+--       prev = "<M-[>",
+--       dismiss = "<C-]>",
+--     },
+--   },
+--   filetypes = {
+--     yaml = false,
+--     markdown = false,
+--     help = false,
+--     gitcommit = false,
+--     gitrebase = false,
+--     hgcommit = false,
+--     svn = false,
+--     cvs = false,
+--     ["."] = false,
+--   },
+--   copilot_node_command = 'node', -- Node.js version must be > 16.x
+--   server_opts_overrides = {},
+-- })
 
 ------------------------------------------------------------------------------------------
 -- diffview 配置
@@ -692,3 +692,18 @@ require('Comment').setup({
     --dotfiles = true,
   --},
 --})
+
+
+------------------------------------------------------------------------------------------
+-- lazygit 配置
+------------------------------------------------------------------------------------------
+vim.g.lazygit_floating_window_winblend = 0 -- transparency of floating window
+vim.g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
+vim.g.lazygit_floating_window_border_chars = {'╭','─', '╮', '│', '╯','─', '╰', '│'} -- customize lazygit popup window border characters
+vim.g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
+vim.g.lazygit_use_neovim_remote = 0 -- fallback to 0 if neovim-remote is not installed
+
+vim.g.lazygit_use_custom_config_file_path = 0 -- config file path is evaluated if this value is 1
+vim.g.lazygit_config_file_path = '' -- custom config file path
+-- OR
+-- vim.g.lazygit_config_file_path = {} -- table of custom config file paths
