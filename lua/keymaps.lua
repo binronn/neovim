@@ -348,6 +348,17 @@ nmap('<leader>gc', ':LazyGitCurrentFile<CR>')
 nmap('<leader>gf', ':LazyGitFilter<CR>')
 nmap('<leader>gfc', ':LazyGitFilterCurrentFile<CR>')
 
+------------------------------------------------------------------------------------------
+-- coc-git 配置
+------------------------------------------------------------------------------------------
+nmap('<leader>gn', '<Plug>(coc-git-nextchunk)')
+nmap('<leader>gp', '<Plug>(coc-git-prevchunk)')
+nmap('[g', '<Plug>(prevconflict)')
+nmap(']g', '<Plug>(coc-git-nextconflict)')
+nmap('<leader>gkc', '<Plug>(coc-git-keepcurrent)')
+nmap('<leader>gki', '<Plug>(coc-git-keepincoming)')
+nmap('<leader>gkb', '<Plug>(coc-git-keepboth)')
+
 ---------------
 ---- VISTA ----
 ---------------
