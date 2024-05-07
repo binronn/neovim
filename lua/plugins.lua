@@ -305,7 +305,8 @@ vim.g.bookmark_auto_save = 1  -- 自动保存书签
 
 vim.g.Lf_GtagsAutoGenerate = 1
 vim.g.Lf_Gtagslabel = 'native-pygments'
---vim.g.Lf_Gtagsconf = '~/.config/nvim/gtags.conf'
+-- vim.g.Lf_Gtagsconf = '~/.config/nvim/gtags.conf'
+vim.g.Lf_RootMarkers = {".git", ".hg", ".svn", ".vs", ".venv", ".venv_wsl"}
 
 
 -- don't show the help in normal mode
@@ -320,7 +321,7 @@ vim.cmd 'let g:Lf_StlSeparator = { "left": "\\ue0b0", "right": "\\ue0b2", "font"
 vim.cmd 'let g:Lf_PreviewResult = {"Function": 0, "BufTag": 0 }'
 
 
-vim.g.Lf_ShortcutF = "<leader>ff"
+-- vim.g.Lf_ShortcutF = "<leader>ff"
 
 --noremap <leader>sf :LeaderfFile<CR> 
 
