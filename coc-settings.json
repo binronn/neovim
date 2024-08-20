@@ -9,7 +9,7 @@
 	"explorer.position": "right",
 	"languageserver": {
 		"coc-clangd": {
-			  "command": "~/.config/coc/extensions/coc-clangd-data/install/17.0.3/clangd_17.0.3/bin/clangd",
+			  "command": "~/.config/coc/extensions/coc-clangd-data/install/18.1.3/clangd_18.1.3/bin/clangd",
 			  "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
 			  "filetypes": ["c", "cpp", "objc", "objcpp, h, hpp"]
 			}
@@ -50,7 +50,7 @@
         /*"-I/usr/lib/clang/15.0.3/include" // 第三方依赖的头文件目录*/
 	  ],
 	"clangd.enabled": true,
-	"clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/17.0.3/clangd_17.0.3/bin/clangd",
+	"clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/18.1.3/clangd_18.1.3/bin/clangd",
 	"jedi.enable": true,
 	"jedi.startupMessage": false,
 	//"jedi.markupKindPreferred": "string",

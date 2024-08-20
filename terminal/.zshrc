@@ -56,7 +56,8 @@ zinit ice lucid wait='0'
 zinit light zsh-users/zsh-completions
 
 # 加载 OMZ 框架及部分插件
-zinit snippet OMZ::lib/completion.zsh
+# zinit snippet OMZ::lib/completion.zsh
+zinit ice lucid wait='0'
 zinit snippet OMZ::lib/history.zsh
 zinit snippet OMZ::lib/theme-and-appearance.zsh
 zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
@@ -66,9 +67,9 @@ bindkey '^P' history-search-backward
 bindkey '^N' history-search-forward
 #
 zinit ice lucid wait='0'
-zinit load zdharma/history-search-multi-word
+zinit light zdharma/history-search-multi-word
 zinit ice lucid wait='0'
-zinit load djui/alias-tips
+zinit light djui/alias-tips
 
 # 终端美化
 zinit ice depth=1
@@ -112,3 +113,13 @@ alias vim=nvim
 #  移除重复的命令历史
 setopt HIST_IGNORE_ALL_DUPS
 
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+### End of Zinit's installer chunk
