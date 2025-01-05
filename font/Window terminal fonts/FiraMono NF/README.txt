@@ -1,1 +1,0 @@
-在 Windows terminal 中将 字体 切换为 FiraCode NF

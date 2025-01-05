@@ -4,18 +4,18 @@
 "----------------------------------------------------------------------------------------
 " 选中代码后创建代码片段
 "
-xmap <leader>x  <Plug>(coc-convert-snippet)
+" xmap <leader>x  <Plug>(coc-convert-snippet)
 
-inoremap <silent><expr> <c-j>
-	  \ pumvisible() ? coc#_select_confirm() :
-	  \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-	  \ <SID>check_back_space() ? "\<c-j>" :
-	  \ coc#refresh()
+" inoremap <silent><expr> <c-j>
+" 	  \ pumvisible() ? coc#_select_confirm() :
+" 	  \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+" 	  \ <SID>check_back_space() ? "\<c-j>" :
+" 	  \ coc#refresh()
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+" function! s:check_back_space() abort
+"   let col = col('.') - 1
+"   return !col || getline('.')[col - 1]  =~# '\s'
+" endfunction
 
 "let g:coc_snippet_next = '<c-j>'
 "----------------------------------------------------------------------------------------
@@ -24,33 +24,33 @@ endfunction
 " 类窗口配置
 "----------------------------------------------------------------------------------------
 "
-nmap <F2> :Vista!!<CR>
-"
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
+" nmap <F2> :Vista!!<CR>
+" "
+" function! NearestMethodOrFunction() abort
+"   return get(b:, 'vista_nearest_method_or_function', '')
+" endfunction
 
-set statusline+=%{NearestMethodOrFunction()}
+" set statusline+=%{NearestMethodOrFunction()}
 
-" By default vista.vim never run if you don't call it explicitly.
-"
-" If you want to show the nearest function in your statusline automatically,
-" you can add the following line to your vimrc
-autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+" " By default vista.vim never run if you don't call it explicitly.
+" "
+" " If you want to show the nearest function in your statusline automatically,
+" " you can add the following line to your vimrc
+" autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'readonly', 'filename', 'modified', 'method' ] ]
-      \ },
-      \ 'component_function': {
-      \   'method': 'NearestMethodOrFunction'
-      \ },
-      \ }
+" let g:lightline = {
+"       \ 'colorscheme': 'wombat',
+"       \ 'active': {
+"       \   'left': [ [ 'mode', 'paste' ],
+"       \             [ 'readonly', 'filename', 'modified', 'method' ] ]
+"       \ },
+"       \ 'component_function': {
+"       \   'method': 'NearestMethodOrFunction'
+"       \ },
+"       \ }
 
-let g:vista_sidebar_position="vertical topleft"
-let g:vista_sidebar_width=40
+" let g:vista_sidebar_position="vertical topleft"
+" let g:vista_sidebar_width=40
 "----------------------------------------------------------------------------------------
 "----------------------------------------------------------------------------------------
 

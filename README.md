@@ -5,53 +5,76 @@
 注意选择字体名称时，要与文件夹名字一致，不要忘记 NF ！
 
 # init.sh
+
 在首次安装时若无法正常加载插件，则运行这个
 
-# COC 问题
-1. 若 coc 加载不正常，
-2. 删除 ~/.config/coc 文件夹
-3. 删除插件目录中的 coc.nvim 文件夹 (~/.local/share/nvim/site/pack/packer/start/coc.nvim)
-4. 打开 nvim 运行 :PackerSync 会重新安装 coc 插件
-
-手动安装 clangd 插件，要拷贝目录至 插件目录，否则将出现找不到头文件的情况
-或使用 coc 安装最新的 clangd :CocCommand clangd.install
-
-路径在 coc-setting.json 中，可手动下载复制
-
-# LeaderF 问题
-使用之前需先编译，编译时需要 python3.x-dev 包，编译命令: LeaderfInstallCExtension
-若编译失败，需进入到插件目录内，修改 install.sh 中的 python2 代码块后 重新编译
-
 # 高亮问题
+
 `tree-sitter CLI not found: `tree-sitter` is not executable!`
 执行命令: sudo npm install -g tree-sitter-cli
 
-# Vista 安装
-sudo apt-get install libjansson-dev
+# Font
 
-then compile and install universal-ctags.
+https://github.com/microsoft/cascadia-code/release
 
-NOTE: Don't use `sudo apt install ctags`, which will install exuberant-ctags and it's not guaranteed to work with vista.vim.
+# nodjs 
 
-git clone https://github.com/universal-ctags/ctags.git --depth=1
+## 安装
 
-cd ctags
+```shell
+# 更新包列表
+sudo apt-get update
 
-./autogen.sh
+# 安装依赖
+sudo apt-get install -y curl
 
-./configure
+# 下载并运行 NodeSource 的安装脚本
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 
-make
+# 安装 Node.js
+sudo apt-get install -y nodejs
+```
 
-sudo make install
+# 安装 pyright
 
-# LazyGit install
+```shell
+更换华为源
+npm config set registry https://mirrors.huaweicloud.com/repository/npm/
 
-LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+## 安装 pyright
+sudo npm i -g pyright 
+```
 
-curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+# 安装 ripgrep for telescope
 
-tar xf lazygit.tar.gz lazygit
+``` shell
+sudo apt-get install ripgrep
+```
 
-sudo install lazygit /usr/local/bin
+# 安装 ctags for telescope
 
+```shell
+sudo apt-get install exuberant-ctags
+```
+
+# 安装 pynvim
+
+```shell
+pip3 install pynvim
+```
+
+# 安装 GDB for dap cpp
+
+need gdb version >= 14.1 from source code build
+
+source code for gdb 15+ -> https://www.linuxfromscratch.org/blfs/view/git/general/gdb.html
+
+# 安装编译工具 for dap and cmake-tool
+
+```shell
+sudo apt install clang clang++ gcc g++ make cmake
+```
+
+# OpenAiKey for avant
+
+export OPENAI_API_KEY=sk-***

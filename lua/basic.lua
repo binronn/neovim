@@ -86,8 +86,8 @@ vim.g.signcolumn=yes
 -- 显示最长的列长度为90
 --vim.g.colorcolumn=90
 -- vim 命令补全
-vim.g.wildmenu=true
-vim.g.wildmode='longest:full'
+vim.cmd('set wildmenu')
+vim.cmd('set wildmode=longest:full,full')
 
 -- 补全最多显示10行
 vim.o.pumheight = 10
@@ -123,6 +123,3 @@ vim.cmd 'set mouse='
 vim.cmd 'set fileencodings=utf-8,gbk'
 -- MARK 插件默认快捷键关闭
 vim.g.mw_no_mappings=true
-
-
-
