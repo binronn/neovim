@@ -1,7 +1,8 @@
 " Enable Mouse
 set mouse=a
 
-set guifont=Fira\ Code:h10
+" set guifont=Fira\ Code:h10
+set guifont=Source\ Code\ Pro:h10
 
 " Right Click Context Menu (Copy-Cut-Paste)
 nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
