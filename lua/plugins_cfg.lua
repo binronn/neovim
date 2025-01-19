@@ -35,6 +35,7 @@ vim.g.bookmark_auto_save = 1 -- 自动保存书签
 function M.lualine_init()
 	require("lualine").setup {
 		options = {
+			disabled_filetypes = {'NvimTree', 'aerial', 'qf', 'help'},
 			icons_enabled = true,
 			theme = "auto",
 			component_separators = {left = "", right = ""},
@@ -99,7 +100,7 @@ function M.bufferline_init()
 			right_trunc_marker = "",
 			diagnostics = "nvim_lsp", -- 使用 nvim-lsp 提供的诊断信息
 			diagnostics_indicator = function(count, level, diagnostics_dict, context)
-				local icon = level:match("error") and " " or " " -- 设置错误和警告的图标
+				local icon = level:match("error") and "× " or "▲ " -- 设置错误和警告的图标
 				return icon .. count -- 显示图标和数量
 			end,
 			custom_filter = function(bufnr)
@@ -185,7 +186,7 @@ function M.FTerm_init()
 			---NOTE: if given string[], it will skip the shell and directly executes the command
 			---@type fun():(string|string[])|string|string[]
 			cmd = function()
-                if vim.fn.has('unix') == 1 then
+                if vim.g.is_unix == 1 then
                     return os.getenv("SHELL")
                 else
                     return 'cmd.exe'
@@ -642,29 +643,18 @@ end
 -- gitsigns 配置
 ------------------------------------------------------------------------------------------
 function M.gitsigns_init()
+	local is_windows = vim.g.is_win32 == 1
+	local is_linux = vim.g.is_unix == 1
+
 	require("gitsigns").setup(
 		{
 			signs = {
-				add = {text = "G+"}, -- 新增
-				change = {text = "G~"}, -- 修改
-				delete = {text = "G-"}, -- 删除
-				topdelete = {text = "G▔"}, -- 顶部删除
-				changedelete = {text = "G!"}, -- 修改并删除
-				untracked = {text = "G?"} -- 未跟踪
-
-				-- add          = { text = 'g+' }, -- 新增
-				-- change       = { text = 'g~' }, -- 修改
-				-- delete       = { text = 'g✗' }, -- 删除
-				-- topdelete    = { text = 'g^' }, -- 顶部删除
-				-- changedelete = { text = 'g!' }, -- 修改并删除
-				-- untracked    = { text = 'g?' }, -- 未跟踪
-
-				-- add          = { text = '🆕' }, -- 新增
-				-- change       = { text = '📝' }, -- 修改
-				-- delete       = { text = '🗑️' }, -- 删除
-				-- topdelete    = { text = '🔥' }, -- 顶部删除
-				-- changedelete = { text = '💥' }, -- 修改并删除
-				-- untracked    = { text = '❓' }, -- 未跟踪
+				add = { text = is_linux and "G+" or '✨' }, -- 新增
+				change = { text = is_linux and "G~" or '📝' }, -- 修改
+				delete = { text = is_linux and "G-" or '🗑️' }, -- 删除
+				topdelete = { text = is_linux and "G▔" or '🔥' }, -- 顶部删除
+				changedelete = { text = is_linux and "G!" or '💥' }, -- 修改并删除
+				untracked = { text = is_linux and "G?" or '❓' }, -- 未跟踪
 			},
 			signcolumn = true, -- 始终显示 Git 状态列
 			numhl = false, -- 不启用行号高亮
@@ -713,7 +703,10 @@ end
 
 function M.null_ls_init()
 	local null_ls = require("null-ls")
-    vim.g.home_path = vim.fn.expand('~')
+	local python_path = 'pthon3'
+	if vim.g.is_win32 then
+		python_path = 'python'
+	end
 	null_ls.setup(
 		{
 			sources = {
@@ -723,13 +716,13 @@ function M.null_ls_init()
 				-- null_ls.builtins.formatting.gofmt,    -- Go 格式化
 				null_ls.builtins.formatting.yapf.with(
 					{
-						command = "python3",
+						command = python_path,
 						args = {"-m", "yapf"}
 					}
 				), -- 使用 yapf
 				null_ls.builtins.formatting.clang_format.with(
 					{
-						extra_args = {"-style", "file:" .. vim.g.home_path .. "/.config/nvim/.clang-format"}, -- 使用项目根目录下的 .clang-format 文件
+						extra_args = {"-style", "file:" .. vim.fn.stdpath("config") .. "/.clang-format"}, -- 使用项目根目录下的 .clang-format 文件
 						filetypes = {"cpp", "c", "cxx", "hpp", "h"}
 					}
 				)
@@ -747,9 +740,26 @@ function M.cmake_tools_init()
 			cmake_command = "cmake", -- CMake 可执行文件路径
 			ctest_command = "ctest", -- CTest 可执行文件路径
 			cmake_build_directory = "build", -- 构建目录
-			cmake_build_options = {}, -- 额外的构建选项
+			-- cmake_build_directory = function()
+			--     -- 动态设置构建目录
+			-- 	local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t") -- 获取当前目录名称
+			-- 	return "build/" .. project_name -- 例如：build/my_project
+			-- 	return vim.g.workspace_dir.get() .. '/build'
+			-- end,
+			cmake_build_options = {'-G "Ninja"', "-DCMAKE_C_COMPILER=clang", "-DCMAKE_CXX_COMPILER=clang++"}, -- 额外的构建选项
 			cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
-			cmake_kits_global = {} -- 全局编译器工具链配置
+			cmake_kits_global = {}, -- 全局编译器工具链配置
+			cwd = function()
+				local current_dir = vim.g.workspace_dir.get()
+				local root_markers = { ".git", "CMakeLists.txt" } -- 根目录标记文件
+				for _, marker in ipairs(root_markers) do
+					local marker_path = current_dir .. "/" .. marker
+					if vim.fn.filereadable(marker_path) == 1 or vim.fn.isdirectory(marker_path) == 1 then
+						return current_dir -- 如果找到标记文件，返回当前目录
+					end
+				end
+				return current_dir -- 否则返回当前目录
+			end
 		}
 	)
 end

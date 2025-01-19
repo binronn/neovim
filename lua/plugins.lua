@@ -204,7 +204,7 @@ return {
 		config = function()
 			require('ibl').setup({
 				indent = {
-					char = '┋',
+					char = '╎',
 					smart_indent_cap = true,
 					priority = 1,
 				},
@@ -281,6 +281,7 @@ return {
 	-- CMAKE 插件
 	{
 		"Civitasv/cmake-tools.nvim",
+		ft = { "cmake", "cpp", "c" }, -- 指定需要延迟加载的文件类型
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- 依赖插件
 			"mfussenegger/nvim-dap" -- 调试支持

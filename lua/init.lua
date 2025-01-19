@@ -21,6 +21,9 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " " --- this line
 
+vim.g.is_win32 = vim.fn.has('win32')
+vim.g.is_unix = vim.fn.has('unix')
+
 --------------------
 ---- 顺序不可变 ----
 --------------------

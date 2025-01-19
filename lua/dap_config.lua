@@ -190,9 +190,30 @@ dap.configurations.cpp = {
 	{
 		name = "Launch",
 		type = function()
-            if vim.fn.has('unix') == 1 then
+            if vim.g.is_unix == 1 then
+				dap.adapters.lldb = {
+					type = 'executable',
+					command = '/usr/bin/lldb-dap-19', -- adjust as needed, must be absolute path
+					name = 'lldb',
+				}
                 return 'lldb'
             else
+				dap.adapters.cppdbg = {
+					id = 'cppdbg',
+					type = 'executable',
+					command = vim.fn.getenv("DEVELOP_BASE") .. 'cpptools-windows-x64\\extension\\debugAdapters\\bin\\OpenDebugAD7.exe',
+					options = {
+						detached = false
+					}
+				}
+				dap.adapters.codelldb = {
+					id = 'codelldb',
+					type = 'executable',
+					command = vim.fn.getenv("DEVELOP_BASE") .. 'codelldb-win32-x64\\extension\\adapter\\codelldb.exe',
+					options = {
+						detached = false
+					}
+				}
                 return 'cppdbg'
             end
         end,
@@ -206,8 +227,14 @@ dap.configurations.cpp = {
 		cwd = "${workspaceFolder}",
 		-- stopAtBeginningOfMainSubprogram = true,
 		-- runInTerminal = true, -- 若为false输出内容则不再console窗口中
-        runInTerminal = false, -- Windows 上可能需要关闭此选项
-        -- externalConsole = true,
+        runInTerminal = true, -- Windows 上可能需要关闭此选项
+		MIDebuggerPath = function()
+            if vim.g.is_unix == 1 then
+				return''
+			else
+				return vim.fn.getenv("DEVELOP_BASE") .. 'gdb\\bin\\gdb.exe'
+			end
+		end,
 		setupCommands = {
 			{
 				text = "-enable-pretty-printing",
@@ -215,16 +242,14 @@ dap.configurations.cpp = {
 				ignoreFailures = false
 			}
 		},
+		externalConsole = true,
+		-- args = {
+			-- "--interpreter=mi",
+		-- },
 		-- stdio = pty,
 	}
 }
 dap.configurations.c = dap.configurations.cpp
-
-dap.adapters.lldb = {
-	type = 'executable',
-	command = '/usr/bin/lldb-dap-19', -- adjust as needed, must be absolute path
-	name = 'lldb',
-}
 -- dap.configurations.cpp = {
 -- 	{
 -- 		name = "Launch file",
@@ -262,29 +287,18 @@ dap.adapters.lldb = {
 -- 	},
 -- }
 
-dap.adapters.gdb = {
-	id = "gdb",
-	type = "executable",
-	command = "gdb", -- GDB 的可执行文件
-	args = {
-		"--interpreter=dap",
-		"--eval-command",
-		"set print pretty on",
-		-- "--tty",
-		-- pty
-	}
-}
-if vim.fn.has('win32') == 1 then
-    dap.adapters.cppdbg = {
-	    id = 'cppdbg',
-	    type = 'executable',
-	    -- command = 'C:\\SoftFolder\\develop_env\\cpptools-windows-x64\\extension\\debugAdapters\\bin\\OpenDebugAD7.exe',
-	    command = vim.fn.getenv("DEVELOP_BASE") .. 'cpptools-windows-x64\\extension\\debugAdapters\\bin\\OpenDebugAD7.exe',
-	    options = {
-		    detached = false
-	    }
-    }
-end
+-- dap.adapters.gdb = {
+-- 	id = "gdb",
+-- 	type = "executable",
+-- 	command = "gdb", -- GDB 的可执行文件
+-- 	args = {
+-- 		"--interpreter=dap",
+-- 		"--eval-command",
+-- 		"set print pretty on",
+-- 		-- "--tty",
+-- 		-- pty
+-- 	}
+-- }
 
 -----------------------------------------------------------------
 -- 配置 Python 调试
@@ -409,30 +423,57 @@ function start_debug_session()
 	end
 
 	if vim.g.is_dapui_inited == nil and (filetype == "c" or filetype == "cpp") then
-		require("dapui").setup(
-			{
-				layouts = {
-					{
-						elements = {
-							{id = "scopes", size = 0.25}, -- 作用域窗口，占 25% 宽度
-							{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
-							{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
-							{id = "watches", size = 0.25} -- 监视窗口，占 25% 宽度
+		if vim.g.is_unix == 1 then
+			require("dapui").setup(
+				{
+					layouts = {
+						{
+							elements = {
+								{id = "scopes", size = 0.25}, -- 作用域窗口，占 25% 宽度
+								{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
+								{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
+								{id = "watches", size = 0.25} -- 监视窗口，占 25% 宽度
+							},
+							size = 40, -- 左侧总宽度为 40 列
+							position = "left" -- 左侧显示
 						},
-						size = 40, -- 左侧总宽度为 40 列
-						position = "left" -- 左侧显示
-					},
-					{
-						elements = {
-							{ id = "repl", size = 0.5 }, -- REPL 窗口，占 50% 高度
-							{ id = "console", size = 0.5 },      -- 控制台窗口，占 50% 高度
-						},
-						size = 25, -- 底部总高度为 10 行
-						position = "bottom" -- 底部显示
+						{
+							elements = {
+								{ id = "repl", size = 0.5 }, -- REPL 窗口，占 50% 高度
+								{ id = "console", size = 0.5 },      -- 控制台窗口，占 50% 高度
+							},
+							size = 25, -- 底部总高度为 10 行
+							position = "bottom" -- 底部显示
+						}
 					}
 				}
-			}
-		) -- 在这里添加你的逻辑
+			) -- 在这里添加你的逻辑
+		else
+			require("dapui").setup(
+				{
+					layouts = {
+						{
+							elements = {
+								{id = "scopes", size = 0.25}, -- 作用域窗口，占 25% 宽度
+								{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
+								{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
+								{id = "watches", size = 0.25} -- 监视窗口，占 25% 宽度
+							},
+							size = 40, -- 左侧总宽度为 40 列
+							position = "left" -- 左侧显示
+						},
+						{
+							elements = {
+								{ id = "repl", size = 1 }, -- REPL 窗口，占 50% 高度
+								-- { id = "console", size = 1 },      -- 控制台窗口，占 50% 高度
+							},
+							size = 20, -- 底部总高度为 10 行
+							position = "bottom" -- 底部显示
+						}
+					}
+				}
+			)
+		end
 		vim.g.is_dapui_inited = true
 	end
 

@@ -37,13 +37,22 @@ function build_project(compile_command)
 			print("Created build directory: " .. build_dir)
 		end
 
-		local cmake_pam =
-			'-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
+		local cmake_pam = ''
+		if vim.fn.has('unix') == 1 then
+			cmake_pam =
+				'-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
+		else
+			cmake_pam =
+				' -G "Ninja" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
+		end
 			-- '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug'
 		-- 在 Fterm 中执行 cmake 命令
-		cmd = "cd " .. build_dir .. " && cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .."
 		if compile_command == true then
-			cmd = "cd " .. build_dir .. " && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
+			if vim.fn.has('unix') == 1 then
+				cmd = "cd " .. build_dir .. " && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
+			else
+				cmd = "cd " .. build_dir .. " && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
+			end
 			-- fterm.run(cmd)
 			vim.cmd("AsyncRun " .. cmd)
 		else
