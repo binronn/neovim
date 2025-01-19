@@ -649,6 +649,13 @@ function M.gitsigns_init()
 	require("gitsigns").setup(
 		{
 			signs = {
+				-- add = { text = '✨' }, -- 新增
+				-- change = { text = '📝' }, -- 修改
+				-- delete = { text = '🗑️' }, -- 删除
+				-- topdelete = { text = '🔥' }, -- 顶部删除
+				-- changedelete = { text = '💥' }, -- 修改并删除
+				-- untracked = { text = '❓' }, -- 未跟踪
+
 				add = { text = is_linux and "G+" or '✨' }, -- 新增
 				change = { text = is_linux and "G~" or '📝' }, -- 修改
 				delete = { text = is_linux and "G-" or '🗑️' }, -- 删除
@@ -735,8 +742,16 @@ end
 -- cmake-tools.nvim 配置
 ------------------------------------------------------------------------------------------
 function M.cmake_tools_init()
+	vim.g.cmake_build_options = {'-G "Ninja"', '-DCMAKE_C_COMPILER=clang', '-DCMAKE_CXX_COMPILER=clang++'}
 	require("cmake-tools").setup(
 		{
+			-- base_settings = {
+				-- build_dir = "",
+				-- build_options = { "-j4" },
+				-- env = {},
+				-- generate_options = { "-DCMAKE_EXPORT_COMPILE_COMMANDS=1" },
+				-- working_dir = "${dir.binary}"
+			-- },
 			cmake_command = "cmake", -- CMake 可执行文件路径
 			ctest_command = "ctest", -- CTest 可执行文件路径
 			cmake_build_directory = "build", -- 构建目录
@@ -747,6 +762,7 @@ function M.cmake_tools_init()
 			-- 	return vim.g.workspace_dir.get() .. '/build'
 			-- end,
 			cmake_build_options = {'-G "Ninja"', "-DCMAKE_C_COMPILER=clang", "-DCMAKE_CXX_COMPILER=clang++"}, -- 额外的构建选项
+			-- cmake_generate_options = { "-G", "Ninja", "-DCMAKE_C_COMPILER=clang", "-DCMAKE_CXX_COMPILER=clang++" },
 			cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
 			cmake_kits_global = {}, -- 全局编译器工具链配置
 			cwd = function()

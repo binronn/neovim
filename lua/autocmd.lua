@@ -88,9 +88,9 @@ function build_project(compile_command)
 		local compiler = ""
 		local output_file = wsdir .. "/main"
 		if file_extension == "cpp" then
-			compiler = "g++"
+			compiler = "clang++ -g "
 		elseif file_extension == "c" then
-			compiler = "gcc"
+			compiler = "clang -g "
 		else
 			print("Unsupported file type. Only .c and .cpp files are supported.")
 			return

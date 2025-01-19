@@ -198,6 +198,17 @@ dap.configurations.cpp = {
 				}
                 return 'lldb'
             else
+				dap.adapters.gdb = {
+					id = 'gdb',
+					type = 'executable',
+					command =  vim.fn.getenv("gdb_path") .. '\\gdb.exe',
+						args = {
+							"-iex", "source " .. vim.fn.stdpath("config") .. "\\.gdbinit",
+							"--interpreter=dap",
+							"--eval-command",
+							"set print pretty on",
+						}
+				}
 				dap.adapters.cppdbg = {
 					id = 'cppdbg',
 					type = 'executable',
@@ -214,7 +225,7 @@ dap.configurations.cpp = {
 						detached = false
 					}
 				}
-                return 'cppdbg'
+                return 'gdb'
             end
         end,
 		request = "launch",
@@ -227,7 +238,7 @@ dap.configurations.cpp = {
 		cwd = "${workspaceFolder}",
 		-- stopAtBeginningOfMainSubprogram = true,
 		-- runInTerminal = true, -- 若为false输出内容则不再console窗口中
-        runInTerminal = true, -- Windows 上可能需要关闭此选项
+        runInTerminal = false, -- Windows 上可能需要关闭此选项
 		MIDebuggerPath = function()
             if vim.g.is_unix == 1 then
 				return''
@@ -243,9 +254,6 @@ dap.configurations.cpp = {
 			}
 		},
 		externalConsole = true,
-		-- args = {
-			-- "--interpreter=mi",
-		-- },
 		-- stdio = pty,
 	}
 }
