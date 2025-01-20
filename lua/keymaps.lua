@@ -193,51 +193,16 @@ local wrappers = {
 	curly_brace = {"{", "}"}
 }
 
-vim.api.nvim_set_keymap(
-	"v",
-	'<leader>"',
-	"",
-	{
-		noremap = true,
-		callback = function()
-			vim.schedule(
-				function()
-					vim.g.wrap_selection(wrappers.double_quote)
-				end
-			)
-		end
-	}
-)
-vim.api.nvim_set_keymap(
-	"v",
-	"<leader>(",
-	"",
-	{
-		noremap = true,
-		callback = function()
-			vim.schedule(
-				function()
-					vim.g.wrap_selection(wrappers.bracket)
-				end
-			)
-		end
-	}
-)
-vim.api.nvim_set_keymap(
-	"v",
-	"<leader>{",
-	"",
-	{
-		noremap = true,
-		callback = function()
-			vim.schedule(
-				function()
-					vim.g.wrap_selection(wrappers.curly_brace)
-				end
-			)
-		end
-	}
-)
+function wrap_selection(a, b)
+
+    local cmd = string.format("'<,'>s/\\%%V\\(.*\\)\\%%V/%s\\1%s/", a, b)
+    vim.cmd(cmd)
+end
+vim.g.wrap_selection = wrap_selection
+
+vmap('S"', ":lua vim.g.wrap_selection('\"', '\"')<CR>")
+vmap('S(', ":lua vim.g.wrap_selection('(', ')')<CR>")
+vmap('S{', ":lua vim.g.wrap_selection('{', '}')<CR>")
 
 ------------------------------------------
 -- 定义 Lua 文件格式化
