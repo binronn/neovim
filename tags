@@ -53,7 +53,6 @@ build_project_sym	/mnt/c/Users/barre/AppData/Local/nvim/lua/autocmd.lua	/^functi
 callback	/mnt/c/Users/barre/AppData/Local/nvim/lua/autocmd.lua	/^		callback = function()$/;"	f
 callback	/mnt/c/Users/barre/AppData/Local/nvim/lua/dap_config.lua	/^				callback = function()$/;"	f
 callback	/mnt/c/Users/barre/AppData/Local/nvim/lua/dap_config.lua	/^		callback = function()$/;"	f
-callback	/mnt/c/Users/barre/AppData/Local/nvim/lua/keymaps.lua	/^		callback = function()$/;"	f
 callback	/mnt/c/Users/barre/AppData/Local/nvim/lua/keymaps.lua	/^  callback = function()$/;"	f
 callback	/mnt/c/Users/barre/AppData/Local/nvim/lua/plugins_cfg.lua	/^			callback = function()$/;"	f
 clear_debug_keymaps	/mnt/c/Users/barre/AppData/Local/nvim/lua/dap_config.lua	/^local function clear_debug_keymaps()$/;"	f
@@ -114,5 +113,5 @@ vmap2	/mnt/c/Users/barre/AppData/Local/nvim/lua/keymaps.lua	/^local function vma
 vmap2x	/mnt/c/Users/barre/AppData/Local/nvim/lua/keymaps.lua	/^local function vmap2x(keys, command, opts)$/;"	f
 workspace_dir	/mnt/c/Users/barre/AppData/Local/nvim/lua/common_func.lua	/^local function workspace_dir()$/;"	f
 workspace_dir2	/mnt/c/Users/barre/AppData/Local/nvim/lua/common_func.lua	/^local function workspace_dir2()$/;"	f
-wrap_selection	/mnt/c/Users/barre/AppData/Local/nvim/lua/common_func.lua	/^local function wrap_selection(wrapper)$/;"	f
+wrap_selection	/mnt/c/Users/barre/AppData/Local/nvim/lua/keymaps.lua	/^function wrap_selection(a, b)$/;"	f
 xmap	/mnt/c/Users/barre/AppData/Local/nvim/lua/keymaps.lua	/^function xmap(shortcut, command)$/;"	f
