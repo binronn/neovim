@@ -106,7 +106,7 @@ vim.o.timeoutlen = 700
 vim.g.syntax = true
 -- 主题设置
 --vim.g.material_style = "deep ocean"
-vim.cmd "colorscheme gruvbox-material"
+-- vim.cmd "colorscheme gruvbox-material"
 
 -- 强制显示侧边栏，防止时有时无
 vim.cmd "set signcolumn=yes"

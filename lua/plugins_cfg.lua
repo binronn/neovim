@@ -38,8 +38,8 @@ function M.lualine_init()
 			disabled_filetypes = {'NvimTree', 'aerial', 'qf', 'help'},
 			icons_enabled = true,
 			theme = "auto",
-			component_separators = {left = "", right = ""},
-			section_separators = {left = "", right = ""},
+			component_separators = {left = "|", right = "|"},
+			section_separators = {left = "", right = ""},
 			disabled_filetypes = {
 				statusline = {},
 				winbar = {}
@@ -91,8 +91,11 @@ function M.bufferline_init()
 			separator_style = "slant",
 			show_close_icon = false,
 			show_buffer_close_icons = false,
-			show_buffer_icons = false,
-			indicator = {icon = " ●"},
+			show_buffer_icons = true,
+            indicator = {
+                icon = '●', -- this should be omitted if indicator style is not 'icon'
+                style = 'icon',
+			},
 			buffer_close_icon = "",
 			modified_icon = "[+]",
 			close_icon = "",
@@ -742,42 +745,17 @@ end
 -- cmake-tools.nvim 配置
 ------------------------------------------------------------------------------------------
 function M.cmake_tools_init()
-	vim.g.cmake_build_options = {'-G "Ninja"', '-DCMAKE_C_COMPILER=clang', '-DCMAKE_CXX_COMPILER=clang++'}
 	require("cmake-tools").setup(
-		{
-			-- base_settings = {
-				-- build_dir = "",
-				-- build_options = { "-j4" },
-				-- env = {},
-				-- generate_options = { "-DCMAKE_EXPORT_COMPILE_COMMANDS=1" },
-				-- working_dir = "${dir.binary}"
-			-- },
-			cmake_command = "cmake", -- CMake 可执行文件路径
-			ctest_command = "ctest", -- CTest 可执行文件路径
-			cmake_build_directory = "build", -- 构建目录
-			-- cmake_build_directory = function()
-			--     -- 动态设置构建目录
-			-- 	local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t") -- 获取当前目录名称
-			-- 	return "build/" .. project_name -- 例如：build/my_project
-			-- 	return vim.g.workspace_dir.get() .. '/build'
-			-- end,
-			cmake_build_options = {'-G "Ninja"', "-DCMAKE_C_COMPILER=clang", "-DCMAKE_CXX_COMPILER=clang++"}, -- 额外的构建选项
-			-- cmake_generate_options = { "-G", "Ninja", "-DCMAKE_C_COMPILER=clang", "-DCMAKE_CXX_COMPILER=clang++" },
-			cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
-			cmake_kits_global = {}, -- 全局编译器工具链配置
-			cwd = function()
-				local current_dir = vim.g.workspace_dir.get()
-				local root_markers = { ".git", "CMakeLists.txt" } -- 根目录标记文件
-				for _, marker in ipairs(root_markers) do
-					local marker_path = current_dir .. "/" .. marker
-					if vim.fn.filereadable(marker_path) == 1 or vim.fn.isdirectory(marker_path) == 1 then
-						return current_dir -- 如果找到标记文件，返回当前目录
-					end
-				end
-				return current_dir -- 否则返回当前目录
-			end
-		}
-	)
+	{
+		cmake_command = "cmake", -- CMake 可执行文件路径
+		ctest_command = "ctest", -- CTest 可执行文件路径
+		cmake_build_directory = "build", -- 构建目录
+		cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
+		cmake_kits_global = {}, -- 全局编译器工具链配置
+		cwd = function()
+			return vim.g.workspace_dir.get()
+		end
+	})
 end
 
 ------------------------------------------------------------------------------------------

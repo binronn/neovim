@@ -103,7 +103,7 @@ return {
 	},
 	{
 		"nvimdev/dashboard-nvim", -- 启动面板
-		event = "VimEnter",
+		-- event = "VimEnter",
 		config = function()
 			require("dashboard").setup({})
 		end,
@@ -142,15 +142,15 @@ return {
 		end
 	},
 	{
-		"morhetz/gruvbox", -- 主题
-		config = function()
+		-- "morhetz/gruvbox", -- 主题
+		-- config = function()
 			-- vim.schedule(function()vim.cmd("colorscheme gruvbox")end)
-		end
+		-- end
 	},
 	{
 		'sainnhe/gruvbox-material',
 		config = function()
-			-- vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
+			vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
 		end
 	},
 	-- {
@@ -229,19 +229,25 @@ return {
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
 		dependencies = {
-			"hrsh7th/nvim-cmp", -- 补全引擎
+			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
 			"hrsh7th/cmp-buffer", -- 缓冲区补全源
 			"hrsh7th/cmp-path", -- 文件路径补全
-			"hrsh7th/cmp-path", -- 文件路径补全
-			"L3MON4D3/LuaSnip", -- 代码片段引擎
+			"saadparwaiz1/cmp_luasnip",
+			{
+				"L3MON4D3/LuaSnip",
+				config = function()
+					vim.g.luasnip = require('luasnip')
+					require('luasnip_cfg')
+				end
+			}, -- 代码片段引擎
             "jose-elias-alvarez/null-ls.nvim", -- 代码格式化插件
 		},
 		config = function()
 			require("lsp_config")
             pcfg.null_ls_init()
 		end,
-        ft = {'cpp', 'hpp', 'python', 'h', 'cxx', 'c'}
+		ft = programming_filetypes
 	},
 	-- 安装 Telescope 插件
 	{

@@ -1,8 +1,8 @@
 " Enable Mouse
 set mouse=a
-
-" set guifont=Fira\ Code:h10
-set guifont=Source\ Code\ Pro:h10
+" set guifont=Source\ Code\ Pro:h10
+set guifont=Hack\ Nerd\ Font:h10
+let g:neovide_title_background_color = "#161616"
 
 " Right Click Context Menu (Copy-Cut-Paste)
 nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>

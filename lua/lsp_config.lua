@@ -32,13 +32,21 @@ end
 -- C++ 配置 (clangd)
 lspconfig.clangd.setup(
 	{
-		cmd = {"clangd", "--background-index=true", "--clang-tidy"},
-		cmd = {"clangd", "--compile-commands-dir=build"}, -- 指定 compile_commands.json 所在目录
+		cmd = {
+			"clangd", 
+			"--background-index=true",
+			"--clang-tidy",
+			"--compile-commands-dir=build",
+			"--completion-style=detailed",  -- 增强补全信息
+			-- "--header-insertion=never"      -- 禁用自动头文件插入
+		},
 		filetypes = {"c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx"},
+		capabilities = require('cmp_nvim_lsp').default_capabilities(),
 		diagnostics = {
 			-- 设置诊断刷新延迟（单位：毫秒）
-			update_in_insert = true, -- 在插入模式下不更新诊断
-			debounce = 300 -- 设置诊断刷新延迟为 300 毫秒
+			update_in_insert = false, -- 在插入模式下不更新诊断
+			debounce = 300, -- 设置诊断刷新延迟为 300 毫秒
+			severity_sort = true            -- 按严重程度排序诊断
 		},
 		on_attach = function(client, bufnr)
 			local opts = {noremap = true, silent = true}
@@ -48,7 +56,6 @@ lspconfig.clangd.setup(
 			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", {desc = "Find references"})
 			vim.keymap.set("n", "gl", "<cmd>Telescope lsp_document_symbols<cr>", {desc = "Find references"})
 			vim.keymap.set("n", "ga", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", {desc = "Find references"})
-			vim.keymap.set("n", "<C-t>", "<cmd>Telescope lsp_workspace_symbols<cr>", {desc = "Find workspace symbols"})
 			keymap(bufnr, "n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
 			keymap(bufnr, "n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
 			keymap(bufnr, "n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
@@ -61,7 +68,7 @@ lspconfig.clangd.setup(
 				opts
 			)
 			keymap(bufnr, "n", "<leader>hs", "<cmd>lua switch_file_and_search()<CR>", opts)
-			keymap(bufnr, "i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
+			keymap(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
 			--     buffer = bufnr,
 			--     callback = function()
@@ -77,6 +84,7 @@ lspconfig.clangd.setup(
 ------------------------------------------------------------------------------------------
 lspconfig.pyright.setup(
 	{
+		filetypes = {"py", "python"},
 		on_attach = function(client, bufnr)
 			local opts = {noremap = true, silent = true}
 			local keymap = vim.api.nvim_buf_set_keymap
@@ -85,7 +93,6 @@ lspconfig.pyright.setup(
 			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", {desc = "Find references"})
 			vim.keymap.set("n", "gl", "<cmd>Telescope lsp_document_symbols<cr>", {desc = "Find references"})
 			vim.keymap.set("n", "ga", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", {desc = "Find references"})
-			vim.keymap.set("n", "<C-t>", "<cmd>Telescope lsp_workspace_symbols<cr>", {desc = "Find workspace symbols"})
 			keymap(bufnr, "n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
 			keymap(bufnr, "n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
 			keymap(bufnr, "n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
@@ -148,29 +155,71 @@ vim.diagnostic.config(
 -- 补全配置
 ------------------------------------------------------------------------------------------
 local cmp = require "cmp"
-cmp.setup(
-	{
-		-- snippet = {
-		--   -- expand = function(args)
-		--     -- require('luasnip').lsp_expand(args.body) -- 使用 LuaSnip 作为代码片段引擎
-		--   -- end,
-		-- },
-		mapping = {
-			["<C-n>"] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Insert}), -- 向下选择
-			["<C-p>"] = cmp.mapping.select_prev_item({behavior = cmp.SelectBehavior.Insert}), -- 向上选择
-			["<Tab>"] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Insert}), -- 向上选择
-			["<C-e>"] = cmp.mapping.confirm({select = true}) -- 使用 Tab 键确认补全
+cmp.setup({
+	window = {
+		completion = {
+			max_width = 50, -- 补全窗口的最大宽度（字符数）
+			min_width = 50, -- 补全窗口的最大宽度（字符数）
 		},
-		sources = cmp.config.sources(
-			{
-				{name = "nvim_lsp"}, -- 从 LSP 获取补全项
-				-- { name = 'luasnip' },  -- 支持代码片段
-				{name = "buffer"}, -- 从当前缓冲区获取补全项
-				{name = "path"}
-			}
-		),
-		-- 模仿 VS2022，自动弹出补全列表
-		completion = {},
-		experimental = {}
-	}
-)
+		documentation = {
+			max_height = 15, -- 文档窗口的最大高度
+		},
+	},
+	mapping = {
+		['<Tab>'] = cmp.mapping(function(fallback)
+			local luasnip = vim.g.luasnip
+			if cmp.visible() then
+				cmp.select_next_item() -- 选择下一个补全项
+			elseif luasnip.expand_or_jumpable() then
+				luasnip.expand_or_jump() -- 跳到luasnip的下一个插入点
+			else
+				fallback() -- 默认行为（插入 Tab）
+			end
+		end, { 'i', 's' }), -- 在插入模式和选择模式下生效
+
+		['<S-Tab>'] = cmp.mapping(function(fallback)
+			local luasnip = vim.g.luasnip
+			if cmp.visible() then
+				cmp.select_prev_item() -- 选择上一个补全项
+			elseif luasnip.jumpable(-1) then
+				luasnip.jump(-1) -- 跳到luasnip的上一个插入点
+			else
+				fallback() -- 默认行为
+			end
+		end, { 'i', 's' }),
+
+		['<C-j>'] = cmp.mapping.confirm({ select = true }), -- 确认当前选择的补全项
+	},
+	sources = {
+		{ name = 'nvim_lsp' }, -- LSP 补全源
+		{ name = 'luasnip' }, -- LSP 补全源
+		{ name = 'buffer' },   -- 缓冲区补全源
+		{ name = 'path' },     -- 路径补全源
+	},
+})
+-- cmp.setup(
+-- 	{
+-- 		-- snippet = {
+-- 		--   -- expand = function(args)
+-- 		--     -- require('luasnip').lsp_expand(args.body) -- 使用 LuaSnip 作为代码片段引擎
+-- 		--   -- end,
+-- 		-- },
+-- 		mapping = {
+-- 			["<Tab>"] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Insert}), -- 向下选择
+-- 			["<C-p>"] = cmp.mapping.select_prev_item({behavior = cmp.SelectBehavior.Insert}), -- 向上选择
+-- 			["<Tab>"] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Insert}), -- 向上选择
+-- 			["<C-e>"] = cmp.mapping.confirm({select = true}) -- 使用 Tab 键确认补全
+-- 		},
+-- 		sources = cmp.config.sources(
+-- 			{
+-- 				{name = "nvim_lsp"}, -- 从 LSP 获取补全项
+-- 				-- { name = 'luasnip' },  -- 支持代码片段
+-- 				{name = "buffer"}, -- 从当前缓冲区获取补全项
+-- 				{name = "path"}
+-- 			}
+-- 		),
+-- 		-- 模仿 VS2022，自动弹出补全列表
+-- 		completion = {},
+-- 		experimental = {}
+-- 	}
+-- )
