@@ -17,7 +17,7 @@ function build_project(compile_command)
 	local wsdir = vim.g.workspace_dir2()
 	local cmake_lists_path = wsdir .. "/CMakeLists.txt"
 	local makefile_path = wsdir .. "/Makefile"
-	local current_file = vim.fn.expand("%:p") -- 获取当前文件的完整路径
+	local current_file = '"' .. vim.fn.expand("%:p") .. '"' -- 获取当前文件的完整路径
 	local file_extension = vim.fn.expand("%:e") -- 获取当前文件的扩展名
 	local build_makefile_path = wsdir .. "/build/Makefile"
 
@@ -49,14 +49,14 @@ function build_project(compile_command)
 		-- 在 Fterm 中执行 cmake 命令
 		if compile_command == true then
 			if vim.fn.has('unix') == 1 then
-				cmd = "cd " .. build_dir .. " && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
+				cmd = "cd \"" .. build_dir .. "\" && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
 			else
-				cmd = "cd " .. build_dir .. " && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
+				cmd = "cd \"" .. build_dir .. "\" && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
 			end
 			-- fterm.run(cmd)
 			vim.cmd("AsyncRun " .. cmd)
 		else
-			cmd = "cd " .. build_dir .. " && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .."
+			cmd = "cd \"" .. build_dir .. "\" && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .."
 			vim.cmd("AsyncRun " .. cmd)
 		end
 
@@ -69,10 +69,10 @@ function build_project(compile_command)
 
 		-- 在 Fterm 中执行 make 命令
 		if compile_command == true then
-			cmd = "cd " .. wsdir .. " && bear --append -o compile_commands.json make"
+			cmd = "cd \"" .. wsdir .. "\" && bear --append -o compile_commands.json make"
 			vim.cmd("AsyncRun " .. cmd)
 		else
-			cmd = "cd " .. wsdir .. " && make"
+			cmd = "cd \"" .. wsdir .. "\" && make"
 			-- fterm.run(cmd)
 			vim.cmd("AsyncRun " .. cmd)
 		end
@@ -86,7 +86,7 @@ function build_project(compile_command)
 
 		-- 根据文件类型选择编译器
 		local compiler = ""
-		local output_file = wsdir .. "/main"
+		local output_file = '"' .. wsdir .. "/main" .. '"'
 		if file_extension == "cpp" then
 			compiler = "clang++ -g "
 		elseif file_extension == "c" then

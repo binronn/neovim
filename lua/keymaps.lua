@@ -179,6 +179,19 @@ nmap2("<leader>wv", ":resize ")
 nmap("<C-h>", "%")
 vmap("<C-h>", "%")
 
+-- 窗口跳转
+nmap("<leader>1", ":1wincmd w<CR>")
+nmap("<leader>2", ":2wincmd w<CR>")
+nmap("<leader>3", ":3wincmd w<CR>")
+nmap("<leader>4", ":4wincmd w<CR>")
+nmap("<leader>5", ":5wincmd w<CR>")
+nmap("<leader>6", ":6wincmd w<CR>")
+nmap("<leader>7", ":7wincmd w<CR>")
+nmap("<leader>8", ":8wincmd w<CR>")
+nmap("<leader>9", ":9wincmd w<CR>")
+nmap("<leader>0", ":0wincmd w<CR>")
+nmap("<leader>p", ":wincmd p<CR>")
+
 ------------------------------------------------------------------------------------------
 -- 选中文字加括号引号
 ------------------------------------------------------------------------------------------

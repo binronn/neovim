@@ -50,17 +50,18 @@ local function workspace_dir2()
 end
 
 local function workspace_dir()
+	local path = ''
 	if vim.fn.empty(vim.g.workspace_dir_content) == 1 then
 		local workspace_folders = vim.lsp.buf.list_workspace_folders()
 		if workspace_folders and #workspace_folders <= 0 then
 			vim.g.workspace_dir_content = vim.fn.getcwd()
-			return vim.fn.getcwd()
 		end
 		for index, folder in ipairs(workspace_folders) do
 			vim.g.workspace_dir_content = folder
-			return folder
+			break
 		end
 	end
+	vim.cmd("cd " .. vim.g.workspace_dir_content)
 	return vim.g.workspace_dir_content
 end
 vim.g.workspace_dir = {get = workspace_dir}

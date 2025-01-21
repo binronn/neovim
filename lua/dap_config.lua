@@ -20,6 +20,36 @@ local g_temp_side_window_groupid = nil
 local g_dapui_closed = false
 
 -----------------------------------------------
+-- 默认调试UI
+-----------------------------------------------
+---
+local function default_dapui()
+	require("dapui").setup(
+	{
+		layouts = {
+			{
+				elements = {
+					{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
+					{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
+					{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
+					{id = "scopes", size = 0.30}, -- 作用域窗口，占 25% 宽度
+				},
+				size = 40, -- 左侧总宽度为 40 列
+				position = "left" -- 左侧显示
+			},
+			{
+				elements = {
+					{ id = "repl", size = 0.5 }, -- REPL 窗口，占 50% 高度
+					{ id = "console", size = 0.5 },      -- 控制台窗口，占 50% 高度
+				},
+				size = 20, -- 底部总高度为 10 行
+				position = "bottom" -- 底部显示
+			}
+		}
+	}
+	)
+end
+-----------------------------------------------
 -- 保存并恢复窗口
 -----------------------------------------------
 ---
@@ -238,7 +268,7 @@ dap.configurations.cpp = {
 		cwd = "${workspaceFolder}",
 		-- stopAtBeginningOfMainSubprogram = true,
 		-- runInTerminal = true, -- 若为false输出内容则不再console窗口中
-        runInTerminal = false, -- Windows 上可能需要关闭此选项
+        runInTerminal = (vim.g.is_unix == 1) and true or false, -- Windows 上可能需要关闭此选项
 		MIDebuggerPath = function()
             if vim.g.is_unix == 1 then
 				return''
@@ -253,7 +283,7 @@ dap.configurations.cpp = {
 				ignoreFailures = false
 			}
 		},
-		externalConsole = true,
+		externalConsole = (vim.g.is_unix == 1) and false or true,
 		-- stdio = pty,
 	}
 }
@@ -311,16 +341,24 @@ dap.configurations.c = dap.configurations.cpp
 -----------------------------------------------------------------
 -- 配置 Python 调试
 -----------------------------------------------------------------
-require("dap-python").setup("python3")
+if vim.g.is_unix == 1 then
+	require("dap-python").setup("python3")
+else
+	require("dap-python").setup("python.exe")
+end
 dap.configurations.python = {
 	{
 		type = "python",
 		request = "launch",
 		name = "Launch file",
-		program = "${file}",
+		program = function()
+			return get_debug_option("path")
+		end,
 		pythonPath = function()
-			return "python3"
-		end
+			return (vim.g.is_unix == 1) and "python3" or "python.exe"
+		end,
+		-- In linux maybe not externalTerminal!!
+	    console = 'externalTerminal', -- 关键参数：externalTerminal/integratedTerminal/internalConsole
 	}
 }
 
@@ -374,121 +412,43 @@ function start_debug_session()
 	close_windows()
 	-- cpp 单独设置配置项
 	local filetype = vim.bo.filetype
-
-	if filetype == "c" or filetype == "cpp" then
-
-		-- local pty = create_tmux_split_and_get_pty()
-
-
-		-- dap.configurations.cpp = {
-		-- 	{
-		-- 		name = "Launch file",
-		-- 		type = "gdb",
-		-- 		request = "launch",
-		-- 		program = function()
-		-- 			return get_debug_option("path")
-		-- 		end,
-		-- 		args = function()
-		-- 			return get_debug_option("args")
-		-- 		end,
-		-- 		cwd = '${workspaceFolder}',
-		-- 		stopOnEntry = false,
-		-- 		-- stdio = {nil, nil},
-		-- 	},
-		-- }
-
-		-- dap.configurations.cpp = {
-		-- 	{
-		-- 		name = "Launch file",
-		-- 		type = "gdb",
-		-- 		request = "launch",
-		-- 		program = function()
-		-- 			return get_debug_option("path")
-		-- 		end,
-		-- 		args = function()
-		-- 			return get_debug_option("args")
-		-- 		end,
-		-- 		-- target = '127.0.0.1:1299',
-		-- 		cwd = '${workspaceFolder}',
-		-- 		stopOnEntry = false,
-		-- 		-- stdio = {nil, nil},
-		-- 	},
-		-- }
-
-
-		-- dap.adapters.gdb = {
-		-- 	id = "gdb",
-		-- 	type = "executable",
-		-- 	command = "gdb", -- GDB 的可执行文件
-		-- 	args = {
-		-- 		"--interpreter=dap",
-		-- 		"--eval-command",
-		-- 		"set print pretty on",
-		-- 		"--tty",
-		-- 		pty
-		-- 	}
-		-- }
-	end
-
 	if vim.g.is_dapui_inited == nil and (filetype == "c" or filetype == "cpp") then
-		if vim.g.is_unix == 1 then
-			require("dapui").setup(
-				{
-					layouts = {
-						{
-							elements = {
-								{id = "scopes", size = 0.25}, -- 作用域窗口，占 25% 宽度
-								{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
-								{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
-								{id = "watches", size = 0.25} -- 监视窗口，占 25% 宽度
-							},
-							size = 40, -- 左侧总宽度为 40 列
-							position = "left" -- 左侧显示
+		local btm_win_elements = {
+			{ id = "repl", size = 1 }, -- REPL 窗口，占 100% 高度
+		}
+
+		local btm_unix_elements = {
+			{ id = "repl", size = 0.5 },			-- REPL 窗口，占 50% 高度
+			{ id = "console", size = 0.5 },			-- 控制台窗口，占 50% 高度
+		}
+
+		require("dapui").setup(
+			{
+				layouts = {
+					{
+						elements = {
+							{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
+							{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
+							{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
+							{id = "scopes", size = 0.30}, -- 作用域窗口，占 25% 宽度
 						},
-						{
-							elements = {
-								{ id = "repl", size = 0.5 }, -- REPL 窗口，占 50% 高度
-								{ id = "console", size = 0.5 },      -- 控制台窗口，占 50% 高度
-							},
-							size = 25, -- 底部总高度为 10 行
-							position = "bottom" -- 底部显示
-						}
+						size = 40, -- 左侧总宽度为 40 列
+						position = "left" -- 左侧显示
+					},
+					{
+						elements = vim.g.is_unix == 1 and btm_unix_elements or btm_win_elements,
+						size = vim.g.is_unix == 1 and 20 or 25, -- 底部总高度为 10 行
+						position = "bottom" -- 底部显示
 					}
 				}
-			) -- 在这里添加你的逻辑
-		else
-			require("dapui").setup(
-				{
-					layouts = {
-						{
-							elements = {
-								{id = "scopes", size = 0.25}, -- 作用域窗口，占 25% 宽度
-								{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
-								{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
-								{id = "watches", size = 0.25} -- 监视窗口，占 25% 宽度
-							},
-							size = 40, -- 左侧总宽度为 40 列
-							position = "left" -- 左侧显示
-						},
-						{
-							elements = {
-								{ id = "repl", size = 1 }, -- REPL 窗口，占 50% 高度
-								-- { id = "console", size = 1 },      -- 控制台窗口，占 50% 高度
-							},
-							size = 20, -- 底部总高度为 10 行
-							position = "bottom" -- 底部显示
-						}
-					}
-				}
-			)
-		end
+			}
+		)
 		vim.g.is_dapui_inited = true
+	elseif vim.g.is_dapui_inited == nil then
+		vim.g.is_dapui_inited = true
+		default_dapui()
 	end
 
-	if vim.g.is_dapui_inited == nil then
-		vim.g.is_dapui_inited = true
-		require("dapui").setup()
-	end
 	require("dap").continue()
 	print('Debugger is running ...')
 end

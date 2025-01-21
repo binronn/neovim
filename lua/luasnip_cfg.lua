@@ -121,5 +121,5 @@ local cpp_snippets = {
 
 -- 注册片段
 ls.add_snippets("c", c_cpp_snippets)
-ls.add_snippets("cpp", vim.tbl_extend("keep", c_cpp_snippets, cpp_snippets))
+ls.add_snippets("cpp", vim.tbl_extend("force", c_cpp_snippets, cpp_snippets)) -- force or keep
 
