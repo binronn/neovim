@@ -61,7 +61,6 @@ local function workspace_dir()
 			break
 		end
 	end
-	vim.cmd("cd " .. vim.g.workspace_dir_content)
 	return vim.g.workspace_dir_content
 end
 vim.g.workspace_dir = {get = workspace_dir}
@@ -72,6 +71,7 @@ local function reset_workspace_dir()
 	print(vim.g.workspace_dir.get())
 end
 vim.g.reset_workspace_dir = {get = reset_workspace_dir}
+vim.g.reset_workspace_dir_nop = {get = workspace_dir}
 
 local function generate_ctags()
 	-- 获取当前目录
