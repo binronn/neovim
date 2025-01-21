@@ -68,7 +68,7 @@ lspconfig.clangd.setup(
 				opts
 			)
 			keymap(bufnr, "n", "<leader>hs", "<cmd>lua switch_file_and_search()<CR>", opts)
-			keymap(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
+			keymap(bufnr, "i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
 			--     buffer = bufnr,
 			--     callback = function()
@@ -207,29 +207,3 @@ cmp.setup({
 		{ name = 'path' },     -- 路径补全源
 	},
 })
--- cmp.setup(
--- 	{
--- 		-- snippet = {
--- 		--   -- expand = function(args)
--- 		--     -- require('luasnip').lsp_expand(args.body) -- 使用 LuaSnip 作为代码片段引擎
--- 		--   -- end,
--- 		-- },
--- 		mapping = {
--- 			["<Tab>"] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Insert}), -- 向下选择
--- 			["<C-p>"] = cmp.mapping.select_prev_item({behavior = cmp.SelectBehavior.Insert}), -- 向上选择
--- 			["<Tab>"] = cmp.mapping.select_next_item({behavior = cmp.SelectBehavior.Insert}), -- 向上选择
--- 			["<C-e>"] = cmp.mapping.confirm({select = true}) -- 使用 Tab 键确认补全
--- 		},
--- 		sources = cmp.config.sources(
--- 			{
--- 				{name = "nvim_lsp"}, -- 从 LSP 获取补全项
--- 				-- { name = 'luasnip' },  -- 支持代码片段
--- 				{name = "buffer"}, -- 从当前缓冲区获取补全项
--- 				{name = "path"}
--- 			}
--- 		),
--- 		-- 模仿 VS2022，自动弹出补全列表
--- 		completion = {},
--- 		experimental = {}
--- 	}
--- )

@@ -1,7 +1,8 @@
 " Enable Mouse
 set mouse=a
 " set guifont=Source\ Code\ Pro:h10
-set guifont=Hack\ Nerd\ Font:h10
+" set guifont=Hack\ Nerd\ Font:h10
+set guifont=Cascadia\ Code:h10
 let g:neovide_title_background_color = "#161616"
 
 " Right Click Context Menu (Copy-Cut-Paste)

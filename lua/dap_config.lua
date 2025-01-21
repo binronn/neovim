@@ -212,7 +212,7 @@ local function get_debug_option(case)
 end
 
 -----------------------------------------------------------------
--- 调试器配置
+-- CPP调试配置
 -----------------------------------------------------------------
 --
 -- 配置 CPP 调试
@@ -223,7 +223,7 @@ dap.configurations.cpp = {
             if vim.g.is_unix == 1 then
 				dap.adapters.lldb = {
 					type = 'executable',
-					command = '/usr/bin/lldb-dap-19', -- adjust as needed, must be absolute path
+					command = '/usr/bin/lldb-dap', -- adjust as needed, must be absolute path
 					name = 'lldb',
 				}
                 return 'lldb'
@@ -239,22 +239,22 @@ dap.configurations.cpp = {
 							"set print pretty on",
 						}
 				}
-				dap.adapters.cppdbg = {
-					id = 'cppdbg',
-					type = 'executable',
-					command = vim.fn.getenv("DEVELOP_BASE") .. 'cpptools-windows-x64\\extension\\debugAdapters\\bin\\OpenDebugAD7.exe',
-					options = {
-						detached = false
-					}
-				}
-				dap.adapters.codelldb = {
-					id = 'codelldb',
-					type = 'executable',
-					command = vim.fn.getenv("DEVELOP_BASE") .. 'codelldb-win32-x64\\extension\\adapter\\codelldb.exe',
-					options = {
-						detached = false
-					}
-				}
+				-- dap.adapters.cppdbg = {
+				-- 	id = 'cppdbg',
+				-- 	type = 'executable',
+				-- 	command = vim.fn.getenv("DEVELOP_BASE") .. 'cpptools-windows-x64\\extension\\debugAdapters\\bin\\OpenDebugAD7.exe',
+				-- 	options = {
+				-- 		detached = false
+				-- 	}
+				-- }
+				-- dap.adapters.codelldb = {
+				-- 	id = 'codelldb',
+				-- 	type = 'executable',
+				-- 	command = vim.fn.getenv("DEVELOP_BASE") .. 'codelldb-win32-x64\\extension\\adapter\\codelldb.exe',
+				-- 	options = {
+				-- 		detached = false
+				-- 	}
+				-- }
                 return 'gdb'
             end
         end,
@@ -288,55 +288,6 @@ dap.configurations.cpp = {
 	}
 }
 dap.configurations.c = dap.configurations.cpp
--- dap.configurations.cpp = {
--- 	{
--- 		name = "Launch file",
--- 		type = "codelldb",
--- 		request = "launch",
--- 		program = function()
--- 			return get_debug_option("path")
--- 		end,
--- 		args = function()
--- 			return get_debug_option("args")
--- 		end,
--- 		cwd = '${workspaceFolder}',
--- 		stopOnEntry = false,
--- 		-- stdio = {nil, nil},
--- 		-- env = {
--- 			-- 通过环境变量重定向 stdout
--- 			-- ["stdout"] = '',
--- 		-- },
--- 	},
--- }
--- dap.configurations.c = dap.configurations.cpp
-
--- dap.configurations.cpp = {
--- 	{
--- 		name = "Launch file",
--- 		type = "gdb",
--- 		request = "launch",
--- 		program = function()
--- 			return get_debug_option("path")
--- 		end,
--- 		args = function()
--- 			return get_debug_option("args")
--- 		end,
--- 		cwd = '${workspaceFolder}',
--- 	},
--- }
-
--- dap.adapters.gdb = {
--- 	id = "gdb",
--- 	type = "executable",
--- 	command = "gdb", -- GDB 的可执行文件
--- 	args = {
--- 		"--interpreter=dap",
--- 		"--eval-command",
--- 		"set print pretty on",
--- 		-- "--tty",
--- 		-- pty
--- 	}
--- }
 
 -----------------------------------------------------------------
 -- 配置 Python 调试
@@ -363,7 +314,7 @@ dap.configurations.python = {
 }
 
 -----------------------------------------------
--- 函数定义
+-- 调试函数定义
 -----------------------------------------------
 ---
 local function setup_debug_keymaps()
@@ -410,7 +361,10 @@ end
 function start_debug_session()
 	save_window_status()
 	close_windows()
-	-- cpp 单独设置配置项
+
+	------------------------------------------------
+	-- cpp 单独设置UI配置项
+	------------------------------------------------
 	local filetype = vim.bo.filetype
 	if vim.g.is_dapui_inited == nil and (filetype == "c" or filetype == "cpp") then
 		local btm_win_elements = {
@@ -553,19 +507,6 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 	close_debug_session()
 end
 
--- nvim 退出自动关闭调试终端
--- vim.api.nvim_create_autocmd(
--- 	"QuitPre",
--- 	{
--- 		pattern = "*",
--- 		callback = function()
---             if vim.v.quitting == 1 or vim.v.quitting_bang == 1 then
---                 terminate_tmux_split_and_get_pty()
---             end
--- 		end
--- 	}
--- )
-
 -------------------------------
 -- 定义 LSP 诊断图标
 -------------------------------
@@ -576,20 +517,20 @@ vim.api.nvim_create_autocmd(
 		once = true,
 		callback = function()
 			-- 确保在设置高亮之前，主题已经切换好了，不然高亮失效
-			vim.cmd("highlight clear DapBreakpointText")
-			vim.cmd("highlight clear DapRunToCusor")
-			vim.cmd("highlight DapRunToCusor guifg=yellow ctermfg=yellow")
-			vim.cmd("highlight DapBreakpointText guifg=red ctermfg=red")
+			vim.cmd("highlight clear DapBreakpointTextDap")
+			vim.cmd("highlight clear DapRunToCusorDap")
+			vim.cmd("highlight DapRunToCusorDap guifg=yellow ctermfg=yellow")
+			vim.cmd("highlight DapBreakpointTextDap guifg=red ctermfg=red")
 
 			vim.fn.sign_define("DiagnosticSignError", {text = "✗", texthl = "DiagnosticSignError"}) -- 错误
 			vim.fn.sign_define("DiagnosticSignWarn", {text = "‼", texthl = "DiagnosticSignWarn"}) -- 警告
 			vim.fn.sign_define("DiagnosticSignInfo", {text = "⬥", texthl = "DiagnosticSignInfo"}) -- 信息
 			vim.fn.sign_define("DiagnosticSignHint", {text = "★", texthl = "DiagnosticSignHint"}) -- 提示
 
-			vim.fn.sign_define("DapBreakpoint", {text = "✹", texthl = "DapBreakpointText", linehl = "", numhl = ""})
-			vim.fn.sign_define("DapStopped", {text = "➔", texthl = "DapRunToCusor", linehl = "", numhl = ""})
-			vim.fn.sign_define("DapBreakpointRejected", {text = "◉", texthl = "DapBreakpointText", linehl = "", numhl = ""}) -- 无效断点
-			vim.fn.sign_define("DapBreakpointResolved", {text = "✓>", texthl = "DapBreakpointText", linehl = "", numhl = ""}) -- 已解析断点
+			vim.fn.sign_define("DapBreakpoint", {text = "✹", texthl = "DapBreakpointTextDap", linehl = "", numhl = ""})
+			vim.fn.sign_define("DapStopped", {text = "➔", texthl = "DapRunToCusorDap", linehl = "", numhl = ""})
+			vim.fn.sign_define("DapBreakpointRejected", {text = "◉", texthl = "DapBreakpointTextDap", linehl = "", numhl = ""}) -- 无效断点
+			vim.fn.sign_define("DapBreakpointResolved", {text = "✓>", texthl = "DapBreakpointTextDap", linehl = "", numhl = ""}) -- 已解析断点
 		end
 	}
 )
