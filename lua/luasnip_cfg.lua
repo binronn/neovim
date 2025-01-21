@@ -15,7 +15,8 @@ local fmt = require("luasnip.extras.fmt").fmt
 local c_cpp_snippets = {
 	-- Main 函数
 	s("main", fmt([[
-	int main(int argc, char *argv[]) {{
+	int main(int argc, char *argv[]) 
+	{{
 		{}
 		return 0;
 	}}]], { i(1) })),
@@ -35,11 +36,12 @@ local c_cpp_snippets = {
 
 	-- 函数定义
 	s("fn", fmt([[
-	{} {}({}) {{
+	{} {}({}) 
+	{{
 		{}
 	}}]], { 
-		c(1, { t("void"), t("int"), t("bool") }),
-		i(2, "function_name"),
+		c(1, { t("void"),  t("auto"), t(nil, "type") }),
+		i(2, 'function_name'),
 		i(3),
 		i(0)
 	})),
@@ -49,7 +51,8 @@ local c_cpp_snippets = {
 
 	-- 结构体
 	s("struct", fmt([[
-	struct {} {{
+	struct {} 
+	{{
 		{};
 	}};]], { i(1, "StructName"), i(0) })),
 
@@ -72,11 +75,16 @@ local c_cpp_snippets = {
 	}}]], { i(1), i(2), i(0) })),
 
 	-- 指针声明
-	s("ptr", fmt([[{}* {} = {};]], { c(1, { t("int"), t("char"), i(nil, "type") }), i(2, "var"), i(3, "NULL") })),
+	s(
+		"ptr", fmt([[{}* {} = {};]], 
+		{ c(1, { t("uint64_t"), t("uint8_t"), i(nil, "type") })
+		, i(2, "var"), i(3, "NULL") })
+	),
 
 	-- 类定义 (C++)
 	s({trig = "class", dscr = "C++ class definition"}, fmt([[
-	class {} {{
+	class {} 
+	{{
 		public:
 		{}();
 		~{}();
@@ -95,7 +103,8 @@ local c_cpp_snippets = {
 local cpp_snippets = {
 	-- 命名空间
 	s("ns", fmt([[
-	namespace {} {{
+	namespace {} 
+	{{
 		{}
 	}} // namespace {}]], { 
 		i(1, "namespace_name"), 

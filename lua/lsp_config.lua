@@ -188,7 +188,17 @@ cmp.setup({
 			end
 		end, { 'i', 's' }),
 
-		['<C-j>'] = cmp.mapping.confirm({ select = true }), -- 确认当前选择的补全项
+		['<C-j>'] = cmp.mapping(function(fallback)
+			local luasnip = vim.g.luasnip
+			if cmp.visible() then
+				cmp.confirm({ select = true })
+			elseif luasnip.choice_active() then
+				luasnip.change_choice(1)
+			else
+				fallback()
+			end
+		end, {'i', 's'}),
+		-- ['<C-j>'] = cmp.mapping.confirm({ select = true }), -- 确认当前选择的补全项
 	},
 	sources = {
 		{ name = 'nvim_lsp' }, -- LSP 补全源
