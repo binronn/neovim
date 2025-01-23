@@ -105,7 +105,34 @@ return {
 		"nvimdev/dashboard-nvim", -- 启动面板
 		-- event = "VimEnter",
 		config = function()
-			require("dashboard").setup({})
+			require('dashboard').setup({
+				config = {
+					header = {
+						" ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
+						" ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
+						" ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
+						" ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
+						" ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
+						" ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
+					},
+					project = { -- 修复项目路径带空格会报错的问题
+							enable = true,
+							key = 'shortcut key',
+							icon = ' ',
+							desc = 'Recent Projects',
+							action = function(selected_project)
+								local project_path = selected_project.path
+								vim.cmd('silent cd ' .. vim.inspect(selected_project)) -- 添加打开项目时，切换环境目录到对应项目
+								vim.g.reset_workspace_dir_nop()
+								require('telescope.builtin').find_files({
+									cwd = project_path,  -- 直接传递路径
+								})
+							end,
+					},
+
+					-- header = { "Welcome to Neovim!" },
+				},
+			})
 		end,
 		dependencies = {"nvim-tree/nvim-web-devicons"}
 	},

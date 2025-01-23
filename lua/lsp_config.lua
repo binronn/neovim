@@ -132,15 +132,15 @@ vim.diagnostic.config(
 			source = "always",
 			format = function(diagnostic)
 				local icons = {
-					-- [vim.diagnostic.severity.ERROR] = "❌",
-					-- [vim.diagnostic.severity.WARN]  = "⚠️",
-					-- [vim.diagnostic.severity.INFO]  = "ℹ️",
-					-- [vim.diagnostic.severity.HINT]  = "💡",
+					[vim.diagnostic.severity.ERROR] = "❌",
+					[vim.diagnostic.severity.WARN]  = "⚠️",
+					[vim.diagnostic.severity.INFO]  = "ℹ️",
+					[vim.diagnostic.severity.HINT]  = "💡",
 
-					[vim.diagnostic.severity.ERROR] = "⨯",
-					[vim.diagnostic.severity.WARN] = "▲",
-					[vim.diagnostic.severity.INFO] = "»",
-					[vim.diagnostic.severity.HINT] = "➤"
+					-- [vim.diagnostic.severity.ERROR] = "⨯",
+					-- [vim.diagnostic.severity.WARN] = "▲",
+					-- [vim.diagnostic.severity.INFO] = "»",
+					-- [vim.diagnostic.severity.HINT] = "➤"
 				}
 				return icons[diagnostic.severity] .. " " .. diagnostic.message
 			end
@@ -152,14 +152,14 @@ vim.diagnostic.config(
 		},
 		signs = {
 			text = {
-				[vim.diagnostic.severity.ERROR] = "⨯",
-				[vim.diagnostic.severity.WARN] = "▲",
-				[vim.diagnostic.severity.INFO] = "»",
-				[vim.diagnostic.severity.HINT] = "➤"
-				-- [vim.diagnostic.severity.ERROR] = "❌",
-				-- [vim.diagnostic.severity.WARN]  = "⚠️",
-				-- [vim.diagnostic.severity.INFO]  = "ℹ️",
-				-- [vim.diagnostic.severity.HINT]  = "💡",
+				-- [vim.diagnostic.severity.ERROR] = "⨯",
+				-- [vim.diagnostic.severity.WARN] = "▲",
+				-- [vim.diagnostic.severity.INFO] = "»",
+				-- [vim.diagnostic.severity.HINT] = "➤"
+				[vim.diagnostic.severity.ERROR] = "❌",
+				[vim.diagnostic.severity.WARN]  = "⚠️",
+				[vim.diagnostic.severity.INFO]  = "ℹ️",
+				[vim.diagnostic.severity.HINT]  = "💡",
 			}
 		}
 	}
@@ -235,7 +235,7 @@ cmp.setup({
 	},
 	snippet = {
 		expand = function(args)
-			require('luasnip').lsp_expand(args.body) -- 使用 Luasnip 处理片段，且支持lsp snippet的参数跳转
+			require('luasnip').lsp_expand(args.body) -- 使用 Luasnip 处理片段，且支持lsp函数参数补全的参数跳转，不加这个就不支持 lsp 函数参数的跳转
 		end,
 	},
 })
