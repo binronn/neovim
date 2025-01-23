@@ -113,7 +113,7 @@ local cpp_snippets = {
 	})),
 
 	-- cout 输出
-	s("cout", fmt([[std::cout << "{}" << std::endl;]], { i(1, "Hello World") })),
+	s("cout", fmt([[std::cout << "{}" << std::endl;]], { i(1, "") })),
 
 	-- 智能指针
 	s("sptr", fmt([[std::shared_ptr<{}> {};]], { i(1, "T"), i(2, "ptr") })),
@@ -121,5 +121,5 @@ local cpp_snippets = {
 
 -- 注册片段
 ls.add_snippets("c", c_cpp_snippets)
-ls.add_snippets("cpp", vim.tbl_extend("force", c_cpp_snippets, cpp_snippets)) -- force or keep
+ls.add_snippets("cpp", vim.tbl_extend("keep", c_cpp_snippets, cpp_snippets)) -- force or keep
 

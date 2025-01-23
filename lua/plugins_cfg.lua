@@ -84,6 +84,7 @@ end
 ----     bufferline 语法高亮配置      ----
 ------------------------------------------
 function M.bufferline_init()
+	nmap('<leader>bc', ':BufferLinePick<CR>')
 	require("bufferline").setup {
 		options = {
 			mode = "buffers",

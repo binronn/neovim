@@ -3,6 +3,9 @@
 ------------------------------------------------------------------------------------------
 local lspconfig = require("lspconfig")
 
+-----------------------------------------------------------------------------------------
+-- 切换头文件函数
+------------------------------------------------------------------------------------------
 function switch_file_and_search()
 	-- 获取当前文件名
 	local current_file = vim.fn.expand("%:t:r") -- 获取文件名（不带路径和扩展名）
@@ -29,6 +32,15 @@ function switch_file_and_search()
 	vim.cmd(command)
 end
 
+local g_capabilities = require('cmp_nvim_lsp').default_capabilities()
+-- g_capabilities.textDocument.completion.completionItem.snippetSupport = true -- 关闭 lsp 的 snippet 支持
+-- g_capabilities.textDocument.completion.completionItem.insertReplaceSupport = false
+-- g_capabilities.textDocument.completion.completionItem.preselectSupport = true
+-- g_capabilities.textDocument.completion.completionItem.insertReplaceSupport = false
+-- g_capabilities.textDocument.completion.completionItem.additionalTextEdits = false
+-- g_capabilities.textDocument.completion.completionItem.insertTextModeSupport = {
+	  -- valueSet = { 1 }
+  -- }
 -- C++ 配置 (clangd)
 lspconfig.clangd.setup(
 	{
@@ -41,7 +53,7 @@ lspconfig.clangd.setup(
 			-- "--header-insertion=never"      -- 禁用自动头文件插入
 		},
 		filetypes = {"c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx"},
-		capabilities = require('cmp_nvim_lsp').default_capabilities(),
+		capabilities = g_capabilities,
 		diagnostics = {
 			-- 设置诊断刷新延迟（单位：毫秒）
 			update_in_insert = false, -- 在插入模式下不更新诊断
@@ -171,6 +183,7 @@ cmp.setup({
 			local luasnip = vim.g.luasnip
 			if cmp.visible() then
 				cmp.select_next_item() -- 选择下一个补全项
+				-- cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert }) -- 选择下一个补全项
 			elseif luasnip.expand_or_jumpable() then
 				luasnip.expand_or_jump() -- 跳到luasnip的下一个插入点
 			else
@@ -178,10 +191,18 @@ cmp.setup({
 			end
 		end, { 'i', 's' }), -- 在插入模式和选择模式下生效
 
+		['<C-n>'] = cmp.mapping(function(fallback)
+			local luasnip = vim.g.luasnip
+			-- luasnip.expand_or_jump() -- 跳到luasnip的下一个插入点
+				-- cmp.select_next_item() -- 选择下一个补全项
+			fallback()
+		end, { 'i', 's' }), -- 在插入模式和选择模式下生效
+
 		['<S-Tab>'] = cmp.mapping(function(fallback)
 			local luasnip = vim.g.luasnip
 			if cmp.visible() then
 				cmp.select_prev_item() -- 选择上一个补全项
+				-- cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- 选择下一个补全项
 			elseif luasnip.jumpable(-1) then
 				luasnip.jump(-1) -- 跳到luasnip的上一个插入点
 			else
@@ -202,9 +223,19 @@ cmp.setup({
 		-- ['<C-j>'] = cmp.mapping.confirm({ select = true }), -- 确认当前选择的补全项
 	},
 	sources = {
-		{ name = 'nvim_lsp' }, -- LSP 补全源
+		{ 
+			name = 'nvim_lsp', 
+			entry_filter = function(entry, ctx) -- 关闭 lsp 的snippet支持
+				return require('cmp.types').lsp.CompletionItemKind[entry:get_kind()] ~= 'Snippet'
+			end,
+		}, -- LSP 补全源
 		{ name = 'luasnip' }, -- LSP 补全源
 		{ name = 'buffer' },   -- 缓冲区补全源
 		{ name = 'path' },     -- 路径补全源
+	},
+	snippet = {
+		expand = function(args)
+			require('luasnip').lsp_expand(args.body) -- 使用 Luasnip 处理片段，且支持lsp snippet的参数跳转
+		end,
 	},
 })
