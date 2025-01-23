@@ -295,7 +295,7 @@ dap.configurations.c = dap.configurations.cpp
 if vim.g.is_unix == 1 then
 	require("dap-python").setup("python3")
 else
-	require("dap-python").setup("python.exe")
+	require("dap-python").setup("python")
 end
 dap.configurations.python = {
 	{
@@ -306,10 +306,11 @@ dap.configurations.python = {
 			return get_debug_option("path")
 		end,
 		pythonPath = function()
-			return (vim.g.is_unix == 1) and "python3" or "python.exe"
+			return (vim.g.is_unix == 1) and "python3" or "python"
 		end,
 		-- In linux maybe not externalTerminal!!
 	    console = 'externalTerminal', -- 关键参数：externalTerminal/integratedTerminal/internalConsole
+		justMyCode = true,
 	}
 }
 

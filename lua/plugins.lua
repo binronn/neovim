@@ -118,8 +118,12 @@ return {
 	{
 		"inkarkat/vim-mark", -- 高亮
 		config = function()
-			vim.api.nvim_set_keymap("n", "<leader>m", "<Plug>MarkSet", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "<leader>N", "<Plug>MarkClear", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "<leader>mh", "<Plug>MarkSet", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "<leader>mH", "<Plug>MarkToggle", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "<leader>mr", "<Plug>MarkRegex", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("x", "<leader>mr", "<Plug>MarkRegex", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "<leader>mn", "<Plug>MarkClear", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "<leader>mN", "<Plug>MarkAllClear", {noremap = true, silent = true})
 		end
 	},
 	{
@@ -193,6 +197,7 @@ return {
 	},
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
+		after = 'gruvbox-material',
 		config = function()
 			pcfg.gitsigns_init()
 		end
@@ -228,6 +233,7 @@ return {
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
+		after = 'gruvbox-material',
 		dependencies = {
 			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
@@ -270,6 +276,7 @@ return {
 	-- 调试插件
 	{
 		"mfussenegger/nvim-dap",
+		after = 'gruvbox-material',
 		-- event = {"BufRead", "BufNewFile"},
 		event = {"VeryLazy"},
 		ft = {"h", "hpp", "cpp", "cxx"},
@@ -316,7 +323,7 @@ return {
 		config = function()
 			require("avante_cfg")
 		end,
-		build = "make", -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",

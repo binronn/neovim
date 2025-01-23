@@ -70,8 +70,14 @@ local function reset_workspace_dir()
 	vim.g.workspace_dir_content = nil
 	print(vim.g.workspace_dir.get())
 end
+
+local function reset_workspace_dir_nop()
+	vim.g.workspace_dir_content = nil
+	vim.g.workspace_dir.get()
+end
+
 vim.g.reset_workspace_dir = {get = reset_workspace_dir}
-vim.g.reset_workspace_dir_nop = {get = workspace_dir}
+vim.g.reset_workspace_dir_nop = reset_workspace_dir_nop
 
 local function generate_ctags()
 	-- 获取当前目录

@@ -89,7 +89,7 @@ cmap("Cg", "CMakeGenerate")
 
 -- 重置工作目录
 cmap("Rw", "lua vim.g.reset_workspace_dir.get()")
-cmap("Rg", "cd %:h | lua vim.g.reset_workspace_dir_nop.get()")
+cmap("Rg", "cd %:h | lua vim.g.reset_workspace_dir_nop()")
 ------------------
 ---- VIM 相关 ----
 ------------------

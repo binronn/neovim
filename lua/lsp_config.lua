@@ -60,13 +60,13 @@ lspconfig.clangd.setup(
 			keymap(bufnr, "n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
 			keymap(bufnr, "n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
 			keymap(bufnr, "n", "<leader>fx", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-			keymap(
-				bufnr,
-				"n",
-				"<leader>wf",
-				"<cmd>lua for _, folder in ipairs(vim.lsp.buf.list_workspace_folders()) do print(folder) end<CR>",
-				opts
-			)
+			-- keymap(
+			-- 	bufnr,
+			-- 	"n",
+			-- 	"<leader>wf",
+			-- 	"<cmd>lua for _, folder in ipairs(vim.lsp.buf.list_workspace_folders()) do print(folder) end<CR>",
+			-- 	opts
+			-- )
 			keymap(bufnr, "n", "<leader>hs", "<cmd>lua switch_file_and_search()<CR>", opts)
 			keymap(bufnr, "i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
@@ -97,6 +97,7 @@ lspconfig.pyright.setup(
 			keymap(bufnr, "n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
 			keymap(bufnr, "n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
 			keymap(bufnr, "n", "<leader>fx", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+			keymap(bufnr, "i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
 		end,
 		settings = {
 			python = {
