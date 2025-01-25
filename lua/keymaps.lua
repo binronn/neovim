@@ -220,4 +220,31 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+------------------------------------------
+-- 输入分号自动格式化段落
+------------------------------------------
+vim.keymap.set('i', ';', function()
+    -- 保存原始光标位置
+    local original_pos = vim.api.nvim_win_get_cursor(0)
+    original_pos[2] = original_pos[2] + 1  -- 列号 + 1
+    
+    -- 插入右括号
+    vim.api.nvim_put({ ';' }, 'c', true, true)
+    
+    -- 执行格式化操作
+    -- vim.cmd([[
+    --     silent! execute "normal! =ap``"
+    --     silent! call cursor(getpos('.'))
+    -- ]])
+
+    -- 使用更快的 nvim_exec 执行格式化操作
+    vim.api.nvim_exec([[
+        silent! execute "normal! =ap``"
+    ]], false)
+ 
+    -- 恢复光标位置
+    vim.api.nvim_win_set_cursor(0, original_pos)
+    return ''
+end, { noremap = true , silent = true})
+
 return M
