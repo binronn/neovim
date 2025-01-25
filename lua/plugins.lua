@@ -103,36 +103,9 @@ return {
 	},
 	{
 		"nvimdev/dashboard-nvim", -- 启动面板
-		-- event = "VimEnter",
+		event = "VimEnter",
 		config = function()
-			require('dashboard').setup({
-				config = {
-					header = {
-						" ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
-						" ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
-						" ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
-						" ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
-						" ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
-						" ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
-					},
-					project = { -- 修复项目路径带空格会报错的问题
-							enable = true,
-							key = 'shortcut key',
-							icon = ' ',
-							desc = 'Recent Projects',
-							action = function(selected_project)
-								local project_path = selected_project.path
-								vim.cmd('silent cd ' .. vim.inspect(selected_project)) -- 添加打开项目时，切换环境目录到对应项目
-								vim.g.reset_workspace_dir_nop()
-								require('telescope.builtin').find_files({
-									cwd = project_path,  -- 直接传递路径
-								})
-							end,
-					},
-
-					-- header = { "Welcome to Neovim!" },
-				},
-			})
+			pcfg.dashboard_init()
 		end,
 		dependencies = {"nvim-tree/nvim-web-devicons"}
 	},
@@ -144,6 +117,10 @@ return {
 	},
 	{
 		"inkarkat/vim-mark", -- 高亮
+		init = function()
+			vim.g.mw_no_mappings = 1
+			vim.g.mwDefaultHighlightingPalette = "maximum"
+		end,
 		config = function()
 			vim.api.nvim_set_keymap("n", "<leader>mh", "<Plug>MarkSet", {noremap = true, silent = true})
 			vim.api.nvim_set_keymap("n", "<leader>mH", "<Plug>MarkToggle", {noremap = true, silent = true})
@@ -163,7 +140,21 @@ return {
 		end
 	},
 	{
-		"MattesGroeger/vim-bookmarks" -- 书签
+		"MattesGroeger/vim-bookmarks", -- 书签
+		init = function()
+			vim.g.bookmark_no_default_key_mappings = 1 -- 关闭默认快捷键映射
+			vim.g.bookmark_save_per_working_dir = 1 -- 书签保存到工作目录
+			vim.g.bookmark_auto_save = 1 -- 自动保存书签
+		end,
+		config = function()
+			vim.api.nvim_set_keymap("n", "mi", "<Plug>BookmarkAnnotate", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "mm", "<Plug>BookmarkToggle", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "ma", "<Plug>BookmarkShowAll", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "mp", "<Plug>BookmarkPrev", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "mn", "<Plug>BookmarkNext", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "mc", "<Plug>BookmarkClear", {noremap = true, silent = true})
+			vim.api.nvim_set_keymap("n", "<leader>mx", "<Plug>BookmarkClearAll", {noremap = true, silent = true})
+		end
 	},
 	{
 		"skywind3000/asyncrun.vim", -- 异步执行命令插件

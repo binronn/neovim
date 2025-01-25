@@ -132,15 +132,15 @@ vim.diagnostic.config(
 			source = "always",
 			format = function(diagnostic)
 				local icons = {
-					[vim.diagnostic.severity.ERROR] = "❌",
-					[vim.diagnostic.severity.WARN]  = "⚠️",
-					[vim.diagnostic.severity.INFO]  = "ℹ️",
-					[vim.diagnostic.severity.HINT]  = "💡",
+					-- [vim.diagnostic.severity.ERROR] = "❌",
+					-- [vim.diagnostic.severity.WARN]  = "⚠️",
+					-- [vim.diagnostic.severity.INFO]  = "ℹ️",
+					-- [vim.diagnostic.severity.HINT]  = "💡",
 
-					-- [vim.diagnostic.severity.ERROR] = "⨯",
-					-- [vim.diagnostic.severity.WARN] = "▲",
-					-- [vim.diagnostic.severity.INFO] = "»",
-					-- [vim.diagnostic.severity.HINT] = "➤"
+					[vim.diagnostic.severity.ERROR] = "⨯",
+					[vim.diagnostic.severity.WARN] = "▲",
+					[vim.diagnostic.severity.INFO] = "»",
+					[vim.diagnostic.severity.HINT] = "➤"
 				}
 				return icons[diagnostic.severity] .. " " .. diagnostic.message
 			end
@@ -152,14 +152,14 @@ vim.diagnostic.config(
 		},
 		signs = {
 			text = {
-				-- [vim.diagnostic.severity.ERROR] = "⨯",
-				-- [vim.diagnostic.severity.WARN] = "▲",
-				-- [vim.diagnostic.severity.INFO] = "»",
-				-- [vim.diagnostic.severity.HINT] = "➤"
-				[vim.diagnostic.severity.ERROR] = "❌",
-				[vim.diagnostic.severity.WARN]  = "⚠️",
-				[vim.diagnostic.severity.INFO]  = "ℹ️",
-				[vim.diagnostic.severity.HINT]  = "💡",
+				[vim.diagnostic.severity.ERROR] = "⨯",
+				[vim.diagnostic.severity.WARN] = "▲",
+				[vim.diagnostic.severity.INFO] = "»",
+				[vim.diagnostic.severity.HINT] = "➤"
+				-- [vim.diagnostic.severity.ERROR] = "❌",
+				-- [vim.diagnostic.severity.WARN]  = "⚠️",
+				-- [vim.diagnostic.severity.INFO]  = "ℹ️",
+				-- [vim.diagnostic.severity.HINT]  = "💡",
 			}
 		}
 	}
@@ -191,12 +191,12 @@ cmp.setup({
 			end
 		end, { 'i', 's' }), -- 在插入模式和选择模式下生效
 
-		['<C-n>'] = cmp.mapping(function(fallback)
-			local luasnip = vim.g.luasnip
-			-- luasnip.expand_or_jump() -- 跳到luasnip的下一个插入点
-				-- cmp.select_next_item() -- 选择下一个补全项
-			fallback()
-		end, { 'i', 's' }), -- 在插入模式和选择模式下生效
+		-- ['<C-n>'] = cmp.mapping(function(fallback)
+		-- 	local luasnip = vim.g.luasnip
+		-- 	-- luasnip.expand_or_jump() -- 跳到luasnip的下一个插入点
+		-- 		-- cmp.select_next_item() -- 选择下一个补全项
+		-- 	fallback()
+		-- end, { 'i', 's' }), -- 在插入模式和选择模式下生效
 
 		['<S-Tab>'] = cmp.mapping(function(fallback)
 			local luasnip = vim.g.luasnip
@@ -220,6 +220,34 @@ cmp.setup({
 				fallback()
 			end
 		end, {'i', 's'}),
+
+		['<C-y>'] = cmp.mapping(function(fallback)
+			local luasnip = vim.g.luasnip
+			if luasnip.jumpable(-1) then
+				luasnip.jump(-1) -- 跳到luasnip的上一个插入点
+			else
+				fallback() -- 默认行为
+			end
+		end, { 'i', 's'}),
+
+		['<C-e>'] = cmp.mapping(function(fallback)
+			local luasnip = vim.g.luasnip
+			if luasnip.jumpable(1) then
+				luasnip.jump(1) -- 跳到luasnip的下一个插入点
+			else
+				fallback() -- 默认行为
+			end
+		end, { 'i', 's' }),
+
+		-- ['<CR>'] = cmp.mapping(function(fallback) -- bad image
+		-- 	local luasnip = vim.g.luasnip
+		-- 	if luasnip.jumpable(1) then
+		-- 		luasnip.jump(1) -- 跳到luasnip的下一个插入点
+		-- 	else
+		-- 		fallback() -- 默认行为
+		-- 	end
+		-- end, { 'i' }),
+
 		-- ['<C-j>'] = cmp.mapping.confirm({ select = true }), -- 确认当前选择的补全项
 	},
 	sources = {

@@ -11,26 +11,12 @@ local nmap2 = keymap.nmap2
 local vmap2 = keymap.vmap2
 local vmap2x = keymap.vmap2x
 
------------------------------------
----- VIM MARK 高亮数量限制解除 ----
------------------------------------
---
-vim.g.mw_no_mappings = 1
-vim.g.mwDefaultHighlightingPalette = "maximum"
-
 ------------------------------------------------------------------------------------------
 -- 异步shell插件 窗口设置
 ------------------------------------------------------------------------------------------
 --
 vim.g.asyncrun_open = 12
 ------------------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------------------
--- 书签保存设置
-------------------------------------------------------------------------------------------
---
-vim.g.bookmark_save_per_working_dir = 1 -- 书签保存到工作目录
-vim.g.bookmark_auto_save = 1 -- 自动保存书签
 
 function M.lualine_init()
 	require("lualine").setup {
@@ -78,6 +64,41 @@ function M.lualine_init()
 		inactive_winbar = {},
 		extensions = {}
 	}
+end
+
+------------------------------------------
+----     dashboard 配置               ----
+------------------------------------------
+function M.dashboard_init()
+	require('dashboard').setup({
+		config = {
+			header = {
+				" ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
+				" ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
+				" ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
+				" ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
+				" ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
+				" ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
+			},
+			project = { -- 修复项目路径带空格会报错的问题
+				enable = true,
+				key = 'shortcut key',
+				icon = ' ',
+				desc = 'Recent Projects',
+				action = function(selected_project)
+					local project_path = selected_project.path
+					vim.cmd('silent cd ' .. vim.inspect(selected_project)) -- 添加打开项目时，切换环境目录到对应项目
+					vim.g.reset_workspace_dir_nop()
+					require('telescope.builtin').find_files({
+						cwd = project_path,  -- 直接传递路径
+					})
+				end,
+			},
+
+			-- header = { "Welcome to Neovim!" },
+		},
+	})
+
 end
 
 ------------------------------------------
@@ -529,25 +550,25 @@ function M.Comment_init()
 			---LHS of toggle mappings in NORMAL mode
 			toggler = {
 				---Line-comment toggle keymap
-				line = "<leader>cc",
+				line = nil,
 				---Block-comment toggle keymap
-				block = "<leader>cb"
+				block = nil
 			},
 			---LHS of operator-pending mappings in NORMAL and VISUAL mode
 			opleader = {
 				---Line-comment keymap
-				line = "<leader>cc",
+				line = nil,
 				---Block-comment keymap
-				block = "<leadercb>"
+				block = nil
 			},
 			---LHS of extra mappings
 			extra = {
 				---Add comment on the line above
-				above = "<leader>cO",
+				above = nil,
 				---Add comment on the line below
-				below = "<leader>gco",
+				below = nil,
 				---Add comment at the end of line
-				eol = "<Nop>"
+				eol = nil,
 			},
 			---Enable keybindings
 			---NOTE: If given `false` then the plugin won't create any mappings
@@ -555,7 +576,7 @@ function M.Comment_init()
 				---Operator-pending mapping; `gcc` `gbc` `gc[count]{motion}` `gb[count]{motion}`
 				basic = true,
 				---Extra mapping; `gco`, `gcO`, `gcA`
-				extra = true
+				extra = false
 			},
 			---Function to call before (un)comment
 			pre_hook = nil,

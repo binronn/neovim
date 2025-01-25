@@ -117,10 +117,6 @@ nmap("<leader>Q", ":q!<CR>")
 nmap("<leader>fn", ":bn<CR>")
 nmap("<leader>fp", ":bp<CR>")
 
--- 上/下一个 buffer
-nmap("<leader>tn", ":tabp<CR>")
-nmap("<leader>tp", ":tabn<CR>")
-
 -- 开启与关闭高亮
 nmap("<leader>hl", ":set hlsearch<CR>")
 nmap("<leader>hc", ":set nohlsearch<CR>")

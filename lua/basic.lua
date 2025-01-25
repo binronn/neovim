@@ -115,7 +115,7 @@ vim.cmd "set signcolumn=yes"
 vim.cmd "set foldmethod=manual"
 -- vim.cmd "set foldmethod=indent"
 -- vim.cmd 'set foldlevel=99'
-vim.cmd "set mouse="
+vim.cmd "set mouse=a"
 -- 多编码支持
 vim.cmd "set fileencodings=utf-8,gbk"
 -- MARK 插件默认快捷键关闭
