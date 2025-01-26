@@ -2,6 +2,7 @@
 -- LSP 配置
 ------------------------------------------------------------------------------------------
 local lspconfig = require("lspconfig")
+vim.g.luasnip_expand = false
 
 -----------------------------------------------------------------------------------------
 -- 切换头文件函数
@@ -33,14 +34,19 @@ function switch_file_and_search()
 end
 
 local g_capabilities = require('cmp_nvim_lsp').default_capabilities()
+-- g_capabilities.textDocument.completion.completionItem.preselectSupport = false -- 关闭 lsp 的 snippet 支持
+-- g_capabilities.textDocument.completion.completionItem.commitCharactersSupport = false -- 关闭 lsp 的 snippet 支持
+-- g_capabilities.textDocument.completion.completionItem.resolveSupport = {
+-- 	  properties = { 'documentation' }
+--   }
 -- g_capabilities.textDocument.completion.completionItem.snippetSupport = true -- 关闭 lsp 的 snippet 支持
 -- g_capabilities.textDocument.completion.completionItem.insertReplaceSupport = false
 -- g_capabilities.textDocument.completion.completionItem.preselectSupport = true
 -- g_capabilities.textDocument.completion.completionItem.insertReplaceSupport = false
 -- g_capabilities.textDocument.completion.completionItem.additionalTextEdits = false
 -- g_capabilities.textDocument.completion.completionItem.insertTextModeSupport = {
-	  -- valueSet = { 1 }
-  -- }
+-- 	  valueSet = { 0 }
+--   }
 -- C++ 配置 (clangd)
 lspconfig.clangd.setup(
 	{
@@ -61,6 +67,7 @@ lspconfig.clangd.setup(
 			severity_sort = true            -- 按严重程度排序诊断
 		},
 		on_attach = function(client, bufnr)
+			-- client.server_capabilities.completionProvider = false
 			local opts = {noremap = true, silent = true}
 			local keymap = vim.api.nvim_buf_set_keymap
 			vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<cr>", {desc = "Find definitions"})
@@ -124,66 +131,68 @@ lspconfig.pyright.setup(
 )
 
 -- 自定义诊断符号
-vim.diagnostic.config(
-	{
-		signs = true,
-		virtual_text = {
-			prefix = "■",
-			source = "always",
-			format = function(diagnostic)
-				local icons = {
-					-- [vim.diagnostic.severity.ERROR] = "❌",
-					-- [vim.diagnostic.severity.WARN]  = "⚠️",
-					-- [vim.diagnostic.severity.INFO]  = "ℹ️",
-					-- [vim.diagnostic.severity.HINT]  = "💡",
-
-					[vim.diagnostic.severity.ERROR] = "⨯",
-					[vim.diagnostic.severity.WARN] = "▲",
-					[vim.diagnostic.severity.INFO] = "»",
-					[vim.diagnostic.severity.HINT] = "➤"
-				}
-				return icons[diagnostic.severity] .. " " .. diagnostic.message
-			end
-		},
-		update_in_insert = false,
-		severity_sort = true,
-		float = {
-			source = "always"
-		},
-		signs = {
-			text = {
-				[vim.diagnostic.severity.ERROR] = "⨯",
-				[vim.diagnostic.severity.WARN] = "▲",
-				[vim.diagnostic.severity.INFO] = "»",
-				[vim.diagnostic.severity.HINT] = "➤"
+vim.diagnostic.config({
+	signs = true,
+	virtual_text = {
+		prefix = "■",
+		source = "always",
+		format = function(diagnostic)
+			local icons = {
 				-- [vim.diagnostic.severity.ERROR] = "❌",
 				-- [vim.diagnostic.severity.WARN]  = "⚠️",
 				-- [vim.diagnostic.severity.INFO]  = "ℹ️",
 				-- [vim.diagnostic.severity.HINT]  = "💡",
+
+				[vim.diagnostic.severity.ERROR] = "⨯",
+				[vim.diagnostic.severity.WARN] = "▲",
+				[vim.diagnostic.severity.INFO] = "»",
+				[vim.diagnostic.severity.HINT] = "➤"
 			}
+			return icons[diagnostic.severity] .. " " .. diagnostic.message
+		end
+	},
+	update_in_insert = false,
+	severity_sort = true,
+	float = {
+		source = "always"
+	},
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "⨯",
+			[vim.diagnostic.severity.WARN] = "▲",
+			[vim.diagnostic.severity.INFO] = "»",
+			[vim.diagnostic.severity.HINT] = "➤"
+			-- [vim.diagnostic.severity.ERROR] = "❌",
+			-- [vim.diagnostic.severity.WARN]  = "⚠️",
+			-- [vim.diagnostic.severity.INFO]  = "ℹ️",
+			-- [vim.diagnostic.severity.HINT]  = "💡",
 		}
 	}
-)
+})
 ------------------------------------------------------------------------------------------
 -- 补全配置
 ------------------------------------------------------------------------------------------
-local cmp = require "cmp"
+-- 判断补全项是否可展开的辅助函数
+--
+local cmp = require('cmp')
 cmp.setup({
+	performance = {
+		max_view_entries = 30,  -- 限制补全窗口中最多显示 20 个条目
+	},
 	window = {
 		completion = {
 			max_width = 50, -- 补全窗口的最大宽度（字符数）
 			min_width = 50, -- 补全窗口的最大宽度（字符数）
 		},
 		documentation = {
-			max_height = 15, -- 文档窗口的最大高度
+			max_height = 25, -- 文档窗口的最大高度
 		},
 	},
 	mapping = {
 		['<Tab>'] = cmp.mapping(function(fallback)
 			local luasnip = vim.g.luasnip
 			if cmp.visible() then
-				cmp.select_next_item() -- 选择下一个补全项
-				-- cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert }) -- 选择下一个补全项
+				cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
 			elseif luasnip.expand_or_jumpable() then
 				luasnip.expand_or_jump() -- 跳到luasnip的下一个插入点
 			else
@@ -191,18 +200,10 @@ cmp.setup({
 			end
 		end, { 'i', 's' }), -- 在插入模式和选择模式下生效
 
-		-- ['<C-n>'] = cmp.mapping(function(fallback)
-		-- 	local luasnip = vim.g.luasnip
-		-- 	-- luasnip.expand_or_jump() -- 跳到luasnip的下一个插入点
-		-- 		-- cmp.select_next_item() -- 选择下一个补全项
-		-- 	fallback()
-		-- end, { 'i', 's' }), -- 在插入模式和选择模式下生效
-
 		['<S-Tab>'] = cmp.mapping(function(fallback)
 			local luasnip = vim.g.luasnip
 			if cmp.visible() then
-				cmp.select_prev_item() -- 选择上一个补全项
-				-- cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select }) -- 选择下一个补全项
+				cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
 			elseif luasnip.jumpable(-1) then
 				luasnip.jump(-1) -- 跳到luasnip的上一个插入点
 			else
@@ -213,11 +214,12 @@ cmp.setup({
 		['<C-j>'] = cmp.mapping(function(fallback)
 			local luasnip = vim.g.luasnip
 			if cmp.visible() then
-				cmp.confirm({ select = true })
+				-- 调用 luasnip.lsp_expand
+				cmp.confirm({select = true,})
 			elseif luasnip.choice_active() then
 				luasnip.change_choice(1)
 			else
-				fallback()
+				cmp.complete()
 			end
 		end, {'i', 's'}),
 
@@ -238,23 +240,26 @@ cmp.setup({
 				fallback() -- 默认行为
 			end
 		end, { 'i', 's' }),
-
-		-- ['<CR>'] = cmp.mapping(function(fallback) -- bad idea
-		-- 	local luasnip = vim.g.luasnip
-		-- 	if luasnip.jumpable(1) then
-		-- 		luasnip.jump(1) -- 跳到luasnip的下一个插入点
-		-- 	else
-		-- 		fallback() -- 默认行为
-		-- 	end
-		-- end, { 'i' }),
-
-		-- ['<C-j>'] = cmp.mapping.confirm({ select = true }), -- 确认当前选择的补全项
 	},
+	formatting = {
+		format = function(entry, vim_item)
+			-- 删除所有 select_next_item 即可展开的补全项(仅可以补全参数不可以跳转(BUG!!))，但仍可以使用cmp.confirm({select = true,})展开补全
+			--
+			if vim_item.abbr:sub(-1) == "~" then 
+				vim_item.word = vim_item.abbr:sub(1, -2)
+			else
+				vim_item.word = vim_item.abbr
+			end
+
+			return vim_item
+		end
+	},
+
 	sources = {
 		{ 
 			name = 'nvim_lsp', 
 			entry_filter = function(entry, ctx) -- 关闭 lsp 的snippet支持
-				return require('cmp.types').lsp.CompletionItemKind[entry:get_kind()] ~= 'Snippet'
+				return require('cmp.types').lsp.CompletionItemKind[entry:get_kind()] ~= 'Text'
 			end,
 		}, -- LSP 补全源
 		{ name = 'luasnip' }, -- LSP 补全源
@@ -264,6 +269,13 @@ cmp.setup({
 	snippet = {
 		expand = function(args)
 			require('luasnip').lsp_expand(args.body) -- 使用 Luasnip 处理片段，且支持lsp函数参数补全的参数跳转，不加这个就不支持 lsp 函数参数的跳转
+			return nil
 		end,
 	},
+	completion = {
+		completeopt = "menuone,noselect,insert,preview",  -- 配置为手动选择、插入并启用预览
+	},
+
 })
+
+

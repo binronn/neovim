@@ -215,7 +215,6 @@ return {
 	},
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
-		after = 'gruvbox-material',
 		config = function()
 			pcfg.gitsigns_init()
 		end
