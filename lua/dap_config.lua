@@ -15,6 +15,7 @@ local tmux_split_pty = nil -- 保存终端的设备ID
 local original_K_mapping = nil -- 保存 K 快捷键功能
 local debug_args = nil
 local g_is_tagbar_open = false
+local g_is_avante_open = false
 local g_is_nvimtree_open = false
 local g_temp_side_window_groupid = nil
 local g_dapui_closed = false
@@ -59,13 +60,23 @@ end
 
 local function save_window_status()
 	local nvim_tree = require("nvim-tree.api").tree
-	g_is_nvimtree_open = nvim_tree.is_visible() -- 检测 NvimTree 是否打开
 
+	g_is_nvimtree_open = nvim_tree.is_visible() -- 检测 NvimTree 是否打开
 	g_is_tagbar_open = false
+	g_is_avante_open = false
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
 		local buf = vim.api.nvim_win_get_buf(win)
 		if vim.api.nvim_buf_get_option(buf, "filetype") == "aerial" then
 			g_is_tagbar_open = true
+			break
+		end
+	end
+
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.api.nvim_buf_get_option(buf, "filetype") == "Avante" then
+			g_is_avante_open = true
+			vim.cmd('AvanteToggle')
 			break
 		end
 	end
@@ -78,6 +89,24 @@ local function close_dap_repl_buffers()
 		print("Closed buffer:", vim.api.nvim_buf_get_name(bufnr))
 		bufnr = vim.fn.bufnr("^%[dap%-repl%-") -- 继续查找下一个匹配的缓冲区
 	end
+end
+
+-----------------------------------------------
+-- 窗口操作函数
+-----------------------------------------------
+function jump_to_file_window()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
+        -- 检查是否是普通文件缓冲区（排除特殊缓冲区如NvimTree等）
+        if filetype ~= "" and filetype ~= "AvanteInput" and filetype ~= "AvanteSelectedFiles" 
+            and filetype ~= "Avante" and filetype ~= "qf" and filetype ~= "NvimTree" 
+            and filetype ~= "aerial" then
+            vim.api.nvim_set_current_win(win)
+            return
+        end
+    end
+    print("No file window found")
 end
 
 -----------------------------------------------------------------
@@ -132,6 +161,24 @@ local function restore_window()
 	if g_is_tagbar_open == true then
 		vim.cmd("AerialOpen") -- 确保命令名称正确
 	end
+
+	-- -- 检查 Avante 是否打开
+	-- if g_is_avante_open == true then
+	-- 	vim.cmd("") -- 确保命令名称正确
+	-- end
+
+	-- if g_is_avante_open == true or g_is_tagbar_open == true or g_is_avante_open == true then
+	-- 	vim.defer_fn(
+	-- 	function()
+	-- 		jump_to_file_window()
+	-- 		-- vim.cmd("wincmd p") -- 切换到上一个窗口
+	-- 		-- close_dap_repl_buffers()
+	-- 	end,
+	-- 	5
+	-- 	)
+
+	-- end
+
     g_is_nvimtree_open = false
     g_is_tagbar_open = false
 end
@@ -367,7 +414,7 @@ function start_debug_session()
 	-- cpp 单独设置UI配置项
 	------------------------------------------------
 	local filetype = vim.bo.filetype
-	if vim.g.is_dapui_inited == nil and (filetype == "c" or filetype == "cpp") then
+	if vim.g.g_dapui_closed == nil and (filetype == "c" or filetype == "cpp") then
 		local btm_win_elements = {
 			{ id = "repl", size = 1 }, -- REPL 窗口，占 100% 高度
 		}
@@ -399,7 +446,7 @@ function start_debug_session()
 			}
 		)
 		vim.g.is_dapui_inited = true
-	elseif vim.g.is_dapui_inited == nil then
+	elseif g_dapui_closed == false then
 		vim.g.is_dapui_inited = true
 		default_dapui()
 	end
@@ -444,28 +491,28 @@ vim.api.nvim_set_keymap("n", "<F9>", '<cmd>lua require"dap".toggle_breakpoint()<
 -- 只跳转到下一个错误
 vim.api.nvim_set_keymap(
 	"n",
-	"<leader>de",
+	"]e",
 	"<cmd>lua vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })<CR>",
 	{noremap = true, silent = true}
 )
 -- 只跳转到上一个错误
 vim.api.nvim_set_keymap(
 	"n",
-	"<leader>dE",
+	"[e",
 	"<cmd>lua vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })<CR>",
 	{noremap = true, silent = true}
 )
--- 只跳转到下一个错误
+-- 只跳转到下一个警告
 vim.api.nvim_set_keymap(
 	"n",
-	"<leader>dd",
+	"]d",
 	"<cmd>lua vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })<CR>",
 	{noremap = true, silent = true}
 )
--- 只跳转到上一个错误
+-- 只跳转到上一个警告
 vim.api.nvim_set_keymap(
 	"n",
-	"<leader>dD",
+	"[d",
 	"<cmd>lua vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })<CR>",
 	{noremap = true, silent = true}
 )

@@ -239,7 +239,7 @@ cmp.setup({
 			end
 		end, { 'i', 's' }),
 
-		-- ['<CR>'] = cmp.mapping(function(fallback) -- bad image
+		-- ['<CR>'] = cmp.mapping(function(fallback) -- bad idea
 		-- 	local luasnip = vim.g.luasnip
 		-- 	if luasnip.jumpable(1) then
 		-- 		luasnip.jump(1) -- 跳到luasnip的下一个插入点

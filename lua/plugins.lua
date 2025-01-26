@@ -340,6 +340,7 @@ return {
 		ft = programming_filetypes,
 		config = function()
 			require("avante_cfg")
+			vim.api.nvim_set_keymap("n", "<leader>aa", ':AvanteToggle<CR>', {noremap = true, silent = true})
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows

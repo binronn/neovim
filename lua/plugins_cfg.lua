@@ -71,14 +71,51 @@ end
 ------------------------------------------
 function M.dashboard_init()
 	require('dashboard').setup({
+		change_to_vcs_root = true,
+		-- theme = 'doom',
 		config = {
 			header = {
-				" ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
-				" ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
-				" ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
-				" ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
-				" ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
-				" ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
+				-- " ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
+				-- " ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
+				-- " ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
+				-- " ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
+				-- " ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
+				-- " ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
+				-- "                                                       ",
+[[ ,ggg, ,ggggggg,     ,ggggggg,    _,gggggg,_      ,ggg,         ,gg      ,a8a,  ,ggg, ,ggg,_,ggg,  ]],
+[[dP""Y8,8P"""""Y8b  ,dP""""""Y8b ,d8P""d8P"Y8b,   dP""Y8a       ,8P      ,8" "8,dP""Y8dP""Y88P""Y8b ]],
+[[Yb, `8dP'     `88  d8'    a  Y8,d8'   Y8   "8b,dPYb, `88       d8'      d8   8bYb, `88'  `88'  `88 ]],
+[[ `"  88'       88  88     "Y8P'd8'    `Ybaaad88P' `"  88       88       88   88 `"  88    88    88 ]],
+[[     88        88  `8baaaa     8P       `""""Y8       88       88       88   88     88    88    88 ]],
+[[     88        88 ,d8P""""     8b            d8       I8       8I       Y8   8P     88    88    88 ]],
+[[     88        88 d8"          Y8,          ,8P       `8,     ,8'       `8, ,8'     88    88    88 ]],
+[[     88        88 Y8,          `Y8,        ,8P'        Y8,   ,8P   8888  "8,8"      88    88    88 ]],
+[[     88        Y8,`Yba,,_____,  `Y8b,,__,,d8P'          Yb,_,dP    `8b,  ,d8b,      88    88    Y8,]],
+[[     88        `Y8  `"Y8888888    `"Y8888P"'             "Y8P"       "Y88P" "Y8     88    88    `Y8]],
+[[                                                                                                   ]],
+			},
+			shortcut = {
+				{ desc = '󰊳  Lazy Update', group = '@property', action = 'Lazy update', key = 'u' },
+				{
+					icon = ' ',
+					icon_hl = '@variable',
+					desc = 'Files',
+					-- group = 'Label',
+					action = 'Telescope find_files',
+					key = 'f',
+				},
+				{
+					desc = ' Oldfiles',
+					-- group = 'DiagnosticHint',
+					action = 'Telescope oldfiles',
+					key = 'o',
+				},
+				{
+					desc = ' File browser',
+					-- group = 'Number',
+					action = 'Telescope file_browser',
+					key = 'b',
+				},
 			},
 			project = { -- 修复项目路径带空格会报错的问题
 				enable = true,
@@ -86,16 +123,27 @@ function M.dashboard_init()
 				icon = ' ',
 				desc = 'Recent Projects',
 				action = function(selected_project)
-					local project_path = selected_project.path
-					vim.cmd('silent cd ' .. vim.inspect(selected_project)) -- 添加打开项目时，切换环境目录到对应项目
+					local project_path = selected_project:gsub("\\", "/") -- 标准化路径
+					vim.cmd('silent cd ' .. vim.fn.shellescape(project_path)) -- 安全切换目录
 					vim.g.reset_workspace_dir_nop()
 					require('telescope.builtin').find_files({
 						cwd = project_path,  -- 直接传递路径
 					})
 				end,
 			},
-
-			-- header = { "Welcome to Neovim!" },
+			mru = {
+				enable = true,      -- 启用最近文件列表
+				limit = 10,          -- 显示最近 5 个文件
+				icon = ' ',        -- 使用 Nerd Font 图标
+				label = 'Recent Files',  -- 显示标题
+				cwd_only = false,   -- 显示所有最近文件，不限于当前目录
+				-- action = function(selected_file)
+					-- local fp = selected_file:gsub("\\", "/") -- 标准化路径
+					-- 打开用户选择的文件
+					-- vim.cmd('edit ' .. fp)
+					-- vim.cmd('silent! cd %:h')
+				-- end,
+			},
 		},
 	})
 
@@ -201,12 +249,13 @@ function M.FTerm_init()
 		{
 			border = "double",
 			dimensions = {
-				height = 0.9,
+				height = 0.75,
 				width = 0.9
 			},
 			---Filetype of the terminal buffer
 			---@type string
 			ft = "FTerm",
+			glow = true,
 			---Command to run inside the terminal
 			---NOTE: if given string[], it will skip the shell and directly executes the command
 			---@type fun():(string|string[])|string|string[]
@@ -214,21 +263,21 @@ function M.FTerm_init()
                 if vim.g.is_unix == 1 then
                     return os.getenv("SHELL")
                 else
-                    return 'cmd.exe'
+                    return 'powershell.exe'
                 end
             end,
 			---Neovim's native window border. See `:h nvim_open_win` for more configuration options.
-			border = "single",
+			border = { "╭", "─" ,"╮", "│", "╯", "─", "╰", "│" },
 			---Close the terminal as soon as shell/command exits.
 			---Disabling this will mimic the native terminal behaviour.
 			---@type boolean
 			auto_close = true,
 			---Highlight group for the terminal. See `:h winhl`
 			---@type string
-			hl = "Normal",
+			-- hl = "Normal",
 			---Transparency of the floating window. See `:h winblend`
 			---@type integer
-			blend = 0,
+			blend = 10,
 			---Object containing the terminal window dimensions.
 			---The value for each field should be between `0` and `1`
 			---@type table<string,number>
@@ -818,7 +867,7 @@ function M.telescope_init()
 				layout_config = {
 					horizontal = {
 						prompt_position = "top", -- 搜索框在顶部
-						height = 0.9, -- 窗口高度
+						height = 0.6, -- 窗口高度
 						width = 0.9, -- 窗口宽度
 						preview_width = 0.6, -- 预览窗口占整个窗口宽度的60%
 						preview_cutoff = 120, -- 预览窗口的截断宽度
@@ -826,7 +875,7 @@ function M.telescope_init()
 					}
 				},
 				border = true, -- 启用边框
-				borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"} -- 自定义边框字符
+				-- borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"} -- 自定义边框字符
 			},
 			extensions = {
 				fzf = {
@@ -1232,5 +1281,6 @@ function M.aerial_init()
 	)
 	nmap("<F2>", ":lua vim.g.toggle_tagbar()<CR>")
 end
+
 
 return M

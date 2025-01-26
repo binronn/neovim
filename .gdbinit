@@ -34,5 +34,22 @@ define hook-stop
 	end
 end
 
+# 定义一个函数来遍历 std::set
+define traverse_set
+  # 参数：$arg0 是 std::set 的变量名
+	if $arg0.size() == 0
+		printf "The set is empty.\n"
+	else
+		set $begin = $arg0.begin()
+		set $end = $arg0.end()
+		printf "Traversing set (%d elements):\n", $arg0.size()
+		while $begin != $end
+			p *$begin
+			set $begin++
+		end
+	end
+end
 
+# 提示用户函数已加载
+printf "Function 'traverse_set' is ready. Use 'traverse_set <set_variable>' to traverse a std::set.\n"
 echo "Gdbinit loaded."

@@ -221,30 +221,49 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 ------------------------------------------
--- 输入分号自动格式化段落
+-- 输入分号自动格式化段落（仅限 C/C++ 文件）
 ------------------------------------------
-vim.keymap.set('i', ';', function()
-    -- 保存原始光标位置
-    local original_pos = vim.api.nvim_win_get_cursor(0)
-    original_pos[2] = original_pos[2] + 1  -- 列号 + 1
-    
-    -- 插入右括号
-    vim.api.nvim_put({ ';' }, 'c', true, true)
-    
-    -- 执行格式化操作
-    -- vim.cmd([[
-    --     silent! execute "normal! =ap``"
-    --     silent! call cursor(getpos('.'))
-    -- ]])
+local function setup_semicolon_formatting()
+    vim.keymap.set('i', ';', function()
+        -- 保存原始光标位置
+        local original_pos = vim.api.nvim_win_get_cursor(0)
+        -- 获取当前行号和列号
+		local row, col = original_pos[1], original_pos[2] + 1  -- col从0开始，需要+1
+		-- 获取光标位置的字符
+		local char_at_cursor = vim.fn.getline(row):sub(col, col)
+		-- 判断是否是行尾（空字符或换行符）
+		local is_at_end = char_at_cursor == "" or char_at_cursor == "\n" or char_at_cursor == '\r'
 
-    -- 使用更快的 nvim_exec 执行格式化操作
-    vim.api.nvim_exec([[
-        silent! execute "normal! =ap``"
-    ]], false)
+		if is_at_end then
+			-- 插入分号
+			vim.api.nvim_put({ ';' }, 'c', true, true)
+
+			-- 使用更快的 nvim_exec 执行格式化操作
+			vim.api.nvim_exec([[
+			silent! execute "normal! =ap``"
+			]], false)
+
+			-- 恢复光标位置
+			vim.api.nvim_win_set_cursor(0, original_pos)
+
+			-- 查找并移动到分号的位置
+			vim.api.nvim_exec([[
+			silent! execute "normal! g_"
+			]], false)
+		else
+			vim.api.nvim_put({ ';' }, 'c', true, true)
+		end
  
-    -- 恢复光标位置
-    vim.api.nvim_win_set_cursor(0, original_pos)
-    return ''
-end, { noremap = true , silent = true})
+        return ''
+    end, { noremap = true , silent = true })
+end
+
+-- 为 C/C++ 文件类型设置自动命令
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'c', 'cpp', 'h', 'hpp', 'cxx' },
+    callback = function()
+        -- setup_semicolon_formatting() -- 有BUG
+    end
+})
 
 return M
