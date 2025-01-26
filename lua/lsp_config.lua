@@ -251,6 +251,37 @@ cmp.setup({
 				vim_item.word = vim_item.abbr
 			end
 
+			local kind_icons = {
+				Text = "",          -- 文本
+				Method = "",        -- 方法
+				Function = "",      -- 函数
+				Constructor = "",   -- 构造函数
+				Field = "識",         -- 字段
+				Variable = "",      -- 变量
+				Class = "ﴯ",         -- 类
+				Interface = "",     -- 接口
+				Module = "",        -- 模块
+				Property = "",      -- 属性
+				Unit = "",          -- 单位
+				Value = "",         -- 值
+				Enum = "",          -- 枚举
+				Keyword = "",       -- 关键字
+				Snippet = "",       -- 代码片段
+				Color = "",         -- 颜色
+				File = "",          -- 文件
+				Reference = "",     -- 引用
+				Folder = "ﱮ",        -- 文件夹
+				EnumMember = "",    -- 枚举成员
+				Constant = "",      -- 常量
+				Struct = "",        -- 结构
+				Event = "",         -- 事件
+				Operator = "",      -- 操作符
+				TypeParameter = ""  -- 类型参数
+			}
+
+			-- 设置补全项的图标
+			vim_item.kind = kind_icons[vim_item.kind] or ""
+
 			return vim_item
 		end
 	},
