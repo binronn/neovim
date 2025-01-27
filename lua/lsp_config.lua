@@ -269,6 +269,11 @@ cmp.setup({
 				while string.byte(abbr, 1) == 0x20 do
 					abbr = abbr:sub(2)
 				end
+
+				if string.byte(abbr, 1) == 0xE2 then
+					abbr = abbr:sub(4)
+				end
+
 				vim_item.word = abbr
 			end
 
