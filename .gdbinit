@@ -1,4 +1,38 @@
 
+python
+import os
+import sys
+base_dir = os.getenv('DEVELOP_BASE')
+gdbscript_dir = os.path.join(base_dir, 'nvim-win64/nvim-config/nvim/gdbscript')
+print('Gdb script dir base: ' + gdbscript_dir)
+sys.path.insert(0, gdbscript_dir)
+from libcxx.v1.printers import register_libcxx_printers
+register_libcxx_printers(None)
+#from libstdcxx.v6.printers import register_libstdcxx_printers
+#from libstdcxx.v6.xmethods import register_libstdcxx_xmethods
+#register_libstdcxx_xmethods(None)
+#register_libstdcxx_printers (None)
+end
+
+set print pretty on
+set print object on
+
+#######################################################
+#######################################################
+# 必须放在脚本初始化之后
+#######################################################
+
+# 设置 GDB 打印数字时默认使用十六进制格式
+set output-radix 16
+
+# 强制所有整数类型（包括 char, unsigned char, int, uint64_t 等）以十六进制显示
+set print hex
+set print unsigned
+
+#######################################################
+
+
+
 define hook-run
 	b abort
 	catch throw

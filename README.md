@@ -90,3 +90,9 @@ cp /home/byron/.local/share/nvim/site/pack/packer/start/avante.nvim/build/{avant
 ```shell
 pip3 install yapf
 ```
+
+# GDB INIT 脚本
+libcxx-pretty-printers 是一个开源项目，旨在为 Clang/LLVM 的 libc++ 库提供 GDB 的 pretty-printers
+```shell
+git clone https://codeberg.org/koutheir/libcxx-pretty-printers.git
+```
