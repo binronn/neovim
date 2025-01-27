@@ -280,6 +280,8 @@ cmp.setup({
 				end
 
 				vim_item.word = abbr
+			else
+				vim_item.word = vim_item.word:gsub("%W*$", "")
 			end
 
 			local kind_icons = {
