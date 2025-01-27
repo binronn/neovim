@@ -1,3 +1,9 @@
+#######################################################
+# 脚本初始化
+#######################################################
+
+set print pretty on
+set print object on
 
 python
 import os
@@ -13,21 +19,41 @@ register_libcxx_printers(None)
 #register_libstdcxx_xmethods(None)
 #register_libstdcxx_printers (None)
 end
+#######################################################
 
-set print pretty on
-set print object on
 
 #######################################################
-#######################################################
-# 必须放在脚本初始化之后
+# 如下内容必须放在脚本初始化之后
 #######################################################
 
 # 设置 GDB 打印数字时默认使用十六进制格式
-set output-radix 16
+# set output-radix 16
 
 # 强制所有整数类型（包括 char, unsigned char, int, uint64_t 等）以十六进制显示
-set print hex
-set print unsigned
+# set print hex
+# set print unsigned
+# 定义 set_hex 函数，将所有数字类型的输出格式设置为 16 进制
+define set_hex
+# 设置 int 类型为 16 进制
+	set output-radix 16
+# 设置 uint64_t 类型为 16 进制
+	# set print hex
+# 设置 char 类型为 16 进制
+	# set print char hex
+	# set print unsigned
+	echo Output format set to hexadecimal.\n
+end
+
+# 定义 set_dec 函数，将所有数字类型的输出格式设置为 10 进制
+define set_dec
+# 设置 int 类型为 10 进制
+	set output-radix 10
+# 设置 uint64_t 类型为 10 进制
+	# set print hex off
+# 设置 char 类型为 10 进制
+	# set print char ascii
+	echo Output format set to decimal.\n
+end
 
 #######################################################
 
@@ -84,6 +110,8 @@ define traverse_set
 	end
 end
 
-# 提示用户函数已加载
-printf "Function 'traverse_set' is ready. Use 'traverse_set <set_variable>' to traverse a std::set.\n"
-echo "Gdbinit loaded."
+echo ===============================================================\n
+set_hex()
+echo Function set_hex/set_dec to switch print format, default is hex\n
+echo Gdbinit loaded.\n
+echo ===============================================================\n

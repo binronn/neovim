@@ -169,11 +169,27 @@ vim.diagnostic.config({
 		}
 	}
 })
+
+
 ------------------------------------------------------------------------------------------
 -- 补全配置
 ------------------------------------------------------------------------------------------
 -- 判断补全项是否可展开的辅助函数
 --
+
+local function trimNonAlphaNumFromStart(s)
+	-- 使用模式匹配来查找第一个出现的字母或数字的位置
+	local startPos = string.find(s, "^[%a%d]")
+
+	if not startPos then 
+		-- 如果没有找到任何字母或数字，则返回空字符串或原始字符串，根据需求调整
+		return s
+	else
+		-- 返回从startPos开始到字符串末尾的部分
+		return string.sub(s, startPos)
+	end
+end
+
 local cmp = require('cmp')
 cmp.setup({
 	performance = {
@@ -243,12 +259,20 @@ cmp.setup({
 	},
 	formatting = {
 		format = function(entry, vim_item)
-			-- 删除所有 select_next_item 即可展开的补全项(仅可以补全参数不可以跳转(BUG!!))，但仍可以使用cmp.confirm({select = true,})展开补全
-			--
-			if vim_item.abbr:sub(-1) == "~" then 
-				vim_item.word = vim_item.abbr:sub(1, -2)
-			else
-				vim_item.word = vim_item.abbr
+			-----------------------------------------------------------------------------------------------------------------------------------------------------------
+			-- 删除所有 select_next_item 即可展开的来自lsp的补全项(仅可以补全参数不可以跳转(BUG!!))，但仍可以使用cmp.confirm({select = true,})展开补全
+			-----------------------------------------------------------------------------------------------------------------------------------------------------------
+			local abbr = vim_item.abbr
+			if abbr:sub(-1) == "~" then 
+				abbr = abbr:sub(1, -2)
+				while abbr:sub(1) == " " do
+					abbr = abbr:sub(2)
+				end
+
+				if #abbr >= 4 and string.byte(abbr, 1) == 0xE2 then
+					abbr = abbr:sub(4)
+				end
+				vim_item.word = abbr
 			end
 
 			local kind_icons = {
