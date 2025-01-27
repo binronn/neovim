@@ -265,12 +265,9 @@ cmp.setup({
 			local abbr = vim_item.abbr
 			if abbr:sub(-1) == "~" then 
 				abbr = abbr:sub(1, -2)
-				while abbr:sub(1) == " " do
-					abbr = abbr:sub(2)
-				end
 
-				if #abbr >= 4 and string.byte(abbr, 1) == 0xE2 then
-					abbr = abbr:sub(4)
+				while string.byte(abbr, 1) == 0x20 do
+					abbr = abbr:sub(2)
 				end
 				vim_item.word = abbr
 			end
