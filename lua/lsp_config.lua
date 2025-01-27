@@ -266,23 +266,31 @@ cmp.setup({
 			if abbr:sub(-1) == "~" then 
 				abbr = abbr:sub(1, -2)
 
-				while string.byte(abbr, 1) == 0x20 do
+				while string.byte(abbr, 1) == 0x20 do -- 删除空格
 					abbr = abbr:sub(2)
 				end
 
-				if string.byte(abbr, 1) == 0xE2 then
+				if string.byte(abbr, 1) == 0xE2 then -- 删除<U+2022>(•), 0xE2,0x80,0xA2
 					abbr = abbr:sub(4)
 				end
 
-				local startPos, endPos = string.find(vim_item.word, "%a")
+				local startPos = string.find(vim_item.word, "%a") -- 若原始补全内容包含 -> . 等非字母数字内容，则保留
 				if startPos > 1 then
 					abbr = string.sub(vim_item.word, 1, startPos - 1) .. abbr
 				end
 
 				vim_item.word = abbr
 			else
-				vim_item.word = vim_item.word:gsub("%W*$", "")
+				vim_item.word = vim_item.word:gsub("%W*$", "") -- 删除补全内容尾部的非字母或数字
 			end
+
+			if vim_item.menu and #vim_item.menu > 60 then -- 提示信息中的参数长度限制
+				vim_item.menu = vim_item.menu:sub(1, 60) .. '...'
+			end
+			if vim_item.abbr and #vim_item.abbr > 60 then -- 提示信息中的参数长度限制
+				vim_item.abbr = vim_item.abbr:sub(1, 60) .. '...'
+			end
+
 
 			local kind_icons = {
 				Text = "",          -- 文本
