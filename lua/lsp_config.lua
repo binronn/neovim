@@ -274,6 +274,11 @@ cmp.setup({
 					abbr = abbr:sub(4)
 				end
 
+				local startPos, endPos = string.find(vim_item.word, "%a")
+				if startPos > 1 then
+					abbr = string.sub(vim_item.word, 1, startPos - 1) .. abbr
+				end
+
 				vim_item.word = abbr
 			end
 
