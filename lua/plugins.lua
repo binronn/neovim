@@ -164,22 +164,19 @@ return {
 		end
 	},
 	{
-		-- "morhetz/gruvbox", -- 主题
-		-- config = function()
-			-- vim.schedule(function()vim.cmd("colorscheme gruvbox")end)
-		-- end
-	},
-	{
 		'sainnhe/gruvbox-material',
+		lazy = false,
 		config = function()
 			vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
 		end
 	},
-	-- {
-	--   "tmhedberg/SimpylFold", -- 代码折叠
-	--   ft = { "python" },
-	-- },
-
+	{
+		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
+		after = 'gruvbox-material',
+		config = function()
+			pcfg.gitsigns_init()
+		end
+	},
 	{
 		"akinsho/bufferline.nvim", -- 缓冲区标签栏
 		config = function()
@@ -214,12 +211,6 @@ return {
 		event = {"BufRead"},
 	},
 	{
-		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
-		config = function()
-			pcfg.gitsigns_init()
-		end
-	},
-	{
 		"lukas-reineke/indent-blankline.nvim",
 		event = "BufRead",
 		whitespace = { highlight = { "Whitespace", "NonText" } },
@@ -250,7 +241,7 @@ return {
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
-		after = 'gruvbox-material',
+		event = 'VeryLazy',
 		dependencies = {
 			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
@@ -275,7 +266,7 @@ return {
 	-- 安装 Telescope 插件
 	{
 		"nvim-telescope/telescope.nvim",
-		event = {'VimEnter'},
+		event = {'VeryLazy'},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
             "nvim-telescope/telescope-file-browser.nvim", -- 文件浏览器
@@ -293,8 +284,6 @@ return {
 	-- 调试插件
 	{
 		"mfussenegger/nvim-dap",
-		after = 'gruvbox-material',
-		-- event = {"BufRead", "BufNewFile"},
 		event = {"VeryLazy"},
 		ft = {"h", "hpp", "cpp", "cxx"},
 		dependencies = {
@@ -312,6 +301,7 @@ return {
 	{
 		"Civitasv/cmake-tools.nvim",
 		ft = { "cmake", "cpp", "c" }, -- 指定需要延迟加载的文件类型
+		event = 'VeryLazy',
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- 依赖插件
 			"mfussenegger/nvim-dap" -- 调试支持
@@ -322,6 +312,7 @@ return {
 	},
 	-- 会话保存与恢复
 	{
+		event = 'VeryLazy',
 		"Shatur/neovim-session-manager",
 		event = 'VeryLazy',
 		dependencies = {"nvim-lua/plenary.nvim"},
@@ -385,7 +376,6 @@ return {
 			}
 		}
 	}
-
 	------------------------------------------
 	----     avante AI END                ----
 	------------------------------------------
