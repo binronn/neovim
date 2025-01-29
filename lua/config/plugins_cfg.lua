@@ -945,7 +945,7 @@ function M.telescope_init()
 	)
 
     nmap2("<F1>", ":Telescope ")
-	vim.keymap.set('i', '<F1>', '<Esc>:Telescope ', { noremap = true, silent = false })
+	imap2('<F1>', '<Esc>:Telescope ')
 
 end
 

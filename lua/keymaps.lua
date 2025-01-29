@@ -208,5 +208,3 @@ vim.api.nvim_create_autocmd('FileType', {
         -- setup_semicolon_formatting() -- 有BUG
     end
 })
-
-return M

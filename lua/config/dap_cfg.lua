@@ -1,3 +1,15 @@
+local keymap = require("keymap_help")
+local map = keymap.map
+local nmap = keymap.nmap
+local nmapd = keymap.nmapd
+local vmap = keymap.vmap
+local xmap = keymap.xmap
+local cmap = keymap.cmap
+local imap = keymap.imap
+local imap2 = keymap.imap2
+local nmap2 = keymap.nmap2
+local vmap2 = keymap.vmap2
+
 local dap = require("dap")
 local dapui = require("dapui")
 
@@ -488,6 +500,7 @@ end
 --
 -- 断点快捷键
 nmap("<F9>", dap.toggle_breakpoint, {noremap = true, silent = true})
+nmap("<C-F9>", function() dap.set_breakpoint(nil, nil, vim.fn.input("Condition: ")) end, {noremap = true, silent = true})
 -- vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(nil, nil, vim.fn.input("Condition: ")) end, { noremap = true, silent = false })
 -- vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(vim.fn.expand('%:p'), vim.fn.line('.'), vim.fn.input("Condition: "))  end, { noremap = true, silent = false })
 -- 只跳转到下一个错误

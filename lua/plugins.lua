@@ -67,7 +67,7 @@ local programming_filetypes = {
 	"svelte"
 }
 
-local pcfg = require("plugins_cfg")
+local pcfg = require("config/plugins_cfg")
 
 return {
 	{
@@ -262,14 +262,14 @@ return {
 			{
 				"L3MON4D3/LuaSnip",
 				config = function()
-					vim.g.luasnip = require('luasnip')
-					require('luasnip_cfg')
+					vim.g.luasnip = require('config/luasnip_cfg')
+					require('config/luasnip_cfg')
 				end
 			}, -- 代码片段引擎
             "jose-elias-alvarez/null-ls.nvim", -- 代码格式化插件
 		},
 		config = function()
-			require("lsp_config")
+			require("config/lsp_cfg")
             pcfg.null_ls_init()
 		end,
 		ft = programming_filetypes
@@ -305,7 +305,7 @@ return {
 			"nvim-telescope/telescope-dap.nvim"
 		},
 		config = function()
-			require("dap_config")
+			require("config/dap_cfg")
 		end
 	},
 	-- CMAKE 插件
@@ -339,7 +339,7 @@ return {
 		event = {"VeryLazy"},
 		ft = programming_filetypes,
 		config = function()
-			require("avante_cfg")
+			require("config/avante_cfg")
 			vim.api.nvim_set_keymap("n", "<leader>aa", ':AvanteToggle<CR>', {noremap = true, silent = true})
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
