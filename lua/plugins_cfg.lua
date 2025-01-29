@@ -95,26 +95,25 @@ function M.dashboard_init()
 [[                                                                                                   ]],
 			},
 			shortcut = {
-				{ desc = '󰊳  Lazy Update', group = '@property', action = 'Lazy update', key = 'u' },
 				{
-					icon = ' ',
-					icon_hl = '@variable',
-					desc = 'Files',
-					-- group = 'Label',
+					desc = ' Find files',
 					action = 'Telescope find_files',
 					key = 'f',
 				},
 				{
-					desc = ' Oldfiles',
-					-- group = 'DiagnosticHint',
+					desc = ' History files',
 					action = 'Telescope oldfiles',
-					key = 'o',
+					key = 'h',
 				},
 				{
 					desc = ' File browser',
-					-- group = 'Number',
 					action = 'Telescope file_browser',
 					key = 'b',
+				},
+				{
+					desc = '■ Empty file',
+					action = 'enew',
+					key = 'e',
 				},
 			},
 			project = { -- 修复项目路径带空格会报错的问题
@@ -123,8 +122,8 @@ function M.dashboard_init()
 				icon = ' ',
 				desc = 'Recent Projects',
 				action = function(selected_project)
-					local project_path = selected_project:gsub("\\", "/") -- 标准化路径
-					vim.cmd('silent cd ' .. vim.fn.shellescape(project_path)) -- 安全切换目录
+					local project_path = selected_project:gsub("/", "\\") -- 标准化路径
+					vim.cmd('silent cd ' .. project_path) -- 安全切换目录
 					vim.g.reset_workspace_dir_nop()
 					require('telescope.builtin').find_files({
 						cwd = project_path,  -- 直接传递路径
@@ -723,19 +722,19 @@ function M.gitsigns_init()
 	require("gitsigns").setup(
 		{
 			signs = {
-				-- add = { text = '✨' }, -- 新增
-				-- change = { text = '📝' }, -- 修改
-				-- delete = { text = '🗑️' }, -- 删除
-				-- topdelete = { text = '🔥' }, -- 顶部删除
-				-- changedelete = { text = '💥' }, -- 修改并删除
-				-- untracked = { text = '❓' }, -- 未跟踪
+				add = { text = '✨' }, -- 新增
+				change = { text = '📝' }, -- 修改
+				delete = { text = '🗑️' }, -- 删除
+				topdelete = { text = '🔥' }, -- 顶部删除
+				changedelete = { text = '💥' }, -- 修改并删除
+				untracked = { text = '❓' }, -- 未跟踪
 
-				add = { text = is_linux and "G+" or '✨' }, -- 新增
-				change = { text = is_linux and "G~" or '📝' }, -- 修改
-				delete = { text = is_linux and "G-" or '🗑️' }, -- 删除
-				topdelete = { text = is_linux and "G▔" or '🔥' }, -- 顶部删除
-				changedelete = { text = is_linux and "G!" or '💥' }, -- 修改并删除
-				untracked = { text = is_linux and "G?" or '❓' }, -- 未跟踪
+				-- add = { text = is_linux and "G+" or '✨' }, -- 新增
+				-- change = { text = is_linux and "G~" or '📝' }, -- 修改
+				-- delete = { text = is_linux and "G-" or '🗑️' }, -- 删除
+				-- topdelete = { text = is_linux and "G▔" or '🔥' }, -- 顶部删除
+				-- changedelete = { text = is_linux and "G!" or '💥' }, -- 修改并删除
+				-- untracked = { text = is_linux and "G?" or '❓' }, -- 未跟踪
 			},
 			signcolumn = true, -- 始终显示 Git 状态列
 			numhl = false, -- 不启用行号高亮
@@ -836,6 +835,7 @@ function M.telescope_init()
 	require("telescope").setup(
 		{
 			defaults = {
+				path_display = { "truncate" },  -- 显示路径时自动处理分隔符
 				-- find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
 				-- vimgrep_arguments = {
 				--   "rg",  -- 使用 ripgrep
