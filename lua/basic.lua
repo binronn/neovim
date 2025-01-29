@@ -5,6 +5,10 @@
 vim.g.background = dark
 vim.g.ambiwidth = double
 
+if vim.g.is_win32 then
+	vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+end
+
 -- 设置中文提示
 --language messages zh_CN.utf-8
 -- 设置中文帮助
