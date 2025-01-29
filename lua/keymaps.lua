@@ -1,70 +1,13 @@
-------------------
----- 通用函数 ----
-------------------
---
--- Modes
---   normal_mode = "n",
---   insert_mode = "i",
---   visual_mode = "v",
---   visual_block_mode = "x",
---   term_mode = "t",
---   command_mode = "c",
---
-local M = {}
-function map(mode, shortcut, command)
-	vim.api.nvim_set_keymap(mode, shortcut, command, {noremap = true, silent = true})
-end
-M.map = map
-
-function nmap(shortcut, command)
-	map("n", shortcut, command)
-end
-M.nmap = nmap
-
-function vmap(shortcut, command)
-	map("v", shortcut, command)
-end
-M.vmap = vmap
-
-function xmap(shortcut, command)
-	map("x", shortcut, command)
-end
-M.mmap = mmap
-
-function cmap(shortcut, command)
-	vim.api.nvim_set_keymap("c", shortcut, command, {noremap = true, silent = false})
-end
-M.cmap = cmap
-
-function imap(shortcut, command)
-	map("i", shortcut, command)
-end
-M.imap = imap
-
--- 定义 nmap 函数
-local function nmap2(key, cmd, opts)
-	opts = opts or {}
-	opts.desc = opts.desc or ""
-	vim.keymap.set("n", key, cmd, opts)
-end
-M.nmap2 = nmap2
-
--- 定义 vmap 函数
-local function vmap2(key, cmd, opts)
-	opts = opts or {}
-	opts.desc = opts.desc or ""
-	vim.keymap.set("v", key, cmd, opts)
-end
-M.vmap2 = vmap2
-
--- 定义 vmap2 函数
-local function vmap2x(keys, command, opts)
-	opts = opts or {}
-	opts.noremap = opts.noremap == nil and true or opts.noremap
-	opts.silent = opts.silent == nil and true or opts.silent
-	vim.api.nvim_set_keymap("v", keys, command, opts)
-end
-M.vmap2x = vmap2x
+local keymap = require("keymap_help")
+local map = keymap.map
+local nmap = keymap.nmap
+local vmap = keymap.vmap
+local xmap = keymap.xmap
+local cmap = keymap.cmap
+local imap = keymap.imap
+local imap2 = keymap.imap2
+local nmap2 = keymap.nmap2
+local vmap2 = keymap.vmap2
 
 ------------------------------------------------------------------------------------------
 -- 取消无用 按键映射

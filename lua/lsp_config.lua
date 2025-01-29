@@ -68,17 +68,18 @@ lspconfig.clangd.setup(
 		},
 		on_attach = function(client, bufnr)
 			-- client.server_capabilities.completionProvider = false
-			local opts = {noremap = true, silent = true}
+			local telescope = require('telescope.builtin')
+			local opts = {noremap = true, silent = true, buffer=bufnr}
 			local keymap = vim.api.nvim_buf_set_keymap
-			vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<cr>", {desc = "Find definitions"})
-			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<cr>", {desc = "Find implementations"})
-			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", {desc = "Find references"})
-			vim.keymap.set("n", "gl", "<cmd>Telescope lsp_document_symbols<cr>", {desc = "Find references"})
-			vim.keymap.set("n", "ga", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", {desc = "Find references"})
-			keymap(bufnr, "n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
-			keymap(bufnr, "n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
-			keymap(bufnr, "n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
-			keymap(bufnr, "n", "<leader>fx", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+			vim.keymap.set("n", "gd", telescope.lsp_definitions, {buffer=bufnr, desc = "Find definitions"})
+			vim.keymap.set("n", "gi", telescope.lsp_implementations, {buffer=bufnr, desc = "Find implementations"})
+			vim.keymap.set("n", "gr", telescope.lsp_references, {buffer=bufnr, desc = "Find references"})
+			vim.keymap.set("n", "gl", telescope.lsp_document_symbols, {buffer=bufnr, desc = "Find references"})
+			vim.keymap.set("n", "ga", telescope.lsp_dynamic_workspace_symbols, {buffer=bufnr, desc = "Find references"})
+			vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+			vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, opts)
+			vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
 			-- keymap(
 			-- 	bufnr,
 			-- 	"n",
@@ -86,8 +87,8 @@ lspconfig.clangd.setup(
 			-- 	"<cmd>lua for _, folder in ipairs(vim.lsp.buf.list_workspace_folders()) do print(folder) end<CR>",
 			-- 	opts
 			-- )
-			keymap(bufnr, "n", "<leader>hs", "<cmd>lua switch_file_and_search()<CR>", opts)
-			keymap(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
+			vim.keymap.set("n", "<leader>hs", switch_file_and_search, opts)
+			vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
 			--     buffer = bufnr,
 			--     callback = function()

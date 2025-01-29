@@ -373,13 +373,13 @@ local function setup_debug_keymaps()
 	end
 	-- 设置调试快捷键
 	original_K_mapping = vim.fn.maparg("K", "n")
-	vim.api.nvim_set_keymap("n", "<F5>", '<cmd>lua require("dap").continue()<CR>', {noremap = true, silent = true})
-	vim.api.nvim_set_keymap("n", "<F8>", '<cmd>lua require("dap").step_over()<CR>', {noremap = true, silent = true})
-	vim.api.nvim_set_keymap("n", "<F7>", '<cmd>lua require"dap".step_into()<CR>', {noremap = true, silent = true})
-	vim.api.nvim_set_keymap("n", "I", '<cmd>lua require"dapui".eval()<CR>', {noremap = true, silent = true})
-
+	nmap("<F5>", dap.continue)
+	nmap("<F8>", dap.step_over)
+	nmap("<F7>", dap.step_into)
+	nmap("I", dapui.eval)
     -- 杀死调试器
-    vim.api.nvim_set_keymap("n", "<leader>dk", "<cmd>lua close_debug_session()<CR>", {noremap = true, silent = true}) 
+    nmap("<leader>dk", close_debug_session) 
+
     -- 杀死调试器
 --     vim.api.nvim_set_keymap(
 --         "n",
@@ -397,11 +397,11 @@ local function clear_debug_keymaps()
 	end
 	-- 恢复 K 的原始映射
 	-- 删除调试快捷键
-	vim.api.nvim_del_keymap("n", "<F5>")
-	vim.api.nvim_del_keymap("n", "<F7>")
-	vim.api.nvim_del_keymap("n", "<F8>")
-	vim.api.nvim_del_keymap("n", "I")
-	vim.api.nvim_del_keymap("n", "<leader>dk")
+	nmapd("<F5>")
+	nmapd("<F7>")
+	nmapd("<F8>")
+	nmapd("I")
+	nmapd("<leader>dk")
     -- vim.api.nvim_set_keymap("n", "<leader>dk", "<cmd>lua terminate_tmux_split_and_get_pty()<CR>", {noremap = true, silent = true}) 
 	-- vim.api.nvim_del_keymap("n", "<leader>dK")
 end
@@ -487,45 +487,43 @@ end
 -----------------------------------------------
 --
 -- 断点快捷键
-vim.api.nvim_set_keymap("n", "<F9>", '<cmd>lua require"dap".toggle_breakpoint()<CR>', {noremap = true, silent = true})
+nmap("<F9>", dap.toggle_breakpoint, {noremap = true, silent = true})
+-- vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(nil, nil, vim.fn.input("Condition: ")) end, { noremap = true, silent = false })
+-- vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(vim.fn.expand('%:p'), vim.fn.line('.'), vim.fn.input("Condition: "))  end, { noremap = true, silent = false })
 -- 只跳转到下一个错误
-vim.api.nvim_set_keymap(
-	"n",
+nmap(
 	"]e",
 	"<cmd>lua vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })<CR>",
 	{noremap = true, silent = true}
 )
 -- 只跳转到上一个错误
-vim.api.nvim_set_keymap(
-	"n",
+nmap(
 	"[e",
 	"<cmd>lua vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })<CR>",
 	{noremap = true, silent = true}
 )
 -- 只跳转到下一个警告
-vim.api.nvim_set_keymap(
-	"n",
+nmap(
 	"]d",
 	"<cmd>lua vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })<CR>",
 	{noremap = true, silent = true}
 )
 -- 只跳转到上一个警告
-vim.api.nvim_set_keymap(
-	"n",
+nmap(
 	"[d",
 	"<cmd>lua vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })<CR>",
 	{noremap = true, silent = true}
 )
  -- 启动调试器
-vim.api.nvim_set_keymap("n", "<leader>dr", "<cmd>lua start_debug_session()<CR>", {noremap = true, silent = true})
+nmap("<leader>dr", "<cmd>lua start_debug_session()<CR>", {noremap = true, silent = true})
 
 -- 启动调试器，重新输入被调试程序的路径
-vim.api.nvim_set_keymap("n", "<leader>dR", "<cmd>lua start_debug_session_new()<CR>", {noremap = true, silent = true})
+nmap("<leader>dR", "<cmd>lua start_debug_session_new()<CR>", {noremap = true, silent = true})
  
 -- 断点列表
-vim.api.nvim_set_keymap("n", "<leader>db", ":Telescope dap list_breakpoints<CR>", {noremap = true, silent = true}) -- 断点列表
+nmap("<leader>db", ":Telescope dap list_breakpoints<CR>", {noremap = true, silent = true}) -- 断点列表
 -- 命令列表
-vim.api.nvim_set_keymap("n", "<leader>dc", ":Telescope dap commands<CR>", {noremap = true, silent = true}) -- DAP 命令列表
+nmap("<leader>dc", ":Telescope dap commands<CR>", {noremap = true, silent = true}) -- DAP 命令列表
 -- 关闭输入输出窗口
 -- vim.api.nvim_set_keymap(
 -- 	"n",

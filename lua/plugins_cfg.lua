@@ -1,15 +1,15 @@
 local M = {}
 
-local keymap = require("keymaps")
+local keymap = require("keymap_help")
 local map = keymap.map
 local nmap = keymap.nmap
 local vmap = keymap.vmap
 local xmap = keymap.xmap
 local cmap = keymap.cmap
 local imap = keymap.imap
+local imap2 = keymap.imap2
 local nmap2 = keymap.nmap2
 local vmap2 = keymap.vmap2
-local vmap2x = keymap.vmap2x
 
 ------------------------------------------------------------------------------------------
 -- 异步shell插件 窗口设置

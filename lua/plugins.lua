@@ -5,6 +5,17 @@
 --   packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
 -- end
 
+local keymap = require("keymap_help")
+local map = keymap.map
+local nmap = keymap.nmap
+local vmap = keymap.vmap
+local xmap = keymap.xmap
+local cmap = keymap.cmap
+local imap = keymap.imap
+local imap2 = keymap.imap2
+local nmap2 = keymap.nmap2
+local vmap2 = keymap.vmap2
+
 local programming_filetypes = {
 	"c",
 	"cpp",
