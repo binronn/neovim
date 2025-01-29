@@ -301,7 +301,6 @@ return {
 	{
 		"Civitasv/cmake-tools.nvim",
 		ft = { "cmake", "cpp", "c" }, -- 指定需要延迟加载的文件类型
-		event = 'VeryLazy',
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- 依赖插件
 			"mfussenegger/nvim-dap" -- 调试支持

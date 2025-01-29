@@ -3,12 +3,15 @@ return require("avante").setup(
 		provider = "openai",
 		auto_suggestions_provider = "openai", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
 		openai = {
-			endpoint = "https://api.deepseek.com/v1",
-			model = "deepseek-chat",
-			timeout = 30000, -- Timeout in milliseconds
+			-- endpoint = "https://api.deepseek.com/v1",
+			-- model = "deepseek-chat",
+			endpoint = "http://192.168.0.101:8000/v1",
+			model = "qwen",
+			timeout = 6000, -- Timeout in milliseconds
 			temperature = 0,
 			max_tokens = 4096,
-			api_key_name = 'DSK'
+			api_key_name = 'ORG'
+			-- api_key_name = 'DSK'
 		},
 		behaviour = {
 			auto_suggestions = false, -- Experimental stage

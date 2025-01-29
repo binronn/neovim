@@ -87,7 +87,7 @@ lspconfig.clangd.setup(
 			-- 	opts
 			-- )
 			keymap(bufnr, "n", "<leader>hs", "<cmd>lua switch_file_and_search()<CR>", opts)
-			keymap(bufnr, "i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
+			keymap(bufnr, "i", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
 			--     buffer = bufnr,
 			--     callback = function()
@@ -275,7 +275,7 @@ cmp.setup({
 				end
 
 				local startPos = string.find(vim_item.word, "%a") -- 若原始补全内容包含 -> . 等非字母数字内容，则保留
-				if startPos > 1 then
+				if startPos ~= nil and startPos > 1 then
 					abbr = string.sub(vim_item.word, 1, startPos - 1) .. abbr
 				end
 
@@ -287,7 +287,7 @@ cmp.setup({
 			if vim_item.menu and #vim_item.menu > 60 then -- 提示信息中的参数长度限制
 				vim_item.menu = vim_item.menu:sub(1, 60) .. '...'
 			end
-			if vim_item.abbr and #vim_item.abbr > 60 then -- 提示信息中的参数长度限制
+			if vim_item.abbr and #vim_item.abbr > 60 then -- 提示信息中的提示词显示的长度限制
 				vim_item.abbr = vim_item.abbr:sub(1, 60) .. '...'
 			end
 

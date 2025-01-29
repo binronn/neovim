@@ -50,7 +50,7 @@ vim.o.hidden = true
 -- vim.g.editing-mode vi
 vim.g.nocompatible = true -- 关闭vi兼容
 vim.g.backspace = indent, eol, start -- 退格键修复
-vim.g.mouse = false -- xshell复制开启
+-- vim.g.mouse = false -- xshell复制开启
 
 vim.g.fileformat = "unix"
 -- vim环境保存与恢复
@@ -119,7 +119,7 @@ vim.cmd "set signcolumn=yes"
 vim.cmd "set foldmethod=manual"
 -- vim.cmd "set foldmethod=indent"
 -- vim.cmd 'set foldlevel=99'
-vim.cmd "set mouse=a"
+-- vim.cmd "set mouse="
 -- 多编码支持
 vim.cmd "set fileencodings=utf-8,gbk"
 -- MARK 插件默认快捷键关闭
