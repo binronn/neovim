@@ -2,8 +2,9 @@
 --
 -- vim.g.mapleader = " "
 -- vim.g.maplocalleader = " "
-vim.g.background = dark
+-- vim.g.background = dark
 vim.g.ambiwidth = double
+vim.opt.ambiwidth = double
 
 if vim.g.is_win32 then
 	vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
@@ -32,6 +33,7 @@ vim.wo.relativenumber = true -- 相对行
 vim.o.cindent = true
 vim.o.smartindent = true
 vim.g.t_Co = 256 --required
+-- vim.o.t_Co = 256 --required
 
 -- 缩进4个空格等于一个Tab
 vim.o.tabstop = 4
@@ -64,25 +66,25 @@ vim.o.re = 1
 vim.o.ttyfast = true
 vim.g.lazyredraw = true
 -- syntax sync minlines=128
-vim.g.nocursorcolumn = true
+vim.g.cursorcolumn = false
 ------------------------------------------------------------------------------------------
-vim.g.hidden = true
+-- vim.g.hidden = true
 vim.g.updatetime = 200
 --vim.g.shortmess+=c
 vim.g.noerrorbells = true
 -- 禁止自动换行
-vim.g.nowrap = true
+vim.o.wrap = false
 
 -- 文件备份问题
-vim.g.noswapfile = true
-vim.g.nobackup = true
+vim.cmd('set noswapfile')
+vim.cmd('set nobackup')
 
 -- 实时显示搜索内容
 vim.g.incsearch = true
 -- 向下滚动h时预留行数
 vim.g.scrolloff = 5
 -- 强制显示侧边栏，防止时有时无
-vim.g.signcolumn = yes
+vim.o.signcolumn = "yes"
 -- 显示最长的列长度为90
 --vim.g.colorcolumn=90
 -- vim 命令补全
@@ -107,7 +109,7 @@ vim.o.updatetime = 300
 -- 遇到问题详见：https://github.com/nshen/learn-neovim-lua/issues/1
 vim.o.timeoutlen = 700
 -- 语法开启
-vim.g.syntax = true
+vim.o.syntax = "enable"
 -- 主题设置
 --vim.g.material_style = "deep ocean"
 -- vim.cmd "colorscheme gruvbox-material"
@@ -129,4 +131,4 @@ vim.opt.termguicolors = true
 
 -- for avant.nvim
 -- views can only be fully collapsed with the global statusline
-vim.opt.laststatus = 3
+-- vim.opt.laststatus = 3

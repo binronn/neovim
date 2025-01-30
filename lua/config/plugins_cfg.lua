@@ -721,13 +721,22 @@ function M.gitsigns_init()
 
 	require("gitsigns").setup(
 		{
+			-- 😊 ✅ 🚀
+			--
 			signs = {
-				add = { text = '✨' }, -- 新增
-				change = { text = '📝' }, -- 修改
-				delete = { text = '🗑️' }, -- 删除
-				topdelete = { text = '🔥' }, -- 顶部删除
-				changedelete = { text = '💥' }, -- 修改并删除
-				untracked = { text = '❓' }, -- 未跟踪
+				-- add = { text = '✨' }, -- 新增
+				-- change = { text = '📝' }, -- 修改
+				-- delete = { text = '🗑️' }, -- 删除
+				-- topdelete = { text = '🔥' }, -- 顶部删除
+				-- changedelete = { text = '💥' }, -- 修改并删除
+				-- untracked = { text = '❓' }, -- 未跟踪
+
+				add = { text = 'G✓' }, -- 新增
+				change = { text = 'G⇌' }, -- 修改
+				delete = { text = 'G✗' }, -- 删除
+				topdelete = { text = 'G⬆' }, -- 顶部删除
+				changedelete = { text = 'G⇌' }, -- 修改并删除，这里使用与修改相同的符号作为示例
+				untracked = { text = 'G…' }, -- 未跟踪
 
 				-- add = { text = is_linux and "G+" or '✨' }, -- 新增
 				-- change = { text = is_linux and "G~" or '📝' }, -- 修改
@@ -890,6 +899,7 @@ function M.telescope_init()
 				},
 				live_grep_args = {
 					auto_quoting = true,
+					path_display = { "truncate" },  -- 显示路径时自动处理分隔符
 					mappings = {
 						-- extend mappings
 						i = {

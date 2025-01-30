@@ -4,6 +4,7 @@ local nmap = keymap.nmap
 local vmap = keymap.vmap
 local xmap = keymap.xmap
 local cmap = keymap.cmap
+local cmap2 = keymap.cmap2
 local imap = keymap.imap
 local imap2 = keymap.imap2
 local nmap2 = keymap.nmap2
@@ -25,14 +26,14 @@ xmap("<Space>", "<nop>")
 ------------------------------------------------------------------------------------------
 -- CMake-tools 映射
 ------------------------------------------------------------------------------------------
-cmap("Cst", "CMakeSelectBuildType")
-cmap("Cb", "CMakeBuild")
-cmap("Cg", "CMakeGenerate")
+cmap2("Cst", "CMakeSelectBuildType")
+cmap2("Cb", "CMakeBuild")
+cmap2("Cg", "CMakeGenerate")
 -- cmap('SS', 'Leaderf! rg -g *.{}')
 
 -- 重置工作目录
-cmap("Rw", "lua vim.g.reset_workspace_dir.get()")
-cmap("Rg", "cd %:h | lua vim.g.reset_workspace_dir_nop()")
+cmap2("Rw", "lua vim.g.reset_workspace_dir.get()")
+cmap2("Rg", "cd %:h | lua vim.g.reset_workspace_dir_nop()")
 ------------------
 ---- VIM 相关 ----
 ------------------

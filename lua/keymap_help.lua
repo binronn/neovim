@@ -56,6 +56,11 @@ local function cmap(shortcut, command, opts)
 end
 M.cmap = cmap
 
+local function cmap2(shortcut, command, opts)
+	map2('c', shortcut, command, opts)
+end
+M.cmap2 = cmap2
+
 local function imap(shortcut, command, opts)
 	map("i", shortcut, command, opts)
 end

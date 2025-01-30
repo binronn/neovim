@@ -2,8 +2,13 @@
 set mouse=a
 " set guifont=Source\ Code\ Pro:h10
 " set guifont=Hack\ Nerd\ Font:h10
+" set guifont=Cascadia\ Code:h10,Noto\ Color\ Emoji:h10
+" GuiFont! Cascadia\ Code:h10
 set guifont=Cascadia\ Code:h10
+" 设置字体
+
 let g:neovide_title_background_color = "#161616"
+let g:neovide_hide_mouse_when_typing = v:true
 
 " 禁用鼠标左键单击
 " nnoremap <LeftMouse> <Nop>

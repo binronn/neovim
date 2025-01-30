@@ -71,7 +71,8 @@ local pcfg = require("config/plugins_cfg")
 
 return {
 	{
-		"andymass/vim-matchup" -- 高亮匹配
+		"andymass/vim-matchup", -- 高亮匹配
+		lazy = true,
 	},
 	{
 		"itchyny/vim-cursorword" -- 高亮光标下内容
@@ -96,9 +97,9 @@ return {
 	-- 	end
 	-- },
 	{
-		"jiangmiao/auto-pairs" -- 自动括号
+		"jiangmiao/auto-pairs", -- 自动括号
+		event = {'BufRead'}
 	},
-	{},
 	{
 		"nvimdev/dashboard-nvim", -- 启动面板
 		event = "VimEnter",
@@ -171,11 +172,21 @@ return {
 	},
 	{
 		"skywind3000/asyncrun.vim", -- 异步执行命令插件
+		lazy = true,
+		event = {'VeryLazy'},
 		config = function()
 			vim.api.nvim_set_keymap("c", "Ar", "AsyncRun ", {noremap = true, silent = false})
 			vim.api.nvim_set_keymap("c", "As", "AsyncStop", {noremap = true, silent = false})
 		end
 	},
+	-- {
+	-- 	"folke/tokyonight.nvim",
+	-- 	-- lazy = false,
+	-- 	config = function()
+	-- 		-- vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
+	-- 		-- vim.schedule(function()vim.cmd("colorscheme tokyonight-moon")end)
+	-- 	end
+	-- },
 	{
 		'sainnhe/gruvbox-material',
 		lazy = false,
@@ -183,9 +194,18 @@ return {
 			vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
 		end
 	},
+	-- {
+	-- 	'mhartington/oceanic-next',
+	-- 	lazy = false,
+	-- 	config = function()
+	-- 		vim.cmd('syntax on')
+	-- 		vim.cmd('let g:oceanic_next_terminal_bold = 1')
+	-- 		vim.cmd('let g:oceanic_next_terminal_italic = 1')
+	-- 		vim.schedule(function()vim.cmd("colorscheme OceanicNext")end)
+	-- 	end
+	-- },
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
-		after = 'gruvbox-material',
 		config = function()
 			pcfg.gitsigns_init()
 		end
@@ -207,6 +227,7 @@ return {
 	},
 	{
 		"numToStr/FTerm.nvim", -- 弹出式终端
+		lazy = true,
 		event = {'VeryLazy'},
 		config = function()
 			pcfg.FTerm_init()
@@ -214,6 +235,7 @@ return {
 	},
 	{
 		"sindrets/diffview.nvim", -- GIT DIFF MERGE WINDOW
+		lazy = true,
 		event = {"BufRead"},
 		config = function()
 			pcfg.diffview_init()
@@ -221,6 +243,7 @@ return {
 	},
 	{
 		"tpope/vim-fugitive", -- Git 插件 :G status<CR> :G ..<CR>
+		lazy = true,
 		event = {"BufRead"},
 	},
 	{
@@ -254,7 +277,7 @@ return {
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
-		event = 'VeryLazy',
+		event = {'VeryLazy'},
 		dependencies = {
 			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
@@ -279,6 +302,7 @@ return {
 	-- 安装 Telescope 插件
 	{
 		"nvim-telescope/telescope.nvim",
+		lazy = true,
 		event = {'VeryLazy'},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
@@ -324,9 +348,9 @@ return {
 	},
 	-- 会话保存与恢复
 	{
-		event = 'VeryLazy',
 		"Shatur/neovim-session-manager",
-		event = 'VeryLazy',
+		lazy = true,
+		event = {'VeryLazy'},
 		dependencies = {"nvim-lua/plenary.nvim"},
 		config = function()
 			pcfg.session_manager_init()

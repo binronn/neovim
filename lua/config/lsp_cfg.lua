@@ -2,7 +2,6 @@
 -- LSP 配置
 ------------------------------------------------------------------------------------------
 local lspconfig = require("lspconfig")
-vim.g.luasnip_expand = false
 
 -----------------------------------------------------------------------------------------
 -- 切换头文件函数
@@ -144,10 +143,16 @@ vim.diagnostic.config({
 				-- [vim.diagnostic.severity.INFO]  = "ℹ️",
 				-- [vim.diagnostic.severity.HINT]  = "💡",
 
-				[vim.diagnostic.severity.ERROR] = "⨯",
-				[vim.diagnostic.severity.WARN] = "▲",
-				[vim.diagnostic.severity.INFO] = "»",
-				[vim.diagnostic.severity.HINT] = "➤"
+				-- [vim.diagnostic.severity.ERROR] = "⨯",
+				-- [vim.diagnostic.severity.WARN] = "▲",
+				-- [vim.diagnostic.severity.INFO] = "»",
+				-- [vim.diagnostic.severity.HINT] = "➤"
+
+				[vim.diagnostic.severity.ERROR] = "L⨯",
+				[vim.diagnostic.severity.WARN] = "L▲",
+				[vim.diagnostic.severity.INFO] = "L»",
+				[vim.diagnostic.severity.HINT] = "Lℹ️"
+
 			}
 			return icons[diagnostic.severity] .. " " .. diagnostic.message
 		end
@@ -159,10 +164,10 @@ vim.diagnostic.config({
 	},
 	signs = {
 		text = {
-			[vim.diagnostic.severity.ERROR] = "⨯",
-			[vim.diagnostic.severity.WARN] = "▲",
-			[vim.diagnostic.severity.INFO] = "»",
-			[vim.diagnostic.severity.HINT] = "➤"
+			[vim.diagnostic.severity.ERROR] = "L⨯",
+			[vim.diagnostic.severity.WARN] = "L▲",
+			[vim.diagnostic.severity.INFO] = "L»",
+			[vim.diagnostic.severity.HINT] = "Lℹ️"
 			-- [vim.diagnostic.severity.ERROR] = "❌",
 			-- [vim.diagnostic.severity.WARN]  = "⚠️",
 			-- [vim.diagnostic.severity.INFO]  = "ℹ️",
@@ -192,6 +197,7 @@ local function trimNonAlphaNumFromStart(s)
 end
 
 local cmp = require('cmp')
+local luasnip = require("luasnip")
 cmp.setup({
 	performance = {
 		max_view_entries = 30,  -- 限制补全窗口中最多显示 20 个条目
@@ -207,7 +213,6 @@ cmp.setup({
 	},
 	mapping = {
 		['<Tab>'] = cmp.mapping(function(fallback)
-			local luasnip = vim.g.luasnip
 			if cmp.visible() then
 				cmp.select_next_item({ behavior = cmp.SelectBehavior.Insert })
 			elseif luasnip.expand_or_jumpable() then
@@ -218,7 +223,6 @@ cmp.setup({
 		end, { 'i', 's' }), -- 在插入模式和选择模式下生效
 
 		['<S-Tab>'] = cmp.mapping(function(fallback)
-			local luasnip = vim.g.luasnip
 			if cmp.visible() then
 				cmp.select_prev_item({ behavior = cmp.SelectBehavior.Insert })
 			elseif luasnip.jumpable(-1) then
@@ -229,7 +233,6 @@ cmp.setup({
 		end, { 'i', 's' }),
 
 		['<C-j>'] = cmp.mapping(function(fallback)
-			local luasnip = vim.g.luasnip
 			if cmp.visible() then
 				-- 调用 luasnip.lsp_expand
 				cmp.confirm({select = true,})
@@ -241,7 +244,6 @@ cmp.setup({
 		end, {'i', 's'}),
 
 		['<C-y>'] = cmp.mapping(function(fallback)
-			local luasnip = vim.g.luasnip
 			if luasnip.jumpable(-1) then
 				luasnip.jump(-1) -- 跳到luasnip的上一个插入点
 			else
@@ -250,7 +252,6 @@ cmp.setup({
 		end, { 'i', 's'}),
 
 		['<C-e>'] = cmp.mapping(function(fallback)
-			local luasnip = vim.g.luasnip
 			if luasnip.jumpable(1) then
 				luasnip.jump(1) -- 跳到luasnip的下一个插入点
 			else
