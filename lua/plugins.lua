@@ -100,7 +100,17 @@ return {
 	},
 	{},
 	{
+		"nvimdev/dashboard-nvim", -- 启动面板
+		event = "VimEnter",
+		config = function()
+			pcfg.dashboard_init()
+		end,
+		dependencies = {"nvim-tree/nvim-web-devicons"}
+	},
+	{
 		"nvim-lualine/lualine.nvim", -- 状态栏
+		event = {'VeryLazy'},
+		-- after = 'dashboard-nvim',
 		dependencies = {"kyazdani42/nvim-web-devicons", opt = true},
 		config = function()
 			pcfg.lualine_init()
@@ -111,14 +121,6 @@ return {
 	},
 	{
 		"tpope/vim-sensible" -- 提供一些合理的默认设置
-	},
-	{
-		"nvimdev/dashboard-nvim", -- 启动面板
-		event = "VimEnter",
-		config = function()
-			pcfg.dashboard_init()
-		end,
-		dependencies = {"nvim-tree/nvim-web-devicons"}
 	},
 	{
 		"stevearc/aerial.nvim", -- 类窗口
@@ -133,12 +135,12 @@ return {
 			vim.g.mwDefaultHighlightingPalette = "maximum"
 		end,
 		config = function()
-			vim.api.nvim_set_keymap("n", "<leader>mh", "<Plug>MarkSet", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "<leader>mH", "<Plug>MarkToggle", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "<leader>mr", "<Plug>MarkRegex", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("x", "<leader>mr", "<Plug>MarkRegex", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "<leader>mn", "<Plug>MarkClear", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "<leader>mN", "<Plug>MarkAllClear", {noremap = true, silent = true})
+			nmap("<leader>mh", "<Plug>MarkSet", {noremap = true, silent = true})
+			nmap("<leader>mH", "<Plug>MarkToggle", {noremap = true, silent = true})
+			nmap("<leader>mr", "<Plug>MarkRegex", {noremap = true, silent = true})
+			xmap("<leader>mr", "<Plug>MarkRegex", {noremap = true, silent = true})
+			nmap("<leader>mn", "<Plug>MarkClear", {noremap = true, silent = true})
+			nmap("<leader>mN", "<Plug>MarkAllClear", {noremap = true, silent = true})
 		end
 	},
 	{
@@ -158,13 +160,13 @@ return {
 			vim.g.bookmark_auto_save = 1 -- 自动保存书签
 		end,
 		config = function()
-			vim.api.nvim_set_keymap("n", "mi", "<Plug>BookmarkAnnotate", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "mm", "<Plug>BookmarkToggle", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "ma", "<Plug>BookmarkShowAll", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "mp", "<Plug>BookmarkPrev", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "mn", "<Plug>BookmarkNext", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "mc", "<Plug>BookmarkClear", {noremap = true, silent = true})
-			vim.api.nvim_set_keymap("n", "<leader>mx", "<Plug>BookmarkClearAll", {noremap = true, silent = true})
+			nmap("mi", "<Plug>BookmarkAnnotate", {noremap = true, silent = true})
+			nmap("mm", "<Plug>BookmarkToggle", {noremap = true, silent = true})
+			nmap("ma", "<Plug>BookmarkShowAll", {noremap = true, silent = true})
+			nmap("mp", "<Plug>BookmarkPrev", {noremap = true, silent = true})
+			nmap("mn", "<Plug>BookmarkNext", {noremap = true, silent = true})
+			nmap("mc", "<Plug>BookmarkClear", {noremap = true, silent = true})
+			nmap("<leader>mx", "<Plug>BookmarkClearAll", {noremap = true, silent = true})
 		end
 	},
 	{

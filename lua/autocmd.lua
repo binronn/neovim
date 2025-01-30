@@ -1,6 +1,8 @@
 local autocmd = vim.api.nvim_create_autocmd
 local vim = vim
 
+local keymap = require("keymap_help")
+local nmap = keymap.nmap
 
 ----------------------------------------------------------------
 --- 构建cpp项目函数
