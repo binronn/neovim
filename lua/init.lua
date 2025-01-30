@@ -31,6 +31,6 @@ vim.g.is_unix = vim.fn.has('unix')
 
 require("lazy").setup("plugins")
 require "common_func"
-require "basic"
+require "config/basic_cfg"
 require "autocmd"
 require "keymaps"
