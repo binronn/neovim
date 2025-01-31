@@ -298,15 +298,15 @@ dap.configurations.cpp = {
 				-- 		detached = false
 				-- 	}
 				-- }
-				-- dap.adapters.codelldb = {
-				-- 	id = 'codelldb',
-				-- 	type = 'executable',
-				-- 	command = vim.fn.getenv("DEVELOP_BASE") .. 'codelldb-win32-x64\\extension\\adapter\\codelldb.exe',
-				-- 	options = {
-				-- 		detached = false
-				-- 	}
-				-- }
-                return 'gdb'
+				dap.adapters.codelldb = {
+					id = 'codelldb',
+					type = 'executable',
+					command = vim.fn.getenv("DEVELOP_BASE") .. 'codelldb\\extension\\adapter\\codelldb.exe',
+					options = {
+						detached = false
+					}
+				}
+                return 'codelldb'
             end
         end,
 		request = "launch",
