@@ -34,9 +34,9 @@ local function default_dapui()
 		layouts = {
 			{
 				elements = {
+					{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
 					{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
 					{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
-					{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
 					{id = "scopes", size = 0.30}, -- 作用域窗口，占 25% 宽度
 				},
 				size = 40, -- 左侧总宽度为 40 列
@@ -441,17 +441,17 @@ function start_debug_session()
 				layouts = {
 					{
 						elements = {
+							{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
 							{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
 							{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
-							{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
 							{id = "scopes", size = 0.30}, -- 作用域窗口，占 25% 宽度
 						},
 						size = 40, -- 左侧总宽度为 40 列
 						position = "left" -- 左侧显示
 					},
 					{
-						elements = vim.g.is_unix == 1 and btm_unix_elements or btm_win_elements,
-						size = vim.g.is_unix == 1 and 20 or 25, -- 底部总高度为 10 行
+						elements = btm_unix_elements,
+						size =  20, -- 底部总高度为 10 行
 						position = "bottom" -- 底部显示
 					}
 				}
