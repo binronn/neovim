@@ -306,7 +306,7 @@ dap.configurations.cpp = {
 						detached = false
 					}
 				}
-                return 'codelldb'
+				return 'codelldb'
             end
         end,
 		request = "launch",
@@ -322,20 +322,20 @@ dap.configurations.cpp = {
 		-- stopAtBeginningOfMainSubprogram = true,
 		-- runInTerminal = true, -- 若为false输出内容则不再console窗口中
         runInTerminal = (vim.g.is_unix == 1) and true or false, -- Windows 上可能需要关闭此选项
-		MIDebuggerPath = function()
-            if vim.g.is_unix == 1 then
-				return''
-			else
-				return vim.fn.getenv("DEVELOP_BASE") .. 'gdb\\bin\\gdb.exe'
-			end
-		end,
-		setupCommands = {
-			{
-				text = "-enable-pretty-printing",
-				description = "enable pretty printing",
-				ignoreFailures = false
-			}
-		},
+		-- MIDebuggerPath = function()
+  --           if vim.g.is_unix == 1 then
+		-- 		return''
+		-- 	else
+		-- 		return vim.fn.getenv("DEVELOP_BASE") .. 'gdb\\bin\\gdb.exe'
+		-- 	end
+		-- end,
+		-- setupCommands = {
+		-- 	{
+		-- 		text = "-enable-pretty-printing",
+		-- 		description = "enable pretty printing",
+		-- 		ignoreFailures = false
+		-- 	}
+		-- },
 		externalConsole = (vim.g.is_unix == 1) and false or true,
 		-- stdio = pty,
 	}
