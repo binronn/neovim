@@ -161,18 +161,18 @@ function M.bufferline_init()
 			show_close_icon = false,
 			show_buffer_close_icons = false,
 			show_buffer_icons = true,
-            indicator = {
-                icon = '●', -- this should be omitted if indicator style is not 'icon'
-                style = 'icon',
+			indicator = {
+				icon = '●', -- this should be omitted if indicator style is not 'icon'
+				style = 'none',
 			},
 			buffer_close_icon = "",
-			modified_icon = "[+]",
+			modified_icon = "●",
 			close_icon = "",
 			left_trunc_marker = "",
 			right_trunc_marker = "",
 			diagnostics = "nvim_lsp", -- 使用 nvim-lsp 提供的诊断信息
 			diagnostics_indicator = function(count, level, diagnostics_dict, context)
-				local icon = level:match("error") and "× " or "▲ " -- 设置错误和警告的图标
+				local icon = level:match("error") and "×" or "▲" -- 设置错误和警告的图标
 				return icon .. count -- 显示图标和数量
 			end,
 			custom_filter = function(bufnr)
@@ -180,7 +180,7 @@ function M.bufferline_init()
 				if vim.api.nvim_buf_get_option(bufnr, "buftype") == "quickfix" then
 					return false
 				end
-                return true
+				return true
 			end,
             highlights = {
                 buffer_selected = { 
