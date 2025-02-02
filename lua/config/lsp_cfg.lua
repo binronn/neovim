@@ -204,10 +204,16 @@ cmp.setup({
 	},
 	window = {
 		completion = {
+			border = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' },
+			scrollbar = false,  -- 关闭滚动条
+			winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None',
 			max_width = 50, -- 补全窗口的最大宽度（字符数）
 			min_width = 50, -- 补全窗口的最大宽度（字符数）
 		},
 		documentation = {
+			border = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' },
+			scrollbar = false,  -- 关闭滚动条
+			winhighlight = 'Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None',
 			max_height = 25, -- 文档窗口的最大高度
 		},
 	},
