@@ -17,11 +17,153 @@ local vmap2 = keymap.vmap2
 --
 vim.g.asyncrun_open = 12
 ------------------------------------------------------------------------------------------
+function M.dressing_init()
+	require("dressing").setup(
+		{
+			input = {
+				-- Set to false to disable the vim.ui.input implementation
+				enabled = true,
+				-- Default prompt string
+				default_prompt = "Input",
+				-- Trim trailing `:` from prompt
+				trim_prompt = true,
+				-- Can be 'left', 'right', or 'center'
+				title_pos = "left",
+				-- The initial mode when the window opens (insert|normal|visual|select).
+				start_mode = "insert",
+				-- These are passed to nvim_open_win
+				border = "rounded",
+				-- 'editor' and 'win' will default to being centered
+				relative = "cursor",
+				-- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+				prefer_width = 40,
+				width = nil,
+				-- min_width and max_width can be a list of mixed types.
+				-- min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
+				max_width = {140, 0.9},
+				min_width = {20, 0.2},
+				buf_options = {},
+				win_options = {
+					-- Disable line wrapping
+					wrap = false,
+					-- Indicator for when text exceeds window
+					list = true,
+					listchars = "precedes:…,extends:…",
+					-- Increase this for more context when text scrolls off the window
+					sidescrolloff = 0
+				},
+				-- Set to `false` to disable
+				mappings = {
+					n = {
+						["<Esc>"] = "Close",
+						["<CR>"] = "Confirm"
+					},
+					i = {
+						["<C-c>"] = "Close",
+						["<CR>"] = "Confirm",
+						["<Up>"] = "HistoryPrev",
+						["<Down>"] = "HistoryNext"
+					}
+				},
+				override = function(conf)
+					-- This is the config that will be passed to nvim_open_win.
+					-- Change values here to customize the layout
+					return conf
+				end,
+				-- see :help dressing_get_config
+				get_config = nil
+			},
+			select = {
+				-- Set to false to disable the vim.ui.select implementation
+				enabled = true,
+				-- Priority list of preferred vim.select implementations
+				backend = {"telescope", "fzf_lua", "fzf", "builtin", "nui"},
+				-- Trim trailing `:` from prompt
+				trim_prompt = true,
+				-- Options for telescope selector
+				-- These are passed into the telescope picker directly. Can be used like:
+				-- telescope = require('telescope.themes').get_ivy({...})
+				telescope = nil,
+				-- Options for fzf selector
+				fzf = {
+					window = {
+						width = 0.5,
+						height = 0.4
+					}
+				},
+				-- Options for fzf-lua
+				fzf_lua = {},
+				-- Options for nui Menu
+				nui = {
+					position = "50%",
+					size = nil,
+					relative = "editor",
+					border = {
+						style = "rounded"
+					},
+					buf_options = {
+						swapfile = false,
+						filetype = "DressingSelect"
+					},
+					win_options = {
+						winblend = 0
+					},
+					max_width = 80,
+					max_height = 40,
+					min_width = 40,
+					min_height = 10
+				},
+				-- Options for built-in selector
+				builtin = {
+					-- Display numbers for options and set up keymaps
+					show_numbers = true,
+					-- These are passed to nvim_open_win
+					border = "rounded",
+					-- 'editor' and 'win' will default to being centered
+					relative = "editor",
+					buf_options = {},
+					win_options = {
+						cursorline = true,
+						cursorlineopt = "both",
+						-- disable highlighting for the brackets around the numbers
+						winhighlight = "MatchParen:",
+						-- adds padding at the left border
+						statuscolumn = " "
+					},
+					-- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+					-- the min_ and max_ options can be a list of mixed types.
+					-- max_width = {140, 0.8} means "the lesser of 140 columns or 80% of total"
+					width = nil,
+					max_width = {140, 0.8},
+					min_width = {40, 0.2},
+					height = nil,
+					max_height = 0.9,
+					min_height = {10, 0.2},
+					-- Set to `false` to disable
+					mappings = {
+						["<Esc>"] = "Close",
+						["<C-c>"] = "Close",
+						["<CR>"] = "Confirm"
+					},
+					override = function(conf)
+						-- This is the config that will be passed to nvim_open_win.
+						-- Change values here to customize the layout
+						return conf
+					end
+				},
+				-- Used to override format_item. See :help dressing-format
+				format_item_override = {},
+				-- see :help dressing_get_config
+				get_config = nil
+			}
+		}
+	)
+end
 
 function M.lualine_init()
 	require("lualine").setup {
 		options = {
-			disabled_filetypes = {'NvimTree', 'aerial', 'qf', 'help'},
+			disabled_filetypes = {"NvimTree", "aerial", "qf", "help"},
 			icons_enabled = true,
 			theme = "auto",
 			component_separators = {left = "|", right = "|"},
@@ -70,89 +212,93 @@ end
 ----     dashboard 配置               ----
 ------------------------------------------
 function M.dashboard_init()
-	require('dashboard').setup({
-		change_to_vcs_root = true,
-		-- theme = 'doom',
-		config = {
-			header = {
-				-- " ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
-				-- " ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
-				-- " ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
-				-- " ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
-				-- " ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
-				-- " ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
-				-- "                                                       ",
-[[ ,ggg, ,ggggggg,     ,ggggggg,    _,gggggg,_      ,ggg,         ,gg      ,a8a,  ,ggg, ,ggg,_,ggg,  ]],
-[[dP""Y8,8P"""""Y8b  ,dP""""""Y8b ,d8P""d8P"Y8b,   dP""Y8a       ,8P      ,8" "8,dP""Y8dP""Y88P""Y8b ]],
-[[Yb, `8dP'     `88  d8'    a  Y8,d8'   Y8   "8b,dPYb, `88       d8'      d8   8bYb, `88'  `88'  `88 ]],
-[[ `"  88'       88  88     "Y8P'd8'    `Ybaaad88P' `"  88       88       88   88 `"  88    88    88 ]],
-[[     88        88  `8baaaa     8P       `""""Y8       88       88       88   88     88    88    88 ]],
-[[     88        88 ,d8P""""     8b            d8       I8       8I       Y8   8P     88    88    88 ]],
-[[     88        88 d8"          Y8,          ,8P       `8,     ,8'       `8, ,8'     88    88    88 ]],
-[[     88        88 Y8,          `Y8,        ,8P'        Y8,   ,8P   8888  "8,8"      88    88    88 ]],
-[[     88        Y8,`Yba,,_____,  `Y8b,,__,,d8P'          Yb,_,dP    `8b,  ,d8b,      88    88    Y8,]],
-[[     88        `Y8  `"Y8888888    `"Y8888P"'             "Y8P"       "Y88P" "Y8     88    88    `Y8]],
-[[                                                                                                   ]],
-			},
-			shortcut = {
-				{
-					desc = ' Find files',
-					action = 'Telescope find_files',
-					key = 'f',
+	require("dashboard").setup(
+		{
+			change_to_vcs_root = true,
+			-- theme = 'doom',
+			config = {
+				header = {
+					-- " ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
+					-- " ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
+					-- " ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
+					-- " ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
+					-- " ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
+					-- " ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
+					-- "                                                       ",
+					[[ ,ggg, ,ggggggg,     ,ggggggg,    _,gggggg,_      ,ggg,         ,gg      ,a8a,  ,ggg, ,ggg,_,ggg,  ]],
+					[[dP""Y8,8P"""""Y8b  ,dP""""""Y8b ,d8P""d8P"Y8b,   dP""Y8a       ,8P      ,8" "8,dP""Y8dP""Y88P""Y8b ]],
+					[[Yb, `8dP'     `88  d8'    a  Y8,d8'   Y8   "8b,dPYb, `88       d8'      d8   8bYb, `88'  `88'  `88 ]],
+					[[ `"  88'       88  88     "Y8P'd8'    `Ybaaad88P' `"  88       88       88   88 `"  88    88    88 ]],
+					[[     88        88  `8baaaa     8P       `""""Y8       88       88       88   88     88    88    88 ]],
+					[[     88        88 ,d8P""""     8b            d8       I8       8I       Y8   8P     88    88    88 ]],
+					[[     88        88 d8"          Y8,          ,8P       `8,     ,8'       `8, ,8'     88    88    88 ]],
+					[[     88        88 Y8,          `Y8,        ,8P'        Y8,   ,8P   8888  "8,8"      88    88    88 ]],
+					[[     88        Y8,`Yba,,_____,  `Y8b,,__,,d8P'          Yb,_,dP    `8b,  ,d8b,      88    88    Y8,]],
+					[[     88        `Y8  `"Y8888888    `"Y8888P"'             "Y8P"       "Y88P" "Y8     88    88    `Y8]],
+					[[                                                                                                   ]]
 				},
-				{
-					desc = ' History files',
-					action = 'Telescope oldfiles',
-					key = 'h',
+				shortcut = {
+					{
+						desc = " Find files",
+						action = "Telescope find_files",
+						key = "f"
+					},
+					{
+						desc = " History files",
+						action = "Telescope oldfiles",
+						key = "h"
+					},
+					{
+						desc = " File browser",
+						action = "Telescope file_browser",
+						key = "b"
+					},
+					{
+						desc = "■ Empty file",
+						action = "enew",
+						key = "e"
+					}
 				},
-				{
-					desc = ' File browser',
-					action = 'Telescope file_browser',
-					key = 'b',
+				project = {
+					-- 修复项目路径带空格会报错的问题
+					enable = true,
+					key = "shortcut key",
+					icon = " ",
+					desc = "Recent Projects",
+					action = function(selected_project)
+						local project_path = selected_project:gsub("/", "\\") -- 标准化路径
+						vim.cmd("silent cd " .. project_path) -- 安全切换目录
+						vim.g.reset_workspace_dir_nop()
+						require("telescope.builtin").find_files(
+							{
+								cwd = project_path -- 直接传递路径
+							}
+						)
+					end
 				},
-				{
-					desc = '■ Empty file',
-					action = 'enew',
-					key = 'e',
-				},
-			},
-			project = { -- 修复项目路径带空格会报错的问题
-				enable = true,
-				key = 'shortcut key',
-				icon = ' ',
-				desc = 'Recent Projects',
-				action = function(selected_project)
-					local project_path = selected_project:gsub("/", "\\") -- 标准化路径
-					vim.cmd('silent cd ' .. project_path) -- 安全切换目录
-					vim.g.reset_workspace_dir_nop()
-					require('telescope.builtin').find_files({
-						cwd = project_path,  -- 直接传递路径
-					})
-				end,
-			},
-			mru = {
-				enable = true,      -- 启用最近文件列表
-				limit = 10,          -- 显示最近 5 个文件
-				icon = ' ',        -- 使用 Nerd Font 图标
-				label = 'Recent Files',  -- 显示标题
-				cwd_only = false,   -- 显示所有最近文件，不限于当前目录
-				-- action = function(selected_file)
+				mru = {
+					enable = true, -- 启用最近文件列表
+					limit = 10, -- 显示最近 5 个文件
+					icon = " ", -- 使用 Nerd Font 图标
+					label = "Recent Files", -- 显示标题
+					cwd_only = false -- 显示所有最近文件，不限于当前目录
+					-- action = function(selected_file)
 					-- local fp = selected_file:gsub("\\", "/") -- 标准化路径
 					-- 打开用户选择的文件
 					-- vim.cmd('edit ' .. fp)
 					-- vim.cmd('silent! cd %:h')
-				-- end,
-			},
-		},
-	})
-
+					-- end,
+				}
+			}
+		}
+	)
 end
 
 ------------------------------------------
 ----     bufferline 语法高亮配置      ----
 ------------------------------------------
 function M.bufferline_init()
-	nmap('<leader>bc', ':BufferLinePick<CR>')
+	nmap("<leader>bc", ":BufferLinePick<CR>")
 	require("bufferline").setup {
 		options = {
 			mode = "buffers",
@@ -162,8 +308,8 @@ function M.bufferline_init()
 			show_buffer_close_icons = false,
 			show_buffer_icons = true,
 			indicator = {
-				icon = '●', -- this should be omitted if indicator style is not 'icon'
-				style = 'none',
+				icon = "●", -- this should be omitted if indicator style is not 'icon'
+				style = "none"
 			},
 			buffer_close_icon = "",
 			modified_icon = "●",
@@ -182,14 +328,14 @@ function M.bufferline_init()
 				end
 				return true
 			end,
-            highlights = {
-                buffer_selected = { 
-                    gui = "underline",
-                    guifg = "#ffffff",
-                    guibg = "#000000",
-                    -- 如果你还想自定义前景色/背景色，可以添加如下配置 guifg = "任意颜色", -- 比如 #ffffff guibg = "任意颜色", -- 比如 #000000 
-                }, 
-            },
+			highlights = {
+				buffer_selected = {
+					gui = "underline",
+					guifg = "#ffffff",
+					guibg = "#000000"
+					-- 如果你还想自定义前景色/背景色，可以添加如下配置 guifg = "任意颜色", -- 比如 #ffffff guibg = "任意颜色", -- 比如 #000000
+				}
+			},
 			show_tab_indicators = true
 		}
 	}
@@ -248,8 +394,8 @@ function M.FTerm_init()
 		{
 			border = "double",
 			dimensions = {
-				height = 0.75,
-				width = 0.9
+				height = 0.70,
+				width = 0.8
 			},
 			---Filetype of the terminal buffer
 			---@type string
@@ -259,14 +405,14 @@ function M.FTerm_init()
 			---NOTE: if given string[], it will skip the shell and directly executes the command
 			---@type fun():(string|string[])|string|string[]
 			cmd = function()
-                if vim.g.is_unix == 1 then
-                    return os.getenv("SHELL")
-                else
-                    return 'powershell.exe'
-                end
-            end,
+				if vim.g.is_unix == 1 then
+					return os.getenv("SHELL")
+				else
+					return "wsl.exe"
+				end
+			end,
 			---Neovim's native window border. See `:h nvim_open_win` for more configuration options.
-			border = { "╭", "─" ,"╮", "│", "╯", "─", "╰", "│" },
+			border = {"╭", "─", "╮", "│", "╯", "─", "╰", "│"},
 			---Close the terminal as soon as shell/command exits.
 			---Disabling this will mimic the native terminal behaviour.
 			---@type boolean
@@ -308,8 +454,8 @@ function M.FTerm_init()
 			on_stderr = nil
 		}
 	)
-	vim.keymap.set('n', '<A-i>', '<CMD>lua require("FTerm").toggle()<CR>')
-	vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
+	vim.keymap.set("n", "<A-i>", '<CMD>lua require("FTerm").toggle()<CR>')
+	vim.keymap.set("t", "<A-i>", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
 end
 
 ------------------------------------------------------------------------------------------
@@ -617,7 +763,7 @@ function M.Comment_init()
 				---Add comment on the line below
 				below = nil,
 				---Add comment at the end of line
-				eol = nil,
+				eol = nil
 			},
 			---Enable keybindings
 			---NOTE: If given `false` then the plugin won't create any mappings
@@ -724,27 +870,28 @@ function M.gitsigns_init()
 		{
 			-- 😊 ✅ 🚀
 			--
+			-- signs = {
+			-- 	add = {text = "🌟"}, -- 新增
+			-- 	change = {text = "✏️"}, -- 修改
+			-- 	delete = {text = "⛔"}, -- 删除（禁止标志，表示移除）
+			-- 	topdelete = {text = "💣"}, -- 顶部删除（炸弹代表彻底删除）
+			-- 	changedelete = {text = "⚡"}, -- 修改并删除（闪电代表快速变化）
+			-- 	untracked = {text = "👀"} -- 未跟踪
+			-- },
 			signs = {
-				-- add = { text = '✨' }, -- 新增
-				-- change = { text = '📝' }, -- 修改
-				-- delete = { text = '🗑️' }, -- 删除
-				-- topdelete = { text = '🔥' }, -- 顶部删除
-				-- changedelete = { text = '💥' }, -- 修改并删除
-				-- untracked = { text = '❓' }, -- 未跟踪
+				-- add = {text = "✨"}, -- 新增
+				-- change = {text = "📝"}, -- 修改
+				-- delete = {text = "🗑️"}, -- 删除
+				-- topdelete = {text = "🔥"}, -- 顶部删除
+				-- changedelete = {text = "💥"}, -- 修改并删除
+				-- untracked = {text = "❓"} -- 未跟踪
 
-				add = { text = 'G✓' }, -- 新增
-				change = { text = 'G⇌' }, -- 修改
-				delete = { text = 'G✗' }, -- 删除
-				topdelete = { text = 'G⬆' }, -- 顶部删除
-				changedelete = { text = 'G⇌' }, -- 修改并删除，这里使用与修改相同的符号作为示例
-				untracked = { text = 'G…' }, -- 未跟踪
-
-				-- add = { text = is_linux and "G+" or '✨' }, -- 新增
-				-- change = { text = is_linux and "G~" or '📝' }, -- 修改
-				-- delete = { text = is_linux and "G-" or '🗑️' }, -- 删除
-				-- topdelete = { text = is_linux and "G▔" or '🔥' }, -- 顶部删除
-				-- changedelete = { text = is_linux and "G!" or '💥' }, -- 修改并删除
-				-- untracked = { text = is_linux and "G?" or '❓' }, -- 未跟踪
+				-- add = { text = '✓' }, -- 新增
+				-- change = { text = '⇌' }, -- 修改
+				-- delete = { text = '✗' }, -- 删除
+				-- topdelete = { text = '⬆' }, -- 顶部删除
+				-- changedelete = { text = '⇌' }, -- 修改并删除，这里使用与修改相同的符号作为示例
+				-- untracked = { text = '…' }, -- 未跟踪
 			},
 			signcolumn = true, -- 始终显示 Git 状态列
 			numhl = false, -- 不启用行号高亮
@@ -793,9 +940,9 @@ end
 
 function M.null_ls_init()
 	local null_ls = require("null-ls")
-	local python_path = 'pthon3'
+	local python_path = "pthon3"
 	if vim.g.is_win32 then
-		python_path = 'python'
+		python_path = "python"
 	end
 	null_ls.setup(
 		{
@@ -826,16 +973,17 @@ end
 ------------------------------------------------------------------------------------------
 function M.cmake_tools_init()
 	require("cmake-tools").setup(
-	{
-		cmake_command = "cmake", -- CMake 可执行文件路径
-		ctest_command = "ctest", -- CTest 可执行文件路径
-		cmake_build_directory = "build", -- 构建目录
-		cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
-		cmake_kits_global = {}, -- 全局编译器工具链配置
-		cwd = function()
-			return vim.g.workspace_dir.get()
-		end
-	})
+		{
+			cmake_command = "cmake", -- CMake 可执行文件路径
+			ctest_command = "ctest", -- CTest 可执行文件路径
+			cmake_build_directory = "build", -- 构建目录
+			cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
+			cmake_kits_global = {}, -- 全局编译器工具链配置
+			cwd = function()
+				return vim.g.workspace_dir.get()
+			end
+		}
+	)
 end
 
 ------------------------------------------------------------------------------------------
@@ -845,7 +993,7 @@ function M.telescope_init()
 	require("telescope").setup(
 		{
 			defaults = {
-				path_display = { "truncate" },  -- 显示路径时自动处理分隔符
+				path_display = {"truncate"}, -- 显示路径时自动处理分隔符
 				-- find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
 				-- vimgrep_arguments = {
 				--   "rg",  -- 使用 ripgrep
@@ -872,7 +1020,7 @@ function M.telescope_init()
 					"%.venv/",
 					"%.venv_win/",
 					"%.venv_bak/",
-					"%.venv*/",
+					"%.venv*/"
 				},
 				layout_config = {
 					horizontal = {
@@ -884,7 +1032,7 @@ function M.telescope_init()
 						preview_height = 0.6 -- 预览窗口占整个窗口高度的60%
 					}
 				},
-				border = true, -- 启用边框
+				border = true -- 启用边框
 				-- borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"} -- 自定义边框字符
 			},
 			extensions = {
@@ -900,7 +1048,7 @@ function M.telescope_init()
 				},
 				live_grep_args = {
 					auto_quoting = true,
-					path_display = { "truncate" },  -- 显示路径时自动处理分隔符
+					path_display = {"truncate"}, -- 显示路径时自动处理分隔符
 					mappings = {
 						-- extend mappings
 						i = {
@@ -938,7 +1086,10 @@ function M.telescope_init()
 		':lua require("telescope").extensions.live_grep_args.live_grep_args({ cwd = vim.g.workspace_dir.get(), search_dirs = { vim.fn.expand("%:p:h") } })<CR>'
 	)
 	nmap("<leader>sf", ':lua require("telescope.builtin").find_files({ cwd = vim.g.workspace_dir.get() })<CR>')
-	nmap("<leader>sF", ':lua require("telescope.builtin").find_files({ cwd = vim.g.workspace_dir.get() , defaults = {file_ignore_patterns = {}}})<CR>')
+	nmap(
+		"<leader>sF",
+		':lua require("telescope.builtin").find_files({ cwd = vim.g.workspace_dir.get() , defaults = {file_ignore_patterns = {}}})<CR>'
+	)
 	nmap(
 		"<leader>sd",
 		':lua require("telescope-live-grep-args.shortcuts").grep_word_under_cursor({cwd = vim.g.workspace_dir.get()})<CR>'
@@ -955,9 +1106,8 @@ function M.telescope_init()
 		':lua require("telescope").extensions.live_grep_args.live_grep_args({ cwd = vim.g.workspace_dir.get() , default_text= vim.g.get_visual_selection.get()})<CR>'
 	)
 
-    nmap2("<F1>", ":Telescope ")
-	imap2('<F1>', '<Esc>:Telescope ')
-
+	nmap2("<F1>", ":Telescope ")
+	imap2("<F1>", "<Esc>:Telescope ")
 end
 
 ------------------------------------------------------------------------------------------
@@ -1292,6 +1442,5 @@ function M.aerial_init()
 	)
 	nmap("<F2>", ":lua vim.g.toggle_tagbar()<CR>")
 end
-
 
 return M

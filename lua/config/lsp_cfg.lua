@@ -136,26 +136,26 @@ vim.diagnostic.config({
 	virtual_text = {
 		prefix = "■",
 		source = "always",
-		format = function(diagnostic)
-			local icons = {
-				-- [vim.diagnostic.severity.ERROR] = "❌",
-				-- [vim.diagnostic.severity.WARN]  = "⚠️",
-				-- [vim.diagnostic.severity.INFO]  = "ℹ️",
-				-- [vim.diagnostic.severity.HINT]  = "💡",
+		-- format = function(diagnostic)
+		-- 	local icons = {
+		-- 		[vim.diagnostic.severity.ERROR] = "❌",
+		-- 		[vim.diagnostic.severity.WARN]  = "⚠️",
+		-- 		[vim.diagnostic.severity.INFO]  = "ℹ️",
+		-- 		[vim.diagnostic.severity.HINT]  = "💡",
 
-				-- [vim.diagnostic.severity.ERROR] = "⨯",
-				-- [vim.diagnostic.severity.WARN] = "▲",
-				-- [vim.diagnostic.severity.INFO] = "»",
-				-- [vim.diagnostic.severity.HINT] = "➤"
+		-- 		-- [vim.diagnostic.severity.ERROR] = "⨯",
+		-- 		-- [vim.diagnostic.severity.WARN] = "▲",
+		-- 		-- [vim.diagnostic.severity.INFO] = "»",
+		-- 		-- [vim.diagnostic.severity.HINT] = "➤"
 
-				[vim.diagnostic.severity.ERROR] = "L⨯",
-				[vim.diagnostic.severity.WARN] = "L▲",
-				[vim.diagnostic.severity.INFO] = "L»",
-				[vim.diagnostic.severity.HINT] = "Lℹ️"
+		-- 		-- [vim.diagnostic.severity.ERROR] = "L⨯",
+		-- 		-- [vim.diagnostic.severity.WARN] = "L▲",
+		-- 		-- [vim.diagnostic.severity.INFO] = "L»",
+		-- 		-- [vim.diagnostic.severity.HINT] = "Lℹ️"
 
-			}
-			return icons[diagnostic.severity] .. " " .. diagnostic.message
-		end
+		-- 	}
+		-- 	return icons[diagnostic.severity] .. " " .. diagnostic.message
+		-- end
 	},
 	update_in_insert = false,
 	severity_sort = true,
@@ -164,10 +164,15 @@ vim.diagnostic.config({
 	},
 	signs = {
 		text = {
-			[vim.diagnostic.severity.ERROR] = "L⨯",
-			[vim.diagnostic.severity.WARN] = "L▲",
-			[vim.diagnostic.severity.INFO] = "L»",
-			[vim.diagnostic.severity.HINT] = "Lℹ️"
+			[vim.diagnostic.severity.ERROR] = "",
+			[vim.diagnostic.severity.WARN] = "▲", -- "‼",
+			[vim.diagnostic.severity.INFO] = "✶",
+			[vim.diagnostic.severity.HINT] = "✿"
+
+			-- [vim.diagnostic.severity.ERROR] = "⨯",
+			-- [vim.diagnostic.severity.WARN] = "▲",
+			-- [vim.diagnostic.severity.INFO] = "»",
+			-- [vim.diagnostic.severity.HINT] = "i"
 			-- [vim.diagnostic.severity.ERROR] = "❌",
 			-- [vim.diagnostic.severity.WARN]  = "⚠️",
 			-- [vim.diagnostic.severity.INFO]  = "ℹ️",

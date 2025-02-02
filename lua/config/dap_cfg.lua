@@ -5,6 +5,7 @@ local nmapd = keymap.nmapd
 local dap = require("dap")
 local dapui = require("dapui")
 
+-- dap.defaults.fallback.terminal_win_cmd = "enew | set filetype=dap-terminal"
 require("telescope").load_extension("dap")
 require("nvim-dap-virtual-text").setup()
 -- dapui.setup()
@@ -583,60 +584,13 @@ vim.api.nvim_create_autocmd(
 			vim.cmd("highlight DapBreakpointTextDap guifg=red ctermfg=256")
 			vim.cmd("highlight DapRunToCusorDap2 guibg=#663300 ctermbg=256") -- 为DapStoppedLine设置背景颜色
 
-			vim.fn.sign_define("DiagnosticSignError", {text = "✗", texthl = "DiagnosticSignError"}) -- 错误
-			vim.fn.sign_define("DiagnosticSignWarn", {text = "‼", texthl = "DiagnosticSignWarn"}) -- 警告
-			vim.fn.sign_define("DiagnosticSignInfo", {text = "⬥", texthl = "DiagnosticSignInfo"}) -- 信息
-			vim.fn.sign_define("DiagnosticSignHint", {text = "★", texthl = "DiagnosticSignHint"}) -- 提示
-
-			-- vim.fn.sign_define("DapBreakpoint", {
-			-- 	text = "🔴",  -- 使用红色圆圈表示断点
-			-- 	texthl = "DapBreakpointTextDap",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义运行到光标位置的符号
-			-- vim.fn.sign_define("DapStopped", {
-			-- 	text = "➤",  -- 使用箭头表示运行到光标位置
-			-- 	texthl = "DapRunToCusorDap",  -- 高亮组
-			-- 	linehl = "DapRunToCusorDap2",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义无效断点符号
-			-- vim.fn.sign_define("DapBreakpointRejected", {
-			-- 	text = "🚫",  -- 使用禁止符号表示无效断点
-			-- 	texthl = "DapBreakpointRejectedText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义已解析断点符号
-			-- vim.fn.sign_define("DapBreakpointResolved", {
-			-- 	text = "✔️",  -- 使用对勾表示已解析断点
-			-- 	texthl = "DapBreakpointResolvedText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义条件断点符号
-			-- vim.fn.sign_define("DapBreakpointConditional", {
-			-- 	text = "🔍",  -- 使用放大镜表示条件断点
-			-- 	texthl = "DapBreakpointConditionalText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义日志断点符号
-			-- vim.fn.sign_define("DapLogPoint", {
-			-- 	text = "📄",  -- 使用文档符号表示日志断点
-			-- 	texthl = "DapLogPointText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
+			-- vim.fn.sign_define("DiagnosticSignError", {text = "✗", texthl = "DiagnosticSignError"}) -- 错误
+			-- vim.fn.sign_define("DiagnosticSignWarn", {text = "‼", texthl = "DiagnosticSignWarn"}) -- 警告
+			-- vim.fn.sign_define("DiagnosticSignInfo", {text = "⬥", texthl = "DiagnosticSignInfo"}) -- 信息
+			-- vim.fn.sign_define("DiagnosticSignHint", {text = "★", texthl = "DiagnosticSignHint"}) -- 提示
 
 			vim.fn.sign_define("DapBreakpoint", {
-				text = "D●",  -- 使用红色圆圈表示断点
+				text = "⬤",  -- 使用红色圆圈表示断点
 				texthl = "DapBreakpointTextDap",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
@@ -644,7 +598,7 @@ vim.api.nvim_create_autocmd(
 
 			-- 定义运行到光标位置的符号
 			vim.fn.sign_define("DapStopped", {
-				text = "D▶",  -- 使用箭头表示运行到光标位置
+				text = "=>",  -- 使用箭头表示运行到光标位置
 				texthl = "DapRunToCusorDap",  -- 高亮组
 				linehl = "DapRunToCusorDap2",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
@@ -652,7 +606,7 @@ vim.api.nvim_create_autocmd(
 
 			-- 定义无效断点符号
 			vim.fn.sign_define("DapBreakpointRejected", {
-				text = "D✗",  -- 使用禁止符号表示无效断点
+				text = "⬢",  -- 使用禁止符号表示无效断点
 				texthl = "DapBreakpointRejectedText",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
@@ -660,7 +614,7 @@ vim.api.nvim_create_autocmd(
 
 			-- 定义已解析断点符号
 			vim.fn.sign_define("DapBreakpointResolved", {
-				text = "D✔️",  -- 使用对勾表示已解析断点
+				text = "◆",  -- 使用对勾表示已解析断点
 				texthl = "DapBreakpointResolvedText",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
@@ -668,7 +622,7 @@ vim.api.nvim_create_autocmd(
 
 			-- 定义条件断点符号
 			vim.fn.sign_define("DapBreakpointConditional", {
-				text = "D?",  -- 使用放大镜表示条件断点
+				text = "◎",  -- 使用放大镜表示条件断点
 				texthl = "DapBreakpointConditionalText",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
@@ -676,11 +630,58 @@ vim.api.nvim_create_autocmd(
 
 			-- 定义日志断点符号
 			vim.fn.sign_define("DapLogPoint", {
-				text = "D!",  -- 使用文档符号表示日志断点
+				text = "■",  -- 使用文档符号表示日志断点
 				texthl = "DapLogPointText",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
 			})
+
+			-- vim.fn.sign_define("DapBreakpoint", {
+			-- 	text = "D●",  -- 使用红色圆圈表示断点
+			-- 	texthl = "DapBreakpointTextDap",  -- 高亮组
+			-- 	linehl = "",  -- 行高亮（留空）
+			-- 	numhl = ""    -- 行号高亮（留空）
+			-- })
+
+			-- -- 定义运行到光标位置的符号
+			-- vim.fn.sign_define("DapStopped", {
+			-- 	text = "D▶",  -- 使用箭头表示运行到光标位置
+			-- 	texthl = "DapRunToCusorDap",  -- 高亮组
+			-- 	linehl = "DapRunToCusorDap2",  -- 行高亮（留空）
+			-- 	numhl = ""    -- 行号高亮（留空）
+			-- })
+
+			-- -- 定义无效断点符号
+			-- vim.fn.sign_define("DapBreakpointRejected", {
+			-- 	text = "D✗",  -- 使用禁止符号表示无效断点
+			-- 	texthl = "DapBreakpointRejectedText",  -- 高亮组
+			-- 	linehl = "",  -- 行高亮（留空）
+			-- 	numhl = ""    -- 行号高亮（留空）
+			-- })
+
+			-- -- 定义已解析断点符号
+			-- vim.fn.sign_define("DapBreakpointResolved", {
+			-- 	text = "D✔️",  -- 使用对勾表示已解析断点
+			-- 	texthl = "DapBreakpointResolvedText",  -- 高亮组
+			-- 	linehl = "",  -- 行高亮（留空）
+			-- 	numhl = ""    -- 行号高亮（留空）
+			-- })
+
+			-- -- 定义条件断点符号
+			-- vim.fn.sign_define("DapBreakpointConditional", {
+			-- 	text = "D?",  -- 使用放大镜表示条件断点
+			-- 	texthl = "DapBreakpointConditionalText",  -- 高亮组
+			-- 	linehl = "",  -- 行高亮（留空）
+			-- 	numhl = ""    -- 行号高亮（留空）
+			-- })
+
+			-- -- 定义日志断点符号
+			-- vim.fn.sign_define("DapLogPoint", {
+			-- 	text = "D!",  -- 使用文档符号表示日志断点
+			-- 	texthl = "DapLogPointText",  -- 高亮组
+			-- 	linehl = "",  -- 行高亮（留空）
+			-- 	numhl = ""    -- 行号高亮（留空）
+			-- })
 
 
 		end

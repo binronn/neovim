@@ -5,13 +5,21 @@ return require("avante").setup(
 		openai = {
 			-- endpoint = "https://api.deepseek.com/v1",
 			-- model = "deepseek-chat",
+			-- api_key_name = 'DSK',
 			endpoint = "http://192.168.0.101:8000/v1",
 			model = "qwen",
-			timeout = 6000, -- Timeout in milliseconds
+			api_key_name = 'ORG',
+			-- endpoint = "https://integrate.api.nvidia.com/v1",
+			-- model = "deepseek-ai/deepseek-r1",
+			-- api_key_name = 'GTX',
+			-- endpoint = "http://localhost:8080/v1",
+			-- model = "qwen",
+			-- endpoint = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-32B-Instruct/v1/chat/completions",
+			-- model = "Qwen/Qwen2.5-Coder-32B-Instruct",
+			-- api_key_name = 'HUG',
+			timeout = 3000, -- Timeout in milliseconds
 			temperature = 0,
 			max_tokens = 4096,
-			api_key_name = 'ORG'
-			-- api_key_name = 'DSK'
 		},
 		behaviour = {
 			auto_suggestions = false, -- Experimental stage

@@ -6,7 +6,8 @@
 vim.g.ambiwidth = double
 vim.opt.ambiwidth = double
 
-if vim.g.is_win32 then
+if vim.g.is_win32 == 1 then
+    vim.cmd('set shellslash')
 	vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
 end
 
@@ -132,3 +133,4 @@ vim.opt.termguicolors = true
 -- for avant.nvim
 -- views can only be fully collapsed with the global statusline
 vim.opt.laststatus = 3
+vim.cmd('set laststatus=3')
