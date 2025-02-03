@@ -1098,7 +1098,7 @@ function M.telescope_init()
 		"<leader>ss",
 		':lua require("telescope.builtin").tags({ env = { TAGS = vim.o.tags}, default_text= vim.fn.expand("<cword>") } )<CR>'
 	)
-	nmap("<leader>sg", ":lua vim.g.generate_ctags.get()<CR>")
+	nmap("<leader>sg", ":lua vim.g.generate_ctags()<CR>")
 
 	-- 配置可视模式下的快捷键
 	vmap(

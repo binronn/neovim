@@ -196,9 +196,8 @@ vim.api.nvim_create_autocmd(
 		once = true,
 		pattern = "*",
 		callback = function()
-			vim.g.reset_workspace_dir.get()
-			vim.g.generate_ctags.get()
-			-- 删除这个autocmd
+			vim.g.reset_workspace_dir_nop()
+			vim.g.generate_ctags(true)
 		end
 	}
 )
@@ -210,7 +209,7 @@ vim.cmd(
 	[[
 augroup GenerateCtags
     autocmd!
-    autocmd VimEnter * lua vim.schedule(function()vim.g.generate_ctags.get()end) 
+    autocmd VimEnter * lua vim.schedule(function()vim.g.generate_ctags(true)end) 
 augroup END
 ]]
 )

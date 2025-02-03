@@ -79,7 +79,8 @@ end
 vim.g.reset_workspace_dir = {get = reset_workspace_dir}
 vim.g.reset_workspace_dir_nop = reset_workspace_dir_nop
 
-local function generate_ctags()
+local function generate_ctags(np)
+	np = np == nil and true or false
 	-- 获取当前目录
 	local current_dir = vim.g.workspace_dir.get()
 
@@ -123,7 +124,7 @@ local function generate_ctags()
 		-- 过滤掉不需要的目录
 		local exclude_dirs =
 			" --exclude=.venv --exclude=.vs --exclude=.venv_wsl --exclude=.vscode --exclude=.git" ..
-			" --exclude='build*' --exclude=out --exclude='*.txt' --exclude='*.json' --exclude='*.md' --exclude='.cache'"
+			" --exclude='build*' --exclude='.venv*' --exclude=.github --exclude=out --exclude='*.txt' --exclude='*.json' --exclude='*.md' --exclude='.cache'"
 		local ctags_cmd = string.format("ctags -R %s -f %s/tags %s", exclude_dirs, current_dir, current_dir)
 
 		if vim.fn.filereadable(current_dir .. "/tags") == 1 then
@@ -132,22 +133,32 @@ local function generate_ctags()
 
 		-- 执行 ctags 命令
 		vim.o.tags = current_dir .. "/tags"
-		print("ctags generating in " .. current_dir .. "/tags")
+
+		if np == true then
+			print("ctags generating in " .. current_dir .. "/tags")
+		end
 		vim.g.async_command(
 			ctags_cmd,
 			function(code)
 				if code == 0 then
-					print("ctags generated in " .. current_dir .. "/tags")
+					if np == true then
+						print("ctags generated in " .. current_dir .. "/tags")
+					end
 				else
-					print("ctags exit code: " .. code)
+					if np == true then
+						print("ctags exit code: " .. code)
+					end
 				end
 			end
 		)
 	else
-		print("No need to generate ctags in " .. current_dir)
+		if np == true then
+			print("No need to generate ctags in " .. current_dir)
+		end
 	end
 end
-vim.g.generate_ctags = {get = generate_ctags}
+-- vim.g.generate_ctags = {get = generate_ctags}
+vim.g.generate_ctags = generate_ctags
 
 -- 定义函数：启动 live_grep_args 并自动添加引号
 local function live_grep_args_with_quotes()
