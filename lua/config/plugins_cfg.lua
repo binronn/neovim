@@ -1108,6 +1108,28 @@ function M.telescope_init()
 
 	nmap2("<F1>", ":Telescope ")
 	imap2("<F1>", "<Esc>:Telescope ")
+
+	------------------------------------------------------------------------------------------
+	-- Telescope 路径修复
+	------------------------------------------------------------------------------------------
+	-- 保存原始的 get_selected_entry 函数
+	local original_get_selected_entry = require("telescope.actions.state").get_selected_entry
+	local function hijack_get_selected_entry(...)
+		local entry = original_get_selected_entry(...)
+		if not entry then return nil end
+
+		-- 仅在 Windows 下替换反斜杠
+		if vim.g.is_win32 == 1 then
+			-- 深度拷贝 entry 避免污染原始数据
+			local modified_entry = vim.deepcopy(entry)
+			-- 替换路径分隔符
+			modified_entry.value = modified_entry.value:gsub("\\", "/")
+			return modified_entry
+		end
+
+		return entry
+	end
+	require("telescope.actions.state").get_selected_entry = hijack_get_selected_entry
 end
 
 ------------------------------------------------------------------------------------------

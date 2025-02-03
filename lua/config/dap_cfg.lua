@@ -606,7 +606,7 @@ vim.api.nvim_create_autocmd(
 
 			-- 定义无效断点符号
 			vim.fn.sign_define("DapBreakpointRejected", {
-				text = "⬢",  -- 使用禁止符号表示无效断点
+				text = "⌂",  -- 使用禁止符号表示无效断点
 				texthl = "DapBreakpointRejectedText",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
