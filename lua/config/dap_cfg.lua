@@ -502,7 +502,7 @@ end
 -- 断点快捷键
 nmap("<F9>", dap.toggle_breakpoint, {noremap = true, silent = true})
 nmap("<C-F9>", function() dap.toggle_breakpoint(vim.fn.input("Condition: ")) end, {noremap = true, silent = true})
--- vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(nil, nil, vim.fn.input("Condition: ")) end, { noremap = true, silent = false })
+vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(nil, nil, vim.fn.input("Condition: ")) end, { noremap = true, silent = false })
 -- vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(vim.fn.expand('%:p'), vim.fn.line('.'), vim.fn.input("Condition: "))  end, { noremap = true, silent = false })
 -- 只跳转到下一个错误
 nmap(
@@ -615,7 +615,7 @@ vim.api.nvim_create_autocmd(
 			-- 定义已解析断点符号
 			vim.fn.sign_define("DapBreakpointResolved", {
 				text = "◆",  -- 使用对勾表示已解析断点
-				texthl = "DapBreakpointResolvedText",  -- 高亮组
+				texthl = "DapBreakpointTextDap",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
 			})
@@ -623,7 +623,7 @@ vim.api.nvim_create_autocmd(
 			-- 定义条件断点符号
 			vim.fn.sign_define("DapBreakpointConditional", {
 				text = "◎",  -- 使用放大镜表示条件断点
-				texthl = "DapBreakpointConditionalText",  -- 高亮组
+				texthl = "DapBreakpointTextDap",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
 			})
@@ -631,7 +631,7 @@ vim.api.nvim_create_autocmd(
 			-- 定义日志断点符号
 			vim.fn.sign_define("DapLogPoint", {
 				text = "■",  -- 使用文档符号表示日志断点
-				texthl = "DapLogPointText",  -- 高亮组
+				texthl = "DapBreakpointTextDap",  -- 高亮组
 				linehl = "",  -- 行高亮（留空）
 				numhl = ""    -- 行号高亮（留空）
 			})

@@ -39,26 +39,26 @@ function build_project(compile_command)
 			print("Created build directory: " .. build_dir)
 		end
 
-		local cmake_pam = ''
-		if vim.fn.has('unix') == 1 then
+		local cmake_pam = ""
+		if vim.fn.has("unix") == 1 then
 			cmake_pam =
 				'-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
 		else
 			cmake_pam =
 				' -G "Ninja" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
 		end
-			-- '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug'
+		-- '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug'
 		-- 在 Fterm 中执行 cmake 命令
 		if compile_command == true then
-			if vim.fn.has('unix') == 1 then
-				cmd = "cd \"" .. build_dir .. "\" && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
+			if vim.fn.has("unix") == 1 then
+				cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
 			else
-				cmd = "cd \"" .. build_dir .. "\" && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
+				cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
 			end
 			-- fterm.run(cmd)
 			vim.cmd("AsyncRun " .. cmd)
 		else
-			cmd = "cd \"" .. build_dir .. "\" && cmake " .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .."
+			cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .."
 			vim.cmd("AsyncRun " .. cmd)
 		end
 
@@ -71,10 +71,10 @@ function build_project(compile_command)
 
 		-- 在 Fterm 中执行 make 命令
 		if compile_command == true then
-			cmd = "cd \"" .. wsdir .. "\" && bear --append -o compile_commands.json make"
+			cmd = 'cd "' .. wsdir .. '" && bear --append -o compile_commands.json make'
 			vim.cmd("AsyncRun " .. cmd)
 		else
-			cmd = "cd \"" .. wsdir .. "\" && make"
+			cmd = 'cd "' .. wsdir .. '" && make'
 			-- fterm.run(cmd)
 			vim.cmd("AsyncRun " .. cmd)
 		end
@@ -100,7 +100,7 @@ function build_project(compile_command)
 
 		-- 在 Fterm 中执行编译命令
 		local cmd = compiler .. " " .. current_file .. " -o " .. output_file
-        vim.cmd("AsyncRun " .. cmd)
+		vim.cmd("AsyncRun " .. cmd)
 
 		-- 将生成的可执行文件目录保存到全局变量中
 		vim.g.build_dir = wsdir
@@ -147,18 +147,6 @@ vim.api.nvim_create_autocmd(
 )
 
 ----------------------------------------------------------------
--- 在 Vim 启动时执行 generate_ctags 函数
-----------------------------------------------------------------
-vim.cmd(
-	[[
-augroup GenerateCtags
-    autocmd!
-    autocmd VimEnter * lua vim.schedule(function()vim.g.generate_ctags.get()end) 
-augroup END
-]]
-)
-
-----------------------------------------------------------------
 -- 当只剩下 NvimTree 窗口时，自动退出
 ----------------------------------------------------------------
 vim.cmd(
@@ -194,7 +182,36 @@ if vim.g.is_win32 == 1 then
 			callback = function()
 				vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
 				vim.opt.laststatus = 3
-			end,
+			end
 		}
 	)
 end
+
+----------------------------------------------------------------
+-- 首次进入设置工作目录
+----------------------------------------------------------------
+vim.api.nvim_create_autocmd(
+	{"BufRead"}, -- 多个触发事件
+	{
+		once = true,
+		pattern = "*",
+		callback = function()
+			vim.g.reset_workspace_dir.get()
+			vim.g.generate_ctags.get()
+			-- 删除这个autocmd
+		end
+	}
+)
+
+----------------------------------------------------------------
+-- 在 Vim 启动时执行 generate_ctags 函数
+----------------------------------------------------------------
+vim.cmd(
+	[[
+augroup GenerateCtags
+    autocmd!
+    autocmd VimEnter * lua vim.schedule(function()vim.g.generate_ctags.get()end) 
+augroup END
+]]
+)
+

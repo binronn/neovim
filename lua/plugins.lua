@@ -96,9 +96,26 @@ return {
 	-- 		)
 	-- 	end
 	-- },
+	-- {
+	-- 	"navarasu/onedark.nvim",
+	-- 	config = function()
+	-- 		-- 在这里添加任何你需要的初始化代码，例如设置主题：
+	-- 		-- vim.cmd.colorscheme("onedark")
+	-- 	end,
+	-- },
+	-- {
+	-- 	"dracula/vim",
+	-- 	name = "dracula", -- 如果你想明确指定插件名称，可以保留这一行；如果不需要改变名称，则可以省略。
+	-- 	config = function()
+	-- 		-- 在这里添加任何你需要的初始化代码，例如设置主题：
+	-- 		-- vim.cmd.colorscheme("dracula")
+	-- 		-- vim.g.colorscheme_bg = "dark"
+	-- 		-- vim.cmd('highlight Normal ctermfg=DarkGray guifg=#BEBEBE')
+	-- 	end,
+	-- },
 	{
 		"jiangmiao/auto-pairs", -- 自动括号
-		event = {'BufRead'}
+		event = {"BufRead"}
 	},
 	{
 		"nvimdev/dashboard-nvim", -- 启动面板
@@ -110,7 +127,7 @@ return {
 	},
 	{
 		"nvim-lualine/lualine.nvim", -- 状态栏
-		event = {'BufEnter', 'BufRead'},
+		event = {"BufEnter", "BufRead"},
 		-- event = {'VeryLazy'},
 		-- after = 'dashboard-nvim',
 		dependencies = {"kyazdani42/nvim-web-devicons", opt = true},
@@ -118,9 +135,7 @@ return {
 			pcfg.lualine_init()
 		end
 	},
-	{
-		-- "kyazdani42/nvim-web-devicons" -- 图标支持
-	},
+	{},
 	-- {
 	-- 	"tpope/vim-sensible" -- 提供一些合理的默认设置
 	-- },
@@ -174,46 +189,42 @@ return {
 	{
 		"skywind3000/asyncrun.vim", -- 异步执行命令插件
 		lazy = true,
-		event = {'VeryLazy'},
+		event = {"VeryLazy"},
 		config = function()
 			vim.api.nvim_set_keymap("c", "Ar", "AsyncRun ", {noremap = true, silent = false})
 			vim.api.nvim_set_keymap("c", "As", "AsyncStop", {noremap = true, silent = false})
 		end
 	},
 	{
-		"folke/tokyonight.nvim",
-		-- lazy = false,
+		"sainnhe/gruvbox-material",
+		lazy = true,
 		config = function()
-			-- vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
-			-- vim.schedule(function()vim.cmd("colorscheme tokyonight-moon")end)
+			-- vim.cmd("colorscheme gruvbox-material")
 		end
 	},
 	{
-		'sainnhe/gruvbox-material',
-		lazy = false,
+		"AlexvZyl/nordic.nvim",
 		config = function()
-			vim.cmd("colorscheme gruvbox-material")
+			require("nordic").setup(
+				{
+					cursorline = {
+						-- Bold font in cursorline.
+						bold = false,
+						-- Bold cursorline number.
+						bold_number = true,
+						-- Available styles: 'dark', 'light'.
+						theme = "dark",
+						-- Blending the cursorline bg with the buffer bg.
+						blend = 0.85
+					}
+				}
+			)
+			vim.cmd.colorscheme("nordic")
 		end
 	},
-	{
-		'shaunsingh/nord.nvim',
-		config = function()
-			-- vim.schedule(function()vim.cmd("colorscheme nord")end)
-		end
-	},
-	-- {
-	-- 	'mhartington/oceanic-next',
-	-- 	lazy = false,
-	-- 	config = function()
-	-- 		vim.cmd('syntax on')
-	-- 		vim.cmd('let g:oceanic_next_terminal_bold = 1')
-	-- 		vim.cmd('let g:oceanic_next_terminal_italic = 1')
-	-- 		vim.schedule(function()vim.cmd("colorscheme OceanicNext")end)
-	-- 	end
-	-- },
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
-		event = {'VimEnter'},
+		event = {"VimEnter"},
 		config = function()
 			pcfg.gitsigns_init()
 		end
@@ -236,7 +247,7 @@ return {
 	{
 		"numToStr/FTerm.nvim", -- 弹出式终端
 		lazy = true,
-		event = {'VeryLazy'},
+		event = {"VeryLazy"},
 		config = function()
 			pcfg.FTerm_init()
 		end
@@ -252,27 +263,44 @@ return {
 	{
 		"tpope/vim-fugitive", -- Git 插件 :G status<CR> :G ..<CR>
 		lazy = true,
-		event = {"BufRead"},
+		event = {"BufRead"}
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		event = "BufRead",
-		whitespace = { highlight = { "Whitespace", "NonText" } },
+		whitespace = {highlight = {"Whitespace", "NonText"}},
 		config = function()
-			require('ibl').setup({
-				indent = {
-					char = '╎',
-					smart_indent_cap = true,
-					priority = 1,
-				},
-				scope = {
-					enabled = false,
-				},
-				exclude = {
-					filetypes = {'dashboard', 'terminal', 'nofile', 'quickfix', 'prompt'},
-				}
+			local highlight = {
+				"iblhl_default"
+			}
 
-			})
+			local hooks = require "ibl.hooks"
+			-- create the highlight groups in the highlight setup hook, so they are reset
+			-- every time the colorscheme changes
+			hooks.register(
+				hooks.type.HIGHLIGHT_SETUP,
+				function()
+					vim.api.nvim_set_hl(0, "iblhl_default", {fg = "#4f5756"})
+				end
+			)
+
+			require("ibl").setup(
+				{
+					indent = {
+						highlight = highlight,
+						char = "╎",
+						smart_indent_cap = true,
+						priority = 1
+					},
+					scope = {
+						enabled = false
+					},
+					exclude = {
+						filetypes = {"dashboard", "terminal", "nofile", "quickfix", "prompt"}
+					}
+				}
+			)
+			vim.api.nvim_set_hl(0, "IblIndent", {fg = "white"})
 		end
 	},
 	{
@@ -285,7 +313,7 @@ return {
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
-		event = {'VeryLazy'},
+		event = {"VeryLazy"},
 		dependencies = {
 			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
@@ -295,15 +323,15 @@ return {
 			{
 				"L3MON4D3/LuaSnip",
 				config = function()
-					vim.g.luasnip = require('config/luasnip_cfg')
-					require('config/luasnip_cfg')
+					vim.g.luasnip = require("config/luasnip_cfg")
+					require("config/luasnip_cfg")
 				end
 			}, -- 代码片段引擎
-            "jose-elias-alvarez/null-ls.nvim", -- 代码格式化插件
+			"jose-elias-alvarez/null-ls.nvim" -- 代码格式化插件
 		},
 		config = function()
 			require("config/lsp_cfg")
-            pcfg.null_ls_init()
+			pcfg.null_ls_init()
 		end,
 		ft = programming_filetypes
 	},
@@ -311,16 +339,16 @@ return {
 	{
 		"nvim-telescope/telescope.nvim",
 		lazy = true,
-		event = {'VeryLazy'},
+		event = {"VeryLazy"},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-            "nvim-telescope/telescope-file-browser.nvim", -- 文件浏览器
-            "nvim-telescope/telescope-live-grep-args.nvim", -- 增强 live_grep
-            "nvim-telescope/telescope-ui-select.nvim", -- 增强 UI 选择
+			"nvim-telescope/telescope-file-browser.nvim", -- 文件浏览器
+			"nvim-telescope/telescope-live-grep-args.nvim", -- 增强 live_grep
+			"nvim-telescope/telescope-ui-select.nvim", -- 增强 UI 选择
 			{
 				"nvim-telescope/telescope-fzf-native.nvim", -- 提供更快的模糊查找
 				build = "make" -- 需要编译
-			},
+			}
 		},
 		config = function()
 			pcfg.telescope_init()
@@ -344,7 +372,7 @@ return {
 	-- CMAKE 插件
 	{
 		"Civitasv/cmake-tools.nvim",
-		ft = { "cmake", "cpp", "c" }, -- 指定需要延迟加载的文件类型
+		ft = {"cmake", "cpp", "c"}, -- 指定需要延迟加载的文件类型
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- 依赖插件
 			"mfussenegger/nvim-dap" -- 调试支持
@@ -357,7 +385,7 @@ return {
 	{
 		"Shatur/neovim-session-manager",
 		lazy = true,
-		event = {'VeryLazy'},
+		event = {"VeryLazy"},
 		dependencies = {"nvim-lua/plenary.nvim"},
 		config = function()
 			pcfg.session_manager_init()
@@ -365,7 +393,7 @@ return {
 	},
 	{
 		"stevearc/dressing.nvim",
-		event = {'VeryLazy'},
+		event = {"VeryLazy"},
 		config = pcfg.dressing_init
 	},
 	------------------------------------------
@@ -378,10 +406,14 @@ return {
 		ft = programming_filetypes,
 		config = function()
 			require("config/avante_cfg")
-			
-			nmap("<leader>aa", function()
-			    require("avante").toggle() -- Assuming the function is named toggle and exported by avante.nvim
-			end, {noremap = true, silent = true})
+
+			nmap(
+				"<leader>aa",
+				function()
+					require("avante").toggle() -- Assuming the function is named toggle and exported by avante.nvim
+				end,
+				{noremap = true, silent = true}
+			)
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
