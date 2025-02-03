@@ -7,7 +7,6 @@ vim.g.ambiwidth = double
 vim.opt.ambiwidth = double
 
 if vim.g.is_win32 == 1 then
-    vim.cmd('set shellslash')
 	vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
 end
 

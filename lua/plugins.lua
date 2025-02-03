@@ -70,10 +70,10 @@ local programming_filetypes = {
 local pcfg = require("config/plugins_cfg")
 
 return {
-	{
-		"andymass/vim-matchup", -- 高亮匹配
-		lazy = true,
-	},
+	-- {
+	-- 	"andymass/vim-matchup", -- 高亮匹配
+	-- 	lazy = true,
+	-- },
 	{
 		"itchyny/vim-cursorword" -- 高亮光标下内容
 	},
@@ -110,7 +110,8 @@ return {
 	},
 	{
 		"nvim-lualine/lualine.nvim", -- 状态栏
-		event = {'VeryLazy'},
+		event = {'BufEnter', 'BufRead'},
+		-- event = {'VeryLazy'},
 		-- after = 'dashboard-nvim',
 		dependencies = {"kyazdani42/nvim-web-devicons", opt = true},
 		config = function()
@@ -118,11 +119,11 @@ return {
 		end
 	},
 	{
-		"kyazdani42/nvim-web-devicons" -- 图标支持
+		-- "kyazdani42/nvim-web-devicons" -- 图标支持
 	},
-	{
-		"tpope/vim-sensible" -- 提供一些合理的默认设置
-	},
+	-- {
+	-- 	"tpope/vim-sensible" -- 提供一些合理的默认设置
+	-- },
 	{
 		"stevearc/aerial.nvim", -- 类窗口
 		config = function()
@@ -131,6 +132,9 @@ return {
 	},
 	{
 		"inkarkat/vim-mark", -- 高亮
+		dependencies = {
+			"inkarkat/vim-ingo-library" -- 通用函数库
+		},
 		init = function()
 			vim.g.mw_no_mappings = 1
 			vim.g.mwDefaultHighlightingPalette = "maximum"
@@ -143,9 +147,6 @@ return {
 			nmap("<leader>mn", "<Plug>MarkClear", {noremap = true, silent = true})
 			nmap("<leader>mN", "<Plug>MarkAllClear", {noremap = true, silent = true})
 		end
-	},
-	{
-		"inkarkat/vim-ingo-library" -- 通用函数库
 	},
 	{
 		"numToStr/Comment.nvim", -- 注释插件
@@ -179,19 +180,25 @@ return {
 			vim.api.nvim_set_keymap("c", "As", "AsyncStop", {noremap = true, silent = false})
 		end
 	},
-	-- {
-	-- 	"folke/tokyonight.nvim",
-	-- 	-- lazy = false,
-	-- 	config = function()
-	-- 		-- vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
-	-- 		-- vim.schedule(function()vim.cmd("colorscheme tokyonight-moon")end)
-	-- 	end
-	-- },
+	{
+		"folke/tokyonight.nvim",
+		-- lazy = false,
+		config = function()
+			-- vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
+			-- vim.schedule(function()vim.cmd("colorscheme tokyonight-moon")end)
+		end
+	},
 	{
 		'sainnhe/gruvbox-material',
 		lazy = false,
 		config = function()
-			vim.schedule(function()vim.cmd("colorscheme gruvbox-material")end)
+			vim.cmd("colorscheme gruvbox-material")
+		end
+	},
+	{
+		'shaunsingh/nord.nvim',
+		config = function()
+			-- vim.schedule(function()vim.cmd("colorscheme nord")end)
 		end
 	},
 	-- {
@@ -206,6 +213,7 @@ return {
 	-- },
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
+		event = {'VimEnter'},
 		config = function()
 			pcfg.gitsigns_init()
 		end
@@ -321,7 +329,6 @@ return {
 	-- 调试插件
 	{
 		"mfussenegger/nvim-dap",
-		event = {"VeryLazy"},
 		ft = {"h", "hpp", "cpp", "cxx"},
 		dependencies = {
 			"nvim-neotest/nvim-nio",
@@ -356,6 +363,11 @@ return {
 			pcfg.session_manager_init()
 		end
 	},
+	{
+		"stevearc/dressing.nvim",
+		event = {'VeryLazy'},
+		config = pcfg.dressing_init
+	},
 	------------------------------------------
 	----     avante AI                    ----
 	------------------------------------------
@@ -366,7 +378,10 @@ return {
 		ft = programming_filetypes,
 		config = function()
 			require("config/avante_cfg")
-			vim.api.nvim_set_keymap("n", "<leader>aa", ':AvanteToggle<CR>', {noremap = true, silent = true})
+			
+			nmap("<leader>aa", function()
+			    require("avante").toggle() -- Assuming the function is named toggle and exported by avante.nvim
+			end, {noremap = true, silent = true})
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows

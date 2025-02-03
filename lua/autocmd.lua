@@ -182,3 +182,19 @@ vim.api.nvim_create_autocmd(
 		end
 	}
 )
+
+----------------------------------------------------------------
+-- 设置Windows路径分隔符
+----------------------------------------------------------------
+if vim.g.is_win32 == 1 then
+	vim.api.nvim_create_autocmd(
+		"BufWinEnter",
+		{
+			pattern = "*",
+			callback = function()
+				vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+				vim.opt.laststatus = 3
+			end,
+		}
+	)
+end
