@@ -14,7 +14,7 @@ fi
 
 export http_proxy=http://127.0.0.1:10808
 export https_proxy=http://127.0.0.1:10808
-export ORG=kq19vnWVCKoW*xj1ydv5v5330PwNBCoSZjuftriy68reYU*tntMAHELF6sFvJ_vh0
+export ORG=''
 
 source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
 autoload -Uz _zinit
@@ -106,3 +106,4 @@ SAVEHIST=200
 [[ -s /data/data/com.termux/files/home/.autojump/etc/profile.d/autojump.sh ]] && source /data/data/com.termux/files/home/.autojump/etc/profile.d/autojump.sh
 autoload -U compinit && compinit -u
 
+export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:'

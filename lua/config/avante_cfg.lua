@@ -3,23 +3,38 @@ return require("avante").setup(
 		provider = "openai",
 		auto_suggestions_provider = "openai", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
 		openai = {
-			-- endpoint = "https://api.deepseek.com/v1",
-			-- model = "deepseek-chat",
-			-- api_key_name = 'DSK',
-			endpoint = "http://192.168.0.101:8000/v1",
-			model = "qwen",
-			api_key_name = 'ORG',
-			-- endpoint = "https://integrate.api.nvidia.com/v1",
-			-- model = "deepseek-ai/deepseek-r1",
-			-- api_key_name = 'GTX',
-			-- endpoint = "http://localhost:8080/v1",
-			-- model = "qwen",
-			-- endpoint = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-32B-Instruct/v1/chat/completions",
-			-- model = "Qwen/Qwen2.5-Coder-32B-Instruct",
-			-- api_key_name = 'HUG',
 			timeout = 3000, -- Timeout in milliseconds
 			temperature = 0,
 			max_tokens = 4096,
+			---------------------------------------------------------------------------------
+			-- deepseek
+			---------------------------------------------------------------------------------
+			---
+			-- endpoint = "https://api.deepseek.com/v1",
+			-- model = "deepseek-reasoner",
+			-- api_key_name = 'DSK',
+			---------------------------------------------------------------------------------
+			-- nvidia
+			---------------------------------------------------------------------------------
+			---
+			-- endpoint = "https://integrate.api.nvidia.com/v1",
+			-- model = "deepseek-ai/deepseek-r1",
+			-- api_key_name = 'GTX',
+			---------------------------------------------------------------------------------
+			-- huggingface 
+			---------------------------------------------------------------------------------
+			---
+			-- endpoint = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-32B-Instruct/v1/chat/completions",
+			-- model = "Qwen/Qwen2.5-Coder-32B-Instruct",
+			-- api_key_name = 'HUG',
+			---------------------------------------------------------------------------------
+			-- siliconflow https://cloud.siliconflow.cn/models
+			---------------------------------------------------------------------------------
+			---
+			endpoint = "https://api.siliconflow.cn/v1/",
+			model = "deepseek-ai/DeepSeek-V3",
+			api_key_name = 'SILICONFLOW',
+			---------------------------------------------------------------------------------
 		},
 		behaviour = {
 			auto_suggestions = false, -- Experimental stage
