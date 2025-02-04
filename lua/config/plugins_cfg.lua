@@ -28,7 +28,8 @@ function M.nordic_init()
 			-- This callback can be used to override the colors used in the extended palette.
 			after_palette = function(palette)
 				palette.comment = '#6b7a8f'
-				palette.fg_float_border = "#777777"
+				palette.fg_float_border = "#777777" -- 浮动窗口
+				palette.border_fg = "#777777" -- 窗口分割
 			end,
 			-- This callback can be used to override highlights before they are applied.
 			on_highlight = function(highlights, palette)
@@ -37,6 +38,13 @@ function M.nordic_init()
 				highlights.TelescopePromptTitle = { bg = 'none', fg = '#e29c45', bold = true }
 				highlights.TelescopeResultsTitle = { bg = 'none', fg = '#a88462', bold = true }
 				highlights.TelescopePreviewTitle = { bg = 'none', fg = '#a88462', bold = true }
+				highlights.Search = { bg = '#A9B655', fg = "#282828", bold = false, underline = false } -- Last search pattern highlighting (see 'hlsearch').  Also used for similar items that need to stand out.
+				highlights.Visual = { bg = '#6666CC', bold = false } -- Visual mode selection
+				highlights.Function = { fg = '#a9b665' }
+				highlights['@operator'] = { fg = '#c77a48' }
+				highlights['@punctuation.bracket'] = { fg = palette.white0 }
+				highlights['@punctuation.delimiter'] = { fg = '#98D9D8' }
+				highlights['@lsp.type.property'] = { fg = '#5CAFDF' }
 			end,
 			-- Enable bold keywords.
 			bold_keywords = false,
@@ -50,9 +58,9 @@ function M.nordic_init()
 				float = true
 			},
 			-- Enable brighter float border.
-			bright_border = true,
+			bright_border = false,
 			-- Reduce the overall amount of blue in the theme (diverges from base Nord).
-			reduced_blue = false,
+			reduced_blue = true,
 			-- Swap the dark background with the normal one.
 			swap_backgrounds = false,
 			-- Cursorline options.  Also includes visual/selection.
