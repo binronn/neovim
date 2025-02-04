@@ -17,6 +17,86 @@ local vmap2 = keymap.vmap2
 --
 vim.g.asyncrun_open = 12
 ------------------------------------------------------------------------------------------
+--
+--
+function M.nordic_init()
+	require("nordic").setup(
+		{
+			-- This callback can be used to override the colors used in the base palette.
+			on_palette = function(palette)
+			end,
+			-- This callback can be used to override the colors used in the extended palette.
+			after_palette = function(palette)
+				palette.comment = '#6b7a8f'
+				palette.fg_float_border = "#777777"
+			end,
+			-- This callback can be used to override highlights before they are applied.
+			on_highlight = function(highlights, palette)
+				highlights.TelescopePreviewBorder = { fg = '#777777', bg = 'none' }
+				highlights.TelescopeResultsBorder = { fg = '#777777', bg = 'none' }
+				highlights.TelescopePromptTitle = { bg = 'none', fg = '#e29c45', bold = true }
+				highlights.TelescopeResultsTitle = { bg = 'none', fg = '#a88462', bold = true }
+				highlights.TelescopePreviewTitle = { bg = 'none', fg = '#a88462', bold = true }
+			end,
+			-- Enable bold keywords.
+			bold_keywords = false,
+			-- Enable italic comments.
+			italic_comments = true,
+			-- Enable editor background transparency.
+			transparent = {
+				-- Enable transparent background.
+				bg = false,
+				-- Enable transparent background for floating windows.
+				float = true
+			},
+			-- Enable brighter float border.
+			bright_border = true,
+			-- Reduce the overall amount of blue in the theme (diverges from base Nord).
+			reduced_blue = false,
+			-- Swap the dark background with the normal one.
+			swap_backgrounds = false,
+			-- Cursorline options.  Also includes visual/selection.
+			cursorline = {
+				-- Bold font in cursorline.
+				bold = false,
+				-- Bold cursorline number.
+				bold_number = true,
+				-- Available styles: 'dark', 'light'.
+				theme = "light",
+				-- Blending the cursorline bg with the buffer bg.
+				blend = 0.85
+			},
+			noice = {
+				-- Available styles: `classic`, `flat`.
+				style = "classic"
+			},
+			telescope = {
+				-- Available styles: `classic`, `flat`.
+				style = "classic"
+			},
+			leap = {
+				-- Dims the backdrop when using leap.
+				dim_backdrop = false
+			},
+			ts_context = {
+				-- Enables dark background for treesitter-context window
+				dark_background = false
+			}
+		}
+	)
+	require("nordic").load()
+end
+
+function M.notify_init()
+	vim.notify = require("notify")
+	require("notify").setup({
+		-- 你的自定义配置选项
+		background_colour = "#777777",
+		timeout = 3000, -- 默认通知显示时间5秒
+		-- 其他你想要设置的选项
+	})
+end
+
 function M.dressing_init()
 	require("dressing").setup(
 		{
@@ -878,21 +958,7 @@ function M.gitsigns_init()
 			-- 	changedelete = {text = "⚡"}, -- 修改并删除（闪电代表快速变化）
 			-- 	untracked = {text = "👀"} -- 未跟踪
 			-- },
-			signs = {
-				-- add = {text = "✨"}, -- 新增
-				-- change = {text = "📝"}, -- 修改
-				-- delete = {text = "🗑️"}, -- 删除
-				-- topdelete = {text = "🔥"}, -- 顶部删除
-				-- changedelete = {text = "💥"}, -- 修改并删除
-				-- untracked = {text = "❓"} -- 未跟踪
-
-				-- add = { text = '✓' }, -- 新增
-				-- change = { text = '⇌' }, -- 修改
-				-- delete = { text = '✗' }, -- 删除
-				-- topdelete = { text = '⬆' }, -- 顶部删除
-				-- changedelete = { text = '⇌' }, -- 修改并删除，这里使用与修改相同的符号作为示例
-				-- untracked = { text = '…' }, -- 未跟踪
-			},
+			signs = {},
 			signcolumn = true, -- 始终显示 Git 状态列
 			numhl = false, -- 不启用行号高亮
 			linehl = false, -- 不启用行高亮
@@ -1069,6 +1135,7 @@ function M.telescope_init()
 	require("telescope").load_extension("fzf")
 	require("telescope").load_extension("file_browser")
 	require("telescope").load_extension("live_grep_args")
+	require("telescope").load_extension("notify")
 
 	------------------------------------------------------------------------------------------
 	-- Telescope 配置

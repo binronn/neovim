@@ -120,30 +120,24 @@ return {
 	{
 		"nvimdev/dashboard-nvim", -- 启动面板
 		event = "VimEnter",
-		config = function()
-			pcfg.dashboard_init()
-		end,
+		config = pcfg.dashboard_init,
 		dependencies = {"nvim-tree/nvim-web-devicons"}
 	},
 	{
 		"nvim-lualine/lualine.nvim", -- 状态栏
 		event = {"BufEnter", "BufRead"},
-		-- event = {'VeryLazy'},
-		-- after = 'dashboard-nvim',
-		dependencies = {"kyazdani42/nvim-web-devicons", opt = true},
-		config = function()
-			pcfg.lualine_init()
-		end
+		dependencies = {
+			{"kyazdani42/nvim-web-devicons", opt = true},
+			{'AlexvZyl/nordic.nvim'}
+		},
+		config = pcfg.lualine_init,
 	},
-	{},
 	-- {
 	-- 	"tpope/vim-sensible" -- 提供一些合理的默认设置
 	-- },
 	{
 		"stevearc/aerial.nvim", -- 类窗口
-		config = function()
-			pcfg.aerial_init()
-		end
+		config = pcfg.aerial_init,
 	},
 	{
 		"inkarkat/vim-mark", -- 高亮
@@ -165,9 +159,7 @@ return {
 	},
 	{
 		"numToStr/Comment.nvim", -- 注释插件
-		config = function()
-			pcfg.Comment_init()
-		end
+		config = pcfg.Comment_init,
 	},
 	{
 		"MattesGroeger/vim-bookmarks", -- 书签
@@ -203,62 +195,42 @@ return {
 		end
 	},
 	{
-		"AlexvZyl/nordic.nvim",
-		config = function()
-			require("nordic").setup(
-				{
-					cursorline = {
-						-- Bold font in cursorline.
-						bold = false,
-						-- Bold cursorline number.
-						bold_number = true,
-						-- Available styles: 'dark', 'light'.
-						theme = "dark",
-						-- Blending the cursorline bg with the buffer bg.
-						blend = 0.85
-					}
-				}
-			)
-			vim.cmd.colorscheme("nordic")
-		end
+		'rcarriga/nvim-notify', -- 通知窗口
+		lazy = false,
+		config = pcfg.notify_init,
+	},
+	{
+		"AlexvZyl/nordic.nvim", -- 主题
+		config = pcfg.nordic_init,
 	},
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
 		event = {"VimEnter"},
-		config = function()
-			pcfg.gitsigns_init()
-		end
+		config = pcfg.gitsigns_init,
 	},
 	{
 		"akinsho/bufferline.nvim", -- 缓冲区标签栏
-		config = function()
-			pcfg.bufferline_init()
-		end
+		dependencies = {'AlexvZyl/nordic.nvim'}, -- 必须优先加载主题
+		config = pcfg.bufferline_init,
 	},
 	{
 		"nvim-treesitter/nvim-treesitter", -- 语法高亮
 		build = function()
 			require("nvim-treesitter.install").update({with_sync = true})
 		end,
-		config = function()
-			pcfg.nvim_treesitter_configs_init()
-		end
+		config = pcfg.nvim_treesitter_configs_init,
 	},
 	{
 		"numToStr/FTerm.nvim", -- 弹出式终端
 		lazy = true,
 		event = {"VeryLazy"},
-		config = function()
-			pcfg.FTerm_init()
-		end
+		config = pcfg.FTerm_init,
 	},
 	{
 		"sindrets/diffview.nvim", -- GIT DIFF MERGE WINDOW
 		lazy = true,
 		event = {"BufRead"},
-		config = function()
-			pcfg.diffview_init()
-		end
+		config = pcfg.diffview_init,
 	},
 	{
 		"tpope/vim-fugitive", -- Git 插件 :G status<CR> :G ..<CR>
@@ -306,9 +278,7 @@ return {
 	{
 		"nvim-tree/nvim-tree.lua", -- 文件浏览器
 		-- cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeOpen" },
-		config = function()
-			pcfg.nvim_tree_init()
-		end
+		config = pcfg.nvim_tree_init,
 	},
 	-- LSP 和补全
 	{
@@ -346,13 +316,15 @@ return {
 			"nvim-telescope/telescope-live-grep-args.nvim", -- 增强 live_grep
 			"nvim-telescope/telescope-ui-select.nvim", -- 增强 UI 选择
 			{
+				'rcarriga/nvim-notify', -- 通知窗口
+				config = pcfg.notify_init,
+			},
+			{
 				"nvim-telescope/telescope-fzf-native.nvim", -- 提供更快的模糊查找
 				build = "make" -- 需要编译
 			}
 		},
-		config = function()
-			pcfg.telescope_init()
-		end
+		config = pcfg.telescope_init,
 	},
 	-- 调试插件
 	{
@@ -377,9 +349,7 @@ return {
 			"nvim-lua/plenary.nvim", -- 依赖插件
 			"mfussenegger/nvim-dap" -- 调试支持
 		},
-		config = function()
-			pcfg.cmake_tools_init()
-		end
+		config = pcfg.cmake_tools_init,
 	},
 	-- 会话保存与恢复
 	{
@@ -387,14 +357,12 @@ return {
 		lazy = true,
 		event = {"VeryLazy"},
 		dependencies = {"nvim-lua/plenary.nvim"},
-		config = function()
-			pcfg.session_manager_init()
-		end
+		config = pcfg.session_manager_init,
 	},
 	{
 		"stevearc/dressing.nvim",
 		event = {"VeryLazy"},
-		config = pcfg.dressing_init
+		config = pcfg.dressing_init,
 	},
 	------------------------------------------
 	----     avante AI                    ----
