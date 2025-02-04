@@ -128,7 +128,7 @@ return {
 		event = {"BufEnter", "BufRead"},
 		dependencies = {
 			{"kyazdani42/nvim-web-devicons", opt = true},
-			{'AlexvZyl/nordic.nvim'}
+			-- {'AlexvZyl/nordic.nvim'}
 		},
 		config = pcfg.lualine_init,
 	},
@@ -189,8 +189,13 @@ return {
 	},
 	{
 		"sainnhe/gruvbox-material",
-		lazy = true,
+		init = function()
+			vim.gruvbox_material_float_style = 'dim'
+		end,
 		config = function()
+			-- vim.g.gruvbox_material_float_style = 'dim'
+			-- vim.g.gruvbox_material_inlay_hints_background = 'none'
+			-- vim.g.gruvbox_material_enable_italic = true
 			-- vim.cmd("colorscheme gruvbox-material")
 		end
 	},
@@ -201,6 +206,7 @@ return {
 	},
 	{
 		"AlexvZyl/nordic.nvim", -- 主题
+		priority = 1000, -- 若无此选项，bufferline显示异常
 		config = pcfg.nordic_init,
 	},
 	{
@@ -210,7 +216,7 @@ return {
 	},
 	{
 		"akinsho/bufferline.nvim", -- 缓冲区标签栏
-		dependencies = {'AlexvZyl/nordic.nvim'}, -- 必须优先加载主题
+		-- dependencies = {'AlexvZyl/nordic.nvim'}, -- 必须优先加载主题
 		config = pcfg.bufferline_init,
 	},
 	{
