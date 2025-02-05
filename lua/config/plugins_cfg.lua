@@ -1064,6 +1064,17 @@ end
 -- telescope 配置
 ------------------------------------------------------------------------------------------
 function M.telescope_init()
+
+	-- Override get_selected_entry to normalize path separators
+	local original_get_selected_entry = require("telescope.actions.state").get_selected_entry
+	require("telescope.actions.state").get_selected_entry = function(...)
+		local entry = original_get_selected_entry(...)
+		if entry and entry.value and type(entry.value) == "string" then
+			entry.value = entry.value:gsub("\\", "/")
+		end
+		return entry
+	end
+
 	require("telescope").setup(
 		{
 			defaults = {
