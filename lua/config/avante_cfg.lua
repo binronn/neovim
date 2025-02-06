@@ -1,11 +1,18 @@
-
-vim.api.nvim_set_hl(0, 'AvanteDiffText', { fg = '#000000', bg = '#384752' }) -- 白色文字，红色背景
-vim.api.nvim_set_hl(0, 'AvanteDiffAdd', { fg = '#000000', bg = '#3d4745' }) -- 黑色文字，绿色背景
+vim.api.nvim_set_hl(0, "AvanteDiffText", {fg = "#000000", bg = "#384752"}) -- 白色文字，红色背景
+vim.api.nvim_set_hl(0, "AvanteDiffAdd", {fg = "#000000", bg = "#3d4745"}) -- 黑色文字，绿色背景
 
 return require("avante").setup(
 	{
 		provider = "qwen",
 		auto_suggestions_provider = "qwen", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
+		web_search_engine = {
+			provider = "tavily",
+			api_key_name = "TAVILY",
+			provider_opts = {
+				time_range = "m",
+				include_answer = "basic"
+			}
+		},
 		-- openai = {
 		-- 	endpoint = "",
 		-- 	model = "",
@@ -19,7 +26,8 @@ return require("avante").setup(
 				endpoint = "https://integrate.api.nvidia.com/v1",
 				model = "deepseek-ai/deepseek-r1",
 				api_key_name = "GTX",
-				proxy = 'http://127.0.0.1:10808',
+				disable_tools = true,
+				-- proxy = 'http://127.0.0.1:10808',
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,
 				max_tokens = 4096
@@ -146,6 +154,6 @@ return require("avante").setup(
 			--- Helps to avoid entering operator-pending mode with diff mappings starting with `c`.
 			--- Disable by setting to -1.
 			override_timeoutlen = 500
-		},
+		}
 	}
 )
