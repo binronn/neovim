@@ -127,20 +127,21 @@ return {
 		"nvim-lualine/lualine.nvim", -- 状态栏
 		event = {"BufEnter", "BufRead"},
 		dependencies = {
-			{"kyazdani42/nvim-web-devicons", opt = true},
+			{"kyazdani42/nvim-web-devicons", opt = true}
 			-- {'AlexvZyl/nordic.nvim'}
 		},
-		config = pcfg.lualine_init,
+		config = pcfg.lualine_init
 	},
 	-- {
 	-- 	"tpope/vim-sensible" -- 提供一些合理的默认设置
 	-- },
 	{
 		"stevearc/aerial.nvim", -- 类窗口
-		config = pcfg.aerial_init,
+		config = pcfg.aerial_init
 	},
 	{
 		"inkarkat/vim-mark", -- 高亮
+		event = {'VeryLazy'},
 		dependencies = {
 			"inkarkat/vim-ingo-library" -- 通用函数库
 		},
@@ -159,7 +160,7 @@ return {
 	},
 	{
 		"numToStr/Comment.nvim", -- 注释插件
-		config = pcfg.Comment_init,
+		config = pcfg.Comment_init
 	},
 	{
 		"MattesGroeger/vim-bookmarks", -- 书签
@@ -189,54 +190,76 @@ return {
 	},
 	{
 		"sainnhe/gruvbox-material",
-		init = function()
-			vim.gruvbox_material_float_style = 'dim'
-		end,
 		config = function()
-			-- vim.g.gruvbox_material_float_style = 'dim'
-			-- vim.g.gruvbox_material_inlay_hints_background = 'none'
-			-- vim.g.gruvbox_material_enable_italic = true
-			-- vim.cmd("colorscheme gruvbox-material")
+			vim.cmd.colorscheme("gruvbox-material")
+			-- 定义一个函数，用于设置自定义高亮
+			local function set_custom_highlights()
+				vim.api.nvim_set_hl(0, "FloatBorder", {bg = "NONE"}) -- 浮动窗口边框透明
+				vim.api.nvim_set_hl(0, "NormalFloat", {bg = "NONE"}) -- 浮动窗口背景透明
+
+				vim.api.nvim_set_hl(0, "TelescopePreviewBorder", {fg = "#777777", bg = "NONE"})
+				vim.api.nvim_set_hl(0, "TelescopeResultsBorder", {fg = "#777777", bg = "NONE"})
+				vim.api.nvim_set_hl(0, "TelescopePromptTitle", {bg = "NONE", fg = "#e29c45", bold = true})
+				vim.api.nvim_set_hl(0, "TelescopeResultsTitle", {bg = "NONE", fg = "#a88462", bold = true})
+				vim.api.nvim_set_hl(0, "TelescopePreviewTitle", {bg = "NONE", fg = "#a88462", bold = true})
+			end
+
+			-- 初次加载时，应用自定义高亮设置
+			set_custom_highlights()
+
+			-- 创建自动命令，在切换到 gruvbox-material 主题时重新应用高亮
+			vim.api.nvim_create_autocmd(
+				"ColorScheme",
+				{
+					pattern = "gruvbox-material",
+					callback = function()
+						set_custom_highlights()
+					end
+				}
+			)
 		end
 	},
 	{
-		'rcarriga/nvim-notify', -- 通知窗口
+		"rcarriga/nvim-notify", -- 通知窗口
 		lazy = false,
-		config = pcfg.notify_init,
+		config = pcfg.notify_init
 	},
 	{
 		"AlexvZyl/nordic.nvim", -- 主题
-		priority = 1000, -- 若无此选项，bufferline显示异常
-		config = pcfg.nordic_init,
+		-- priority = 1000, -- 确保最先加载
+		lazy = true,
+		config = function()
+			pcfg.nordic_init()
+		end
 	},
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
-		event = {"VimEnter"},
-		config = pcfg.gitsigns_init,
+		event = {"BufRead"},
+		config = pcfg.gitsigns_init
 	},
 	{
 		"akinsho/bufferline.nvim", -- 缓冲区标签栏
 		-- dependencies = {'AlexvZyl/nordic.nvim'}, -- 必须优先加载主题
-		config = pcfg.bufferline_init,
+		config = pcfg.bufferline_init
 	},
 	{
 		"nvim-treesitter/nvim-treesitter", -- 语法高亮
 		build = function()
 			require("nvim-treesitter.install").update({with_sync = true})
 		end,
-		config = pcfg.nvim_treesitter_configs_init,
+		config = pcfg.nvim_treesitter_configs_init
 	},
 	{
 		"numToStr/FTerm.nvim", -- 弹出式终端
 		lazy = true,
 		event = {"VeryLazy"},
-		config = pcfg.FTerm_init,
+		config = pcfg.FTerm_init
 	},
 	{
 		"sindrets/diffview.nvim", -- GIT DIFF MERGE WINDOW
 		lazy = true,
 		event = {"BufRead"},
-		config = pcfg.diffview_init,
+		config = pcfg.diffview_init
 	},
 	{
 		"tpope/vim-fugitive", -- Git 插件 :G status<CR> :G ..<CR>
@@ -284,7 +307,7 @@ return {
 	{
 		"nvim-tree/nvim-tree.lua", -- 文件浏览器
 		-- cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeOpen" },
-		config = pcfg.nvim_tree_init,
+		config = pcfg.nvim_tree_init
 	},
 	-- LSP 和补全
 	{
@@ -322,15 +345,15 @@ return {
 			"nvim-telescope/telescope-live-grep-args.nvim", -- 增强 live_grep
 			"nvim-telescope/telescope-ui-select.nvim", -- 增强 UI 选择
 			{
-				'rcarriga/nvim-notify', -- 通知窗口
-				config = pcfg.notify_init,
+				"rcarriga/nvim-notify", -- 通知窗口
+				config = pcfg.notify_init
 			},
 			{
 				"nvim-telescope/telescope-fzf-native.nvim", -- 提供更快的模糊查找
 				build = "make" -- 需要编译
 			}
 		},
-		config = pcfg.telescope_init,
+		config = pcfg.telescope_init
 	},
 	-- 调试插件
 	{
@@ -355,7 +378,7 @@ return {
 			"nvim-lua/plenary.nvim", -- 依赖插件
 			"mfussenegger/nvim-dap" -- 调试支持
 		},
-		config = pcfg.cmake_tools_init,
+		config = pcfg.cmake_tools_init
 	},
 	-- 会话保存与恢复
 	{
@@ -363,31 +386,101 @@ return {
 		lazy = true,
 		event = {"VeryLazy"},
 		dependencies = {"nvim-lua/plenary.nvim"},
-		config = pcfg.session_manager_init,
+		config = pcfg.session_manager_init
 	},
 	{
 		"stevearc/dressing.nvim",
 		event = {"VeryLazy"},
-		config = pcfg.dressing_init,
+		config = pcfg.dressing_init
 	},
+	-- {
+	-- 	"MeanderingProgrammer/render-markdown.nvim",
+	-- 	config = function()
+	-- 		require("render-markdown").setup(
+	-- 		{
+	-- 			file_types = {"markdown", "Avante"},
+	-- 			-- 使用主题颜色而不是自定义颜色
+	-- 			use_theme_colors = true,
+	-- 			-- 禁用可能覆盖主题的自定义高亮
+	-- 			custom_highlights = false
+	-- 		}
+	-- 		)
+	-- 	end,
+	-- 	ft = {"markdown", "Avante"}
+	-- },
+	------------------------------------------
+	----     codecompanion AI             ----
+	------------------------------------------
+	-- {
+	-- 	"olimorris/codecompanion.nvim",
+	-- 	dependencies = {
+	-- 		"nvim-lualine/lualine.nvim",
+	-- 		"nvim-lua/plenary.nvim",
+	-- 		"nvim-treesitter/nvim-treesitter",
+	-- 		{
+	-- 			"MeanderingProgrammer/render-markdown.nvim",
+	-- 			config = function()
+	-- 				require("render-markdown").setup(
+	-- 					{
+	-- 						file_types = {"markdown", "Avante"},
+	-- 						-- 使用主题颜色而不是自定义颜色
+	-- 						use_theme_colors = false,
+	-- 						-- 禁用可能覆盖主题的自定义高亮
+	-- 						custom_highlights = true,
+	-- 						-- 确保在正常模式下也能正确显示
+	-- 						highlight = {
+	-- 							enabled = true,
+	-- 							-- 设置高亮模式为始终启用
+	-- 							always_enabled = true,
+	-- 							-- 设置高亮组
+	-- 							highlight_groups = {
+	-- 								normal = "Normal",
+	-- 								visual = "Visual",
+	-- 								insert = "Insert",
+	-- 								replace = "Replace",
+	-- 								command = "Command"
+	-- 							}
+	-- 						}
+	-- 					}
+	-- 				)
+	-- 			end,
+	-- 			ft = {"markdown", "Avante"}
+	-- 		}
+	-- 	},
+	-- 	config = function()
+	-- 		local comp = require("config.codecomp_cfg"):new()
+	-- 		comp.setup_codecomp()
+	-- 		-- comp.init({})
+	-- 		nmap('<leader>ac', ':CodeCompanionActions<CR>')
+	-- 		nmap('<leader>aa', ':CodeCompanionChat Toggle<CR>')
+	-- 		nmap2('<leader>ae', ':CodeCompanion ')
+	-- 		vmap2('<leader>ae', ':CodeCompanion ')
+	-- 	end,
+	-- }
+	------------------------------------------
+	----     codecompanion AI             ----
+	------------------------------------------
+	---
 	------------------------------------------
 	----     avante AI                    ----
 	------------------------------------------
 	{
 		"yetone/avante.nvim",
 		-- event = {"BufRead", "BufNewFile"},
-		event = {"VeryLazy"},
-		ft = programming_filetypes,
+		-- event = {"VeryLazy"},
+		lazy = false,
+		version = false,
+		-- ft = programming_filetypes,
 		config = function()
 			require("config/avante_cfg")
 
-			nmap(
-				"<leader>aa",
-				function()
-					require("avante").toggle() -- Assuming the function is named toggle and exported by avante.nvim
-				end,
-				{noremap = true, silent = true}
-			)
+			-- nmap(
+			-- 	"<leader>aa",
+			-- 	function()
+			-- 		require("avante").toggle() -- Assuming the function is named toggle and exported by avante.nvim
+			-- 	end,
+			-- 	{noremap = true, silent = true}
+			-- )
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
@@ -396,36 +489,55 @@ return {
 			"stevearc/dressing.nvim",
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
+			"hrsh7th/nvim-cmp",
 			--- The below dependencies are optional,
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 			-- "zbirenbaum/copilot.lua", -- for providers='copilot'
 			-- {
-			--   -- support for image pasting
-			--   "HakonHarnes/img-clip.nvim",
-			--   event = "BufRead",
-			--   config = function()
-			--     require("img-clip").setup({
-			--       -- recommended settings
-			--       default = {
-			--         embed_image_as_base64 = false,
-			--         prompt_for_file_name = false,
-			--         drag_and_drop = {
-			--           insert_mode = true,
-			--         },
-			--         -- required for Windows users
-			--         use_absolute_path = true,
-			--       },
-			--     })
-			--   end,
+			-- 	-- support for image pasting
+			-- 	"HakonHarnes/img-clip.nvim",
+			-- 	event = "VeryLazy",
+			-- 	config = function()
+			-- 		require("img-clip").setup(
+			-- 			{
+			-- 				-- recommended settings
+			-- 				default = {
+			-- 					embed_image_as_base64 = false,
+			-- 					prompt_for_file_name = false,
+			-- 					drag_and_drop = {
+			-- 						insert_mode = true
+			-- 					},
+			-- 					-- required for Windows users
+			-- 					use_absolute_path = true
+			-- 				}
+			-- 			}
+			-- 		)
+			-- 	end
 			-- },
-			-- {
-			--   -- Make sure to set this up properly if you have lazy=true
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
 				config = function()
 					require("render-markdown").setup(
 						{
-							file_types = {"markdown", "Avante"}
+							file_types = {"markdown", "Avante"},
+							-- 使用主题颜色而不是自定义颜色
+							use_theme_colors = false,
+							-- 禁用可能覆盖主题的自定义高亮
+							custom_highlights = true,
+							-- 确保在正常模式下也能正确显示
+							highlight = {
+								enabled = true,
+								-- 设置高亮模式为始终启用
+								always_enabled = true,
+								-- 设置高亮组
+								highlight_groups = {
+									normal = "Normal",
+									visual = "Visual",
+									insert = "Insert",
+									replace = "Replace",
+									command = "Command"
+								}
+							}
 						}
 					)
 				end,

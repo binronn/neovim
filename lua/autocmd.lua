@@ -174,28 +174,32 @@ vim.api.nvim_create_autocmd(
 ----------------------------------------------------------------
 -- 设置Windows路径分隔符
 ----------------------------------------------------------------
-if vim.g.is_win32 == 1 then
-	vim.api.nvim_create_autocmd(
-		"BufWinEnter",
-		{
-			pattern = "*",
-			callback = function()
-				vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
-				vim.opt.laststatus = 3
-			end
-		}
-	)
-end
+vim.api.nvim_create_autocmd(
+	"BufRead",
+	{
+		pattern = "*",
+		callback = function()
+			vim.schedule(
+				function()
+					vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+					vim.opt.laststatus = 3
+				end
+			)
+		end
+	}
+)
 
 ----------------------------------------------------------------
 -- 首次进入设置工作目录
 ----------------------------------------------------------------
 vim.api.nvim_create_autocmd(
-	{"BufRead"}, -- 多个触发事件
+	"BufRead", -- 多个触发事件
 	{
 		once = true,
 		pattern = "*",
 		callback = function()
+			vim.notify('Reset workdir path and generate ctags', vim.log.levels.INFO, { title = 'Workspace Setup' })
+			vim.fn.chdir(vim.fn.expand("%:h"))
 			vim.g.reset_workspace_dir_nop()
 			vim.g.generate_ctags(true)
 		end
@@ -214,3 +218,19 @@ augroup END
 ]]
 )
 
+----------------------------------------------------------------
+-- 主题切换部分设置重新设置
+----------------------------------------------------------------
+vim.api.nvim_create_autocmd(
+	"ColorScheme",
+	{
+		callback = function()
+			vim.schedule(
+				function()
+					vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+					vim.opt.laststatus = 3
+				end
+			)
+		end
+	}
+)

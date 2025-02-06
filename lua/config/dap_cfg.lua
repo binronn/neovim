@@ -31,28 +31,28 @@ local g_dapui_closed = false
 ---
 local function default_dapui()
 	require("dapui").setup(
-	{
-		layouts = {
-			{
-				elements = {
-					{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
-					{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
-					{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
-					{id = "scopes", size = 0.30}, -- 作用域窗口，占 25% 宽度
+		{
+			layouts = {
+				{
+					elements = {
+						{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
+						{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
+						{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
+						{id = "scopes", size = 0.30} -- 作用域窗口，占 25% 宽度
+					},
+					size = 40, -- 左侧总宽度为 40 列
+					position = "left" -- 左侧显示
 				},
-				size = 40, -- 左侧总宽度为 40 列
-				position = "left" -- 左侧显示
-			},
-			{
-				elements = {
-					{ id = "repl", size = 0.5 }, -- REPL 窗口，占 50% 高度
-					{ id = "console", size = 0.5 },      -- 控制台窗口，占 50% 高度
-				},
-				size = 20, -- 底部总高度为 10 行
-				position = "bottom" -- 底部显示
+				{
+					elements = {
+						{id = "repl", size = 0.5}, -- REPL 窗口，占 50% 高度
+						{id = "console", size = 0.5} -- 控制台窗口，占 50% 高度
+					},
+					size = 20, -- 底部总高度为 10 行
+					position = "bottom" -- 底部显示
+				}
 			}
 		}
-	}
 	)
 end
 -----------------------------------------------
@@ -81,7 +81,7 @@ local function save_window_status()
 		local buf = vim.api.nvim_win_get_buf(win)
 		if vim.api.nvim_buf_get_option(buf, "filetype") == "Avante" then
 			g_is_avante_open = true
-			vim.cmd('AvanteToggle')
+			vim.cmd("AvanteToggle")
 			break
 		end
 	end
@@ -100,18 +100,21 @@ end
 -- 窗口操作函数
 -----------------------------------------------
 function jump_to_file_window()
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
-        -- 检查是否是普通文件缓冲区（排除特殊缓冲区如NvimTree等）
-        if filetype ~= "" and filetype ~= "AvanteInput" and filetype ~= "AvanteSelectedFiles" 
-            and filetype ~= "Avante" and filetype ~= "qf" and filetype ~= "NvimTree" 
-            and filetype ~= "aerial" then
-            vim.api.nvim_set_current_win(win)
-            return
-        end
-    end
-    print("No file window found")
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
+		-- 检查是否是普通文件缓冲区（排除特殊缓冲区如NvimTree等）
+		if
+			filetype ~= "" and filetype ~= "AvanteInput" and filetype ~= "AvanteSelectedFiles" and filetype ~= "Avante" and
+				filetype ~= "qf" and
+				filetype ~= "NvimTree" and
+				filetype ~= "aerial"
+		 then
+			vim.api.nvim_set_current_win(win)
+			return
+		end
+	end
+	print("No file window found")
 end
 
 -----------------------------------------------------------------
@@ -184,8 +187,8 @@ local function restore_window()
 
 	-- end
 
-    g_is_nvimtree_open = false
-    g_is_tagbar_open = false
+	g_is_nvimtree_open = false
+	g_is_tagbar_open = false
 end
 
 -----------------------------------------------------------------
@@ -207,7 +210,6 @@ function terminate_tmux_split_and_get_pty()
 
 	vim.api.nvim_del_keymap("n", "<leader>dk")
 end
-
 
 local function close_windows()
 	vim.cmd("cclose")
@@ -272,24 +274,25 @@ dap.configurations.cpp = {
 	{
 		name = "Launch",
 		type = function()
-            if vim.g.is_unix == 1 then
+			if vim.g.is_unix == 1 then
 				dap.adapters.lldb = {
-					type = 'executable',
-					command = '/usr/bin/lldb-dap', -- adjust as needed, must be absolute path
-					name = 'lldb',
+					type = "executable",
+					command = "/usr/bin/lldb-dap", -- adjust as needed, must be absolute path
+					name = "lldb"
 				}
-                return 'lldb'
-            else
+				return "lldb"
+			else
 				dap.adapters.gdb = {
-					id = 'gdb',
-					type = 'executable',
-					command =  vim.fn.getenv("gdb_path") .. '\\gdb.exe',
-						args = {
-							"-iex", "source " .. vim.fn.stdpath("config") .. "\\.gdbinit",
-							"--interpreter=dap",
-							"--eval-command",
-							"set print pretty on",
-						}
+					id = "gdb",
+					type = "executable",
+					command = vim.fn.getenv("gdb_path") .. "\\gdb.exe",
+					args = {
+						"-iex",
+						"source " .. vim.fn.stdpath("config") .. "\\.gdbinit",
+						"--interpreter=dap",
+						"--eval-command",
+						"set print pretty on"
+					}
 				}
 				-- dap.adapters.cppdbg = {
 				-- 	id = 'cppdbg',
@@ -300,16 +303,16 @@ dap.configurations.cpp = {
 				-- 	}
 				-- }
 				dap.adapters.codelldb = {
-					id = 'codelldb',
-					type = 'executable',
-					command = vim.fn.getenv("DEVELOP_BASE") .. 'codelldb\\extension\\adapter\\codelldb.exe',
+					id = "codelldb",
+					type = "executable",
+					command = vim.fn.getenv("DEVELOP_BASE") .. "codelldb\\extension\\adapter\\codelldb.exe",
 					options = {
 						detached = false
 					}
 				}
-				return 'codelldb'
-            end
-        end,
+				return "codelldb"
+			end
+		end,
 		request = "launch",
 		program = function()
 			return get_debug_option("path")
@@ -322,9 +325,9 @@ dap.configurations.cpp = {
 		cwd = "${workspaceFolder}",
 		-- stopAtBeginningOfMainSubprogram = true,
 		-- runInTerminal = true, -- 若为false输出内容则不再console窗口中
-        runInTerminal = (vim.g.is_unix == 1) and true or false, -- Windows 上可能需要关闭此选项
+		runInTerminal = (vim.g.is_unix == 1) and true or false, -- Windows 上可能需要关闭此选项
 		-- MIDebuggerPath = function()
-  --           if vim.g.is_unix == 1 then
+		--           if vim.g.is_unix == 1 then
 		-- 		return''
 		-- 	else
 		-- 		return vim.fn.getenv("DEVELOP_BASE") .. 'gdb\\bin\\gdb.exe'
@@ -337,7 +340,7 @@ dap.configurations.cpp = {
 		-- 		ignoreFailures = false
 		-- 	}
 		-- },
-		externalConsole = (vim.g.is_unix == 1) and false or true,
+		externalConsole = (vim.g.is_unix == 1) and false or true
 		-- stdio = pty,
 	}
 }
@@ -363,8 +366,8 @@ dap.configurations.python = {
 			return (vim.g.is_unix == 1) and "python3" or "python"
 		end,
 		-- In linux maybe not externalTerminal!!
-	    console = 'externalTerminal', -- 关键参数：externalTerminal/integratedTerminal/internalConsole
-		justMyCode = true,
+		console = "externalTerminal", -- 关键参数：externalTerminal/integratedTerminal/internalConsole
+		justMyCode = true
 	}
 }
 
@@ -384,16 +387,16 @@ local function setup_debug_keymaps()
 	nmap("<F8>", dap.step_over)
 	nmap("<F7>", dap.step_into)
 	nmap("I", dapui.eval)
-    -- 杀死调试器
-    nmap("<leader>dk", close_debug_session) 
+	-- 杀死调试器
+	nmap("<leader>dk", close_debug_session)
 
-    -- 杀死调试器
---     vim.api.nvim_set_keymap(
---         "n",
---         "<leader>dK",
---         "<cmd>lua terminate_tmux_split_and_get_pty(); close_debug_session(); <CR>",
---         {noremap = true, silent = true}
--- )
+	-- 杀死调试器
+	--     vim.api.nvim_set_keymap(
+	--         "n",
+	--         "<leader>dK",
+	--         "<cmd>lua terminate_tmux_split_and_get_pty(); close_debug_session(); <CR>",
+	--         {noremap = true, silent = true}
+	-- )
 end
 
 local function clear_debug_keymaps()
@@ -409,17 +412,15 @@ local function clear_debug_keymaps()
 	nmapd("<F8>")
 	nmapd("I")
 	nmapd("<leader>dk")
-    -- vim.api.nvim_set_keymap("n", "<leader>dk", "<cmd>lua terminate_tmux_split_and_get_pty()<CR>", {noremap = true, silent = true}) 
+	-- vim.api.nvim_set_keymap("n", "<leader>dk", "<cmd>lua terminate_tmux_split_and_get_pty()<CR>", {noremap = true, silent = true})
 	-- vim.api.nvim_del_keymap("n", "<leader>dK")
 end
 
 function start_debug_session()
-
 	-- if vim.g.build_bin_path == nil then
 	-- 	vim.g.build_bin_path = get_debug_option('path')
 	-- 	debug_args = get_debug_option('args')
 	-- end
-
 	save_window_status()
 	close_windows()
 
@@ -428,36 +429,37 @@ function start_debug_session()
 	------------------------------------------------
 	local filetype = vim.bo.filetype
 	if vim.g.g_dapui_closed == nil and (filetype == "c" or filetype == "cpp") then
-		local btm_win_elements = {
-			{ id = "repl", size = 1 }, -- REPL 窗口，占 100% 高度
-		}
+		-- local btm_win_elements = {
+		-- 	{id = "repl", size = 1} -- REPL 窗口，占 100% 高度
+		-- }
 
-		local btm_unix_elements = {
-			{ id = "repl", size = 0.5 },			-- REPL 窗口，占 50% 高度
-			{ id = "console", size = 0.5 },			-- 控制台窗口，占 50% 高度
-		}
+		-- local btm_unix_elements = {
+		-- 	{id = "repl", size = 0.5}, -- REPL 窗口，占 50% 高度
+		-- 	{id = "console", size = 0.5} -- 控制台窗口，占 50% 高度
+		-- }
 
-		require("dapui").setup(
-			{
-				layouts = {
-					{
-						elements = {
-							{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
-							{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
-							{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
-							{id = "scopes", size = 0.30}, -- 作用域窗口，占 25% 宽度
-						},
-						size = 40, -- 左侧总宽度为 40 列
-						position = "left" -- 左侧显示
-					},
-					{
-						elements = btm_unix_elements,
-						size =  20, -- 底部总高度为 10 行
-						position = "bottom" -- 底部显示
-					}
-				}
-			}
-		)
+		-- require("dapui").setup(
+		-- 	{
+		-- 		layouts = {
+		-- 			{
+		-- 				elements = {
+		-- 					{id = "watches", size = 0.20}, -- 监视窗口，占 25% 宽度
+		-- 					{id = "breakpoints", size = 0.25}, -- 断点窗口，占 25% 宽度
+		-- 					{id = "stacks", size = 0.25}, -- 调用栈窗口，占 25% 宽度
+		-- 					{id = "scopes", size = 0.30} -- 作用域窗口，占 25% 宽度
+		-- 				},
+		-- 				size = 40, -- 左侧总宽度为 40 列
+		-- 				position = "left" -- 左侧显示
+		-- 			},
+		-- 			{
+		-- 				elements = btm_unix_elements,
+		-- 				size = 20, -- 底部总高度为 10 行
+		-- 				position = "bottom" -- 底部显示
+		-- 			}
+		-- 		}
+		-- 	}
+		-- )
+		default_dapui()
 		vim.g.is_dapui_inited = true
 	elseif g_dapui_closed == false then
 		vim.g.is_dapui_inited = true
@@ -465,7 +467,7 @@ function start_debug_session()
 	end
 
 	require("dap").continue()
-	print('Debugger is running ...')
+	print("Debugger is running ...")
 end
 function start_debug_session_new()
 	vim.g.build_bin_path = nil
@@ -483,7 +485,7 @@ function close_debug_session()
 	if dap.session() then
 		dap.terminate() -- 终止调试会话
 		dapui.close() -- 关闭调试器
-        restore_window()
+		restore_window()
 	end
 
 	-- 关闭 dap-ui 的界面
@@ -491,8 +493,6 @@ function close_debug_session()
 		dapui.close()
 		g_dapui_closed = true
 	end
-
-
 end
 
 -----------------------------------------------
@@ -501,9 +501,13 @@ end
 --
 -- 断点快捷键
 nmap("<F9>", dap.toggle_breakpoint, {noremap = true, silent = true})
-nmap("<C-F9>", function() dap.toggle_breakpoint(vim.fn.input("Condition: ")) end, {noremap = true, silent = true})
-vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(nil, nil, vim.fn.input("Condition: ")) end, { noremap = true, silent = false })
--- vim.keymap.set('n', '<C-F9>', function() dap.set_breakpoint(vim.fn.expand('%:p'), vim.fn.line('.'), vim.fn.input("Condition: "))  end, { noremap = true, silent = false })
+nmap(
+	"<C-F9>",
+	function()
+		dap.toggle_breakpoint(vim.fn.input("Condition: "))
+	end,
+	{noremap = true, silent = true}
+)
 -- 只跳转到下一个错误
 nmap(
 	"]e",
@@ -528,12 +532,12 @@ nmap(
 	"<cmd>lua vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })<CR>",
 	{noremap = true, silent = true}
 )
- -- 启动调试器
+-- 启动调试器
 nmap("<leader>dr", "<cmd>lua start_debug_session()<CR>", {noremap = true, silent = true})
 
 -- 启动调试器，重新输入被调试程序的路径
 nmap("<leader>dR", "<cmd>lua start_debug_session_new()<CR>", {noremap = true, silent = true})
- 
+
 -- 断点列表
 nmap("<leader>db", ":Telescope dap list_breakpoints<CR>", {noremap = true, silent = true}) -- 断点列表
 -- 命令列表
@@ -571,119 +575,138 @@ end
 -- 定义 LSP 诊断图标
 -------------------------------
 ---
+function reset_highlight()
+	vim.cmd("highlight clear DapBreakpointTextDap")
+	vim.cmd("highlight clear DapRunToCusorDap")
+	vim.cmd("highlight DapRunToCusorDap guifg=yellow ctermfg=256")
+	vim.cmd("highlight DapBreakpointTextDap guifg=red ctermfg=256")
+	vim.cmd("highlight DapRunToCusorDap2 guibg=#663300 ctermbg=256") -- 为DapStoppedLine设置背景颜色
+
+	-- vim.fn.sign_define("DiagnosticSignError", {text = "✗", texthl = "DiagnosticSignError"}) -- 错误
+	-- vim.fn.sign_define("DiagnosticSignWarn", {text = "‼", texthl = "DiagnosticSignWarn"}) -- 警告
+	-- vim.fn.sign_define("DiagnosticSignInfo", {text = "⬥", texthl = "DiagnosticSignInfo"}) -- 信息
+	-- vim.fn.sign_define("DiagnosticSignHint", {text = "★", texthl = "DiagnosticSignHint"}) -- 提示
+
+	vim.fn.sign_define(
+		"DapBreakpoint",
+		{
+			text = "⬤", -- 使用红色圆圈表示断点
+			texthl = "DapBreakpointTextDap", -- 高亮组
+			linehl = "", -- 行高亮（留空）
+			numhl = "" -- 行号高亮（留空）
+		}
+	)
+
+	-- 定义运行到光标位置的符号
+	vim.fn.sign_define(
+		"DapStopped",
+		{
+			text = "=>", -- 使用箭头表示运行到光标位置
+			texthl = "DapRunToCusorDap", -- 高亮组
+			linehl = "DapRunToCusorDap2", -- 行高亮（留空）
+			numhl = "" -- 行号高亮（留空）
+		}
+	)
+
+	-- 定义无效断点符号
+	vim.fn.sign_define(
+		"DapBreakpointRejected",
+		{
+			text = "⌂", -- 使用禁止符号表示无效断点
+			texthl = "DapBreakpointRejectedText", -- 高亮组
+			linehl = "", -- 行高亮（留空）
+			numhl = "" -- 行号高亮（留空）
+		}
+	)
+
+	-- 定义已解析断点符号
+	vim.fn.sign_define(
+		"DapBreakpointResolved",
+		{
+			text = "◎", -- 使用对勾表示已解析断点
+			texthl = "DapBreakpointTextDap", -- 高亮组
+			linehl = "", -- 行高亮（留空）
+			numhl = "" -- 行号高亮（留空）
+		}
+	)
+
+	-- 定义条件断点符号
+	vim.fn.sign_define(
+		"DapBreakpointConditional",
+		{
+			text = "◆", -- 使用放大镜表示条件断点
+			texthl = "DapBreakpointTextDap", -- 高亮组
+			linehl = "", -- 行高亮（留空）
+			numhl = "" -- 行号高亮（留空）
+		}
+	)
+
+	-- 定义日志断点符号
+	vim.fn.sign_define(
+		"DapLogPoint",
+		{
+			text = "■", -- 使用文档符号表示日志断点
+			texthl = "DapBreakpointTextDap", -- 高亮组
+			linehl = "", -- 行高亮（留空）
+			numhl = "" -- 行号高亮（留空）
+		}
+	)
+
+	-- vim.fn.sign_define("DapBreakpoint", {
+	-- 	text = "D●",  -- 使用红色圆圈表示断点
+	-- 	texthl = "DapBreakpointTextDap",  -- 高亮组
+	-- 	linehl = "",  -- 行高亮（留空）
+	-- 	numhl = ""    -- 行号高亮（留空）
+	-- })
+
+	-- -- 定义运行到光标位置的符号
+	-- vim.fn.sign_define("DapStopped", {
+	-- 	text = "D▶",  -- 使用箭头表示运行到光标位置
+	-- 	texthl = "DapRunToCusorDap",  -- 高亮组
+	-- 	linehl = "DapRunToCusorDap2",  -- 行高亮（留空）
+	-- 	numhl = ""    -- 行号高亮（留空）
+	-- })
+
+	-- -- 定义无效断点符号
+	-- vim.fn.sign_define("DapBreakpointRejected", {
+	-- 	text = "D✗",  -- 使用禁止符号表示无效断点
+	-- 	texthl = "DapBreakpointRejectedText",  -- 高亮组
+	-- 	linehl = "",  -- 行高亮（留空）
+	-- 	numhl = ""    -- 行号高亮（留空）
+	-- })
+
+	-- -- 定义已解析断点符号
+	-- vim.fn.sign_define("DapBreakpointResolved", {
+	-- 	text = "D✔️",  -- 使用对勾表示已解析断点
+	-- 	texthl = "DapBreakpointResolvedText",  -- 高亮组
+	-- 	linehl = "",  -- 行高亮（留空）
+	-- 	numhl = ""    -- 行号高亮（留空）
+	-- })
+
+	-- -- 定义条件断点符号
+	-- vim.fn.sign_define("DapBreakpointConditional", {
+	-- 	text = "D?",  -- 使用放大镜表示条件断点
+	-- 	texthl = "DapBreakpointConditionalText",  -- 高亮组
+	-- 	linehl = "",  -- 行高亮（留空）
+	-- 	numhl = ""    -- 行号高亮（留空）
+	-- })
+
+	-- -- 定义日志断点符号
+	-- vim.fn.sign_define("DapLogPoint", {
+	-- 	text = "D!",  -- 使用文档符号表示日志断点
+	-- 	texthl = "DapLogPointText",  -- 高亮组
+	-- 	linehl = "",  -- 行高亮（留空）
+	-- 	numhl = ""    -- 行号高亮（留空）
+	-- })
+end
+
+----------------------------------------------------------------
+-- 主题切换重置高亮
+----------------------------------------------------------------
 vim.api.nvim_create_autocmd(
-	"BufEnter",
+	"ColorScheme",
 	{
-		pattern = "*",
-		once = true,
-		callback = function()
-			-- 确保在设置高亮之前，主题已经切换好了，不然高亮失效
-			vim.cmd("highlight clear DapBreakpointTextDap")
-			vim.cmd("highlight clear DapRunToCusorDap")
-			vim.cmd("highlight DapRunToCusorDap guifg=yellow ctermfg=256")
-			vim.cmd("highlight DapBreakpointTextDap guifg=red ctermfg=256")
-			vim.cmd("highlight DapRunToCusorDap2 guibg=#663300 ctermbg=256") -- 为DapStoppedLine设置背景颜色
-
-			-- vim.fn.sign_define("DiagnosticSignError", {text = "✗", texthl = "DiagnosticSignError"}) -- 错误
-			-- vim.fn.sign_define("DiagnosticSignWarn", {text = "‼", texthl = "DiagnosticSignWarn"}) -- 警告
-			-- vim.fn.sign_define("DiagnosticSignInfo", {text = "⬥", texthl = "DiagnosticSignInfo"}) -- 信息
-			-- vim.fn.sign_define("DiagnosticSignHint", {text = "★", texthl = "DiagnosticSignHint"}) -- 提示
-
-			vim.fn.sign_define("DapBreakpoint", {
-				text = "⬤",  -- 使用红色圆圈表示断点
-				texthl = "DapBreakpointTextDap",  -- 高亮组
-				linehl = "",  -- 行高亮（留空）
-				numhl = ""    -- 行号高亮（留空）
-			})
-
-			-- 定义运行到光标位置的符号
-			vim.fn.sign_define("DapStopped", {
-				text = "=>",  -- 使用箭头表示运行到光标位置
-				texthl = "DapRunToCusorDap",  -- 高亮组
-				linehl = "DapRunToCusorDap2",  -- 行高亮（留空）
-				numhl = ""    -- 行号高亮（留空）
-			})
-
-			-- 定义无效断点符号
-			vim.fn.sign_define("DapBreakpointRejected", {
-				text = "⌂",  -- 使用禁止符号表示无效断点
-				texthl = "DapBreakpointRejectedText",  -- 高亮组
-				linehl = "",  -- 行高亮（留空）
-				numhl = ""    -- 行号高亮（留空）
-			})
-
-			-- 定义已解析断点符号
-			vim.fn.sign_define("DapBreakpointResolved", {
-				text = "◆",  -- 使用对勾表示已解析断点
-				texthl = "DapBreakpointTextDap",  -- 高亮组
-				linehl = "",  -- 行高亮（留空）
-				numhl = ""    -- 行号高亮（留空）
-			})
-
-			-- 定义条件断点符号
-			vim.fn.sign_define("DapBreakpointConditional", {
-				text = "◎",  -- 使用放大镜表示条件断点
-				texthl = "DapBreakpointTextDap",  -- 高亮组
-				linehl = "",  -- 行高亮（留空）
-				numhl = ""    -- 行号高亮（留空）
-			})
-
-			-- 定义日志断点符号
-			vim.fn.sign_define("DapLogPoint", {
-				text = "■",  -- 使用文档符号表示日志断点
-				texthl = "DapBreakpointTextDap",  -- 高亮组
-				linehl = "",  -- 行高亮（留空）
-				numhl = ""    -- 行号高亮（留空）
-			})
-
-			-- vim.fn.sign_define("DapBreakpoint", {
-			-- 	text = "D●",  -- 使用红色圆圈表示断点
-			-- 	texthl = "DapBreakpointTextDap",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义运行到光标位置的符号
-			-- vim.fn.sign_define("DapStopped", {
-			-- 	text = "D▶",  -- 使用箭头表示运行到光标位置
-			-- 	texthl = "DapRunToCusorDap",  -- 高亮组
-			-- 	linehl = "DapRunToCusorDap2",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义无效断点符号
-			-- vim.fn.sign_define("DapBreakpointRejected", {
-			-- 	text = "D✗",  -- 使用禁止符号表示无效断点
-			-- 	texthl = "DapBreakpointRejectedText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义已解析断点符号
-			-- vim.fn.sign_define("DapBreakpointResolved", {
-			-- 	text = "D✔️",  -- 使用对勾表示已解析断点
-			-- 	texthl = "DapBreakpointResolvedText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义条件断点符号
-			-- vim.fn.sign_define("DapBreakpointConditional", {
-			-- 	text = "D?",  -- 使用放大镜表示条件断点
-			-- 	texthl = "DapBreakpointConditionalText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-			-- -- 定义日志断点符号
-			-- vim.fn.sign_define("DapLogPoint", {
-			-- 	text = "D!",  -- 使用文档符号表示日志断点
-			-- 	texthl = "DapLogPointText",  -- 高亮组
-			-- 	linehl = "",  -- 行高亮（留空）
-			-- 	numhl = ""    -- 行号高亮（留空）
-			-- })
-
-
-		end
+		callback = reset_highlight
 	}
 )
+reset_highlight()

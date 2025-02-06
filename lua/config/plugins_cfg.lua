@@ -27,24 +27,24 @@ function M.nordic_init()
 			end,
 			-- This callback can be used to override the colors used in the extended palette.
 			after_palette = function(palette)
-				palette.comment = '#6b7a8f'
+				palette.comment = "#6b7a8f"
 				palette.fg_float_border = "#777777" -- 浮动窗口
 				palette.border_fg = "#777777" -- 窗口分割
 			end,
 			-- This callback can be used to override highlights before they are applied.
 			on_highlight = function(highlights, palette)
-				highlights.TelescopePreviewBorder = { fg = '#777777', bg = 'none' }
-				highlights.TelescopeResultsBorder = { fg = '#777777', bg = 'none' }
-				highlights.TelescopePromptTitle = { bg = 'none', fg = '#e29c45', bold = true }
-				highlights.TelescopeResultsTitle = { bg = 'none', fg = '#a88462', bold = true }
-				highlights.TelescopePreviewTitle = { bg = 'none', fg = '#a88462', bold = true }
-				highlights.Search = { bg = '#A9B655', fg = "#282828", bold = false, underline = false } -- Last search pattern highlighting (see 'hlsearch').  Also used for similar items that need to stand out.
-				highlights.Visual = { bg = '#6666CC', bold = false } -- Visual mode selection
-				highlights.Function = { fg = '#a9b665' }
-				highlights['@operator'] = { fg = '#c77a48' }
-				highlights['@punctuation.bracket'] = { fg = palette.white0 }
-				highlights['@punctuation.delimiter'] = { fg = '#98D9D8' }
-				highlights['@lsp.type.property'] = { fg = '#5CAFDF' }
+				highlights.TelescopePreviewBorder = {fg = "#777777", bg = "none"}
+				highlights.TelescopeResultsBorder = {fg = "#777777", bg = "none"}
+				highlights.TelescopePromptTitle = {bg = "none", fg = "#e29c45", bold = true}
+				highlights.TelescopeResultsTitle = {bg = "none", fg = "#a88462", bold = true}
+				highlights.TelescopePreviewTitle = {bg = "none", fg = "#a88462", bold = true}
+				highlights.Search = {bg = "#A9B655", fg = "#282828", bold = false, underline = false} -- Last search pattern highlighting (see 'hlsearch').  Also used for similar items that need to stand out.
+				highlights.Visual = {bg = "#6666CC", bold = false} -- Visual mode selection
+				highlights.Function = {fg = "#a9b665"}
+				highlights["@operator"] = {fg = "#c77a48"}
+				highlights["@punctuation.bracket"] = {fg = palette.white0}
+				highlights["@punctuation.delimiter"] = {fg = "#98D9D8"}
+				highlights["@lsp.type.property"] = {fg = "#5CAFDF"}
 			end,
 			-- Enable bold keywords.
 			bold_keywords = false,
@@ -97,12 +97,14 @@ end
 
 function M.notify_init()
 	vim.notify = require("notify")
-	require("notify").setup({
-		-- 你的自定义配置选项
-		background_colour = "#777777",
-		timeout = 3000, -- 默认通知显示时间5秒
-		-- 其他你想要设置的选项
-	})
+	require("notify").setup(
+		{
+			-- 你的自定义配置选项
+			background_colour = "#777777",
+			timeout = 3000 -- 默认通知显示时间5秒
+			-- 其他你想要设置的选项
+		}
+	)
 end
 
 function M.dressing_init()
@@ -1064,7 +1066,6 @@ end
 -- telescope 配置
 ------------------------------------------------------------------------------------------
 function M.telescope_init()
-
 	-- Override get_selected_entry to normalize path separators
 	local original_get_selected_entry = require("telescope.actions.state").get_selected_entry
 	require("telescope.actions.state").get_selected_entry = function(...)
