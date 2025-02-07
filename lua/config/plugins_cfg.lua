@@ -95,6 +95,24 @@ function M.nordic_init()
 	require("nordic").load()
 end
 
+function M.bigfile_init()
+	-- default config
+	require("bigfile").setup {
+		filesize = 2, -- size of the file in MiB, the plugin round file sizes to the closest MiB
+		pattern = { "*" }, -- autocmd pattern or function see <### Overriding the detection of big files>
+		features = { -- features to disable
+			"indent_blankline",
+			"illuminate",
+			"lsp",
+			"treesitter",
+			"syntax",
+			"matchparen",
+			"vimopts",
+			"filetype",
+		},
+	}
+end
+
 function M.notify_init()
 	vim.notify = require("notify")
 	require("notify").setup(
@@ -1234,8 +1252,8 @@ function M.session_manager_init()
 		autoload_mode = require("session_manager.config").AutoloadMode.Disabled, -- 自动加载模式
 		-- autoload_mode = false, -- 自动加载模式
 		autosave_last_session = true, -- 自动保存最后会话
-		autosave_ignore_not_normal = true, -- 忽略非正常缓冲区的自动保存
-		autosave_only_in_session = false -- 仅在会话中自动保存
+		autosave_ignore_not_normal = false, -- 忽略非正常缓冲区的自动保存
+		autosave_only_in_session = true -- 仅在会话中自动保存
 	}
 
 	nmap("<leader>sm", ":SessionManager available_commands<CR>") -- 会话管理

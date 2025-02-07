@@ -53,7 +53,7 @@ return require("avante").setup(
 			["deepseek"] = {
 				__inherited_from = "openai",
 				endpoint = "https://api.deepseek.com/v1",
-				model = "deepseek-reasoner",
+				model = "deepseek-chat",
 				api_key_name = "DSK",
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,

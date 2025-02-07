@@ -193,15 +193,21 @@ vim.api.nvim_create_autocmd(
 -- 首次进入设置工作目录
 ----------------------------------------------------------------
 vim.api.nvim_create_autocmd(
-	"BufRead", -- 多个触发事件
+	"BufReadPost", -- 修改为在缓冲区加载完成之后执行
 	{
 		once = true,
 		pattern = "*",
 		callback = function()
 			vim.notify('Reset workdir path and generate ctags', vim.log.levels.INFO, { title = 'Workspace Setup' })
-			vim.fn.chdir(vim.fn.expand("%:h"))
-			vim.g.reset_workspace_dir_nop()
-			vim.g.generate_ctags(true)
+
+			vim.schedule(
+				function()
+					vim.g.reset_workspace_dir_nop()
+					vim.fn.chdir(vim.g.workspace_dir.get())
+					vim.g.generate_ctags(true)
+				end
+				-- 1000
+				)
 		end
 	}
 )

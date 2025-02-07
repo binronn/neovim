@@ -114,6 +114,10 @@ return {
 	-- 	end,
 	-- },
 	{
+		"LunarVim/bigfile.nvim",
+		config = pcfg.bigfile_init,
+	},
+	{
 		"jiangmiao/auto-pairs", -- 自动括号
 		event = {"BufRead"}
 	},
@@ -192,8 +196,12 @@ return {
 		"sainnhe/gruvbox-material",
 		config = function()
 			vim.cmd.colorscheme("gruvbox-material")
+
 			-- 定义一个函数，用于设置自定义高亮
 			local function set_custom_highlights()
+				vim.cmd('highlight NvimTreeEndOfBuffer guibg=#282828') -- nvimtree 背景色
+				vim.cmd('highlight NvimTreeNormal guibg=#282828') -- nvimtree 背景色
+
 				vim.api.nvim_set_hl(0, "FloatBorder", {bg = "NONE"}) -- 浮动窗口边框透明
 				vim.api.nvim_set_hl(0, "NormalFloat", {bg = "NONE"}) -- 浮动窗口背景透明
 

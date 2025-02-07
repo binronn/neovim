@@ -122,43 +122,38 @@ end
 -----------------------------------------------------------------
 local function restore_window()
 	-- 如果有窗口被打开，则设置 autocmd
+	local type = nil
 	if g_is_tagbar_open == true then
+		type = 'aerial'
+	elseif g_is_nvimtree_open == true then
+		type = 'NvimTree'
+	else
+		return
+	end
+
+	if type ~= nil then
 		vim.api.nvim_create_autocmd(
-			"FileType",
-			{
-				pattern = "aerial", -- 监听所有缓冲区
-				once = true,
-				callback = function()
-					vim.defer_fn(
-						function()
-							vim.cmd("wincmd p") -- 切换到上一个窗口
-							-- close_dap_repl_buffers()
-						end,
-						50
-					)
-				end
-			}
+		"FileType",
+		{
+			pattern = type, -- 监听所有缓冲区
+			once = true,
+			callback = function()
+				vim.defer_fn(
+				function()
+					vim.cmd("wincmd l") -- 移动到右侧的窗口
+					-- close_dap_repl_buffers()
+				end,
+				200 -- 等待窗口加载结束
+				)
+			end
+		}
 		)
 	end
 
-	if g_is_nvimtree_open == true then
-		vim.api.nvim_create_autocmd(
-			"FileType",
-			{
-				pattern = "NvimTree", -- 监听所有缓冲区
-				once = true,
-				callback = function()
-					vim.defer_fn(
-						function()
-							vim.cmd("wincmd p") -- 切换到上一个窗口
-							-- close_dap_repl_buffers()
-						end,
-						50
-					)
-				end
-			}
-		)
-	end
+	-- -- 检查 Avante 是否打开
+	-- if g_is_avante_open == true then
+	-- 	vim.cmd("AvanteToggle") -- 确保命令名称正确
+	-- end
 
 	-- 检查 NvimTree 是否打开
 	if g_is_nvimtree_open == true then
@@ -169,11 +164,6 @@ local function restore_window()
 	if g_is_tagbar_open == true then
 		vim.cmd("AerialOpen") -- 确保命令名称正确
 	end
-
-	-- -- 检查 Avante 是否打开
-	-- if g_is_avante_open == true then
-	-- 	vim.cmd("") -- 确保命令名称正确
-	-- end
 
 	-- if g_is_avante_open == true or g_is_tagbar_open == true or g_is_avante_open == true then
 	-- 	vim.defer_fn(
@@ -416,13 +406,7 @@ local function clear_debug_keymaps()
 	-- vim.api.nvim_del_keymap("n", "<leader>dK")
 end
 
-function start_debug_session()
-	-- if vim.g.build_bin_path == nil then
-	-- 	vim.g.build_bin_path = get_debug_option('path')
-	-- 	debug_args = get_debug_option('args')
-	-- end
-	save_window_status()
-	close_windows()
+local function reset_debug_session_ui_continue()
 
 	------------------------------------------------
 	-- cpp 单独设置UI配置项
@@ -467,7 +451,33 @@ function start_debug_session()
 	end
 
 	require("dap").continue()
-	print("Debugger is running ...")
+	vim.notify('Debugger is running ...', vim.log.levels.INFO, { title = 'Lsp debug' })
+end
+
+function start_debug_session()
+	-- if vim.g.build_bin_path == nil then
+	-- 	vim.g.build_bin_path = get_debug_option('path')
+	-- 	debug_args = get_debug_option('args')
+	-- end
+	-- save_window_status()
+	-- close_windows()
+	local file_path = vim.fn.expand("%")
+    if vim.fn.filereadable(file_path) ~= 1 then
+		vim.notify('Cursor not in file', vim.log.levels.INFO, { title = 'Lsp debug' })
+		return
+	end
+
+	local current_cursor = vim.api.nvim_win_get_cursor(0)
+	local current_buffer = vim.api.nvim_get_current_buf()
+	-- Wait until the new tab is ready
+	vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+		once = true,
+		callback = function()
+			vim.api.nvim_win_set_cursor(0, {current_cursor[1], current_cursor[2]})
+			reset_debug_session_ui_continue()
+		end
+	})
+	vim.cmd('tabnew %')
 end
 function start_debug_session_new()
 	vim.g.build_bin_path = nil
@@ -485,7 +495,8 @@ function close_debug_session()
 	if dap.session() then
 		dap.terminate() -- 终止调试会话
 		dapui.close() -- 关闭调试器
-		restore_window()
+		-- restore_window()
+		vim.cmd('tabc')
 	end
 
 	-- 关闭 dap-ui 的界面
