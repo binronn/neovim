@@ -1,4 +1,5 @@
 local M = require("lualine.component"):extend()
+
 M.processing = false
 M.spinner_index = 1
 
@@ -12,7 +13,7 @@ local spinner_symbols = {
 	"⠦",
 	"⠧",
 	"⠇",
-	"⠏"
+	"⠏",
 }
 local spinner_symbols_len = 10
 
@@ -21,21 +22,17 @@ function M:init(options)
 	M.super.init(self, options)
 
 	local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
-
-	vim.api.nvim_create_autocmd(
-		{"User"},
-		{
-			pattern = "CodeCompanionRequest*",
-			group = group,
-			callback = function(request)
-				if request.match == "CodeCompanionRequestStarted" then
-					self.processing = true
-				elseif request.match == "CodeCompanionRequestFinished" then
-					self.processing = false
-				end
+	vim.api.nvim_create_autocmd({ "User" }, {
+		pattern = "CodeCompanionRequest*",
+		group = group,
+		callback = function(request)
+			if request.match == "CodeCompanionRequestStarted" then
+				self.processing = true
+			elseif request.match == "CodeCompanionRequestFinished" then
+				self.processing = false
 			end
-		}
-	)
+		end,
+	})
 end
 
 -- Function that runs every time statusline is updated
@@ -51,38 +48,95 @@ end
 function M:setup_codecomp()
 	require("codecompanion").setup(
 		{
+			opts = {
+				language = 'Chinese',
+			},
 			adapters = {
-				deepseek = function()
-					return require("codecompanion.adapters").extend(
-						"openai_compatible",
-						{
-							env = {
-								url = "https://api.siliconflow.cn", -- optional: default value is ollama url http://127.0.0.1:11434
-								model = 'deepseek-ai/Deepseek-V3',
-								api_key = vim.fn.getenv('SILICONFLOW'), -- optional: if your endpoint is authenticated
-								-- api_key = "OpenAI_API_KEY", -- optional: if your endpoint is authenticated
-								-- chat_url = "/v1/chat/completions" -- optional: default value, override if different
-							}
+			qwen = function()
+				return require("codecompanion.adapters").extend(
+					"openai_compatible",
+					{
+						name = "qwen",
+						env = {
+							url = "http://192.168.0.101:8000", -- optional: default value is ollama url http://127.0.0.1:11434
+							model = "qwen",
+							api_key = vim.fn.getenv("ORG"), -- optional: if your endpoint is authenticated
+							-- api_key = "OpenAI_API_KEY", -- optional: if your endpoint is authenticated
+							chat_url = "/v1/chat/completions" -- optional: default value, override if different
 						}
-					)
-				end
+					}
+				)
+			end,
+			nvidia = function()
+				return require("codecompanion.adapters").extend(
+					"openai_compatible",
+					{
+						name = "nvidia",
+						env = {
+							url = "https://integrate.api.nvidia.com",
+							model = "deepseek-ai/deepseek-r1",
+							api_key = vim.fn.getenv("GTX"),
+							chat_url = "/v1/chat/completions"
+						}
+					}
+				)
+			end,
+			sil_deepseek = function()
+				return require("codecompanion.adapters").extend(
+					"openai_compatible",
+					{
+						name = "sil_deepseek",
+						env = {
+							url = "https://api.siliconflow.cn",
+							model = "deepseek-ai/DeepSeek-V3",
+							api_key = vim.fn.getenv("SILICONFLOW"),
+							chat_url = "/v1/chat/completions"
+						}
+					}
+				)
+			end,
+			deepseek = function()
+				return require("codecompanion.adapters").extend(
+					"openai_compatible",
+					{
+						name = "deepseek",
+						env = {
+							url = "https://api.deepseek.com",
+							model = "deepseek-chat",
+							api_key = vim.fn.getenv("DSK"),
+							chat_url = "/v1/chat/completions"
+						}
+					}
+				)
+			end
 			},
 			strategies = {
 				chat = {
-					intro_message = "Welcome to CodeCompanion ✨! Press ? for options",
+					roles = {
+						---The header name for the LLM's messages
+						---@type string|fun(adapter: CodeCompanion.Adapter): string
+						llm = function(adapter)
+							return "CodeCompanion (" .. adapter.name .. ")"
+						end,
+
+						---The header name for your messages
+						---@type string
+						-- user = "Byron ",
+					},
+					-- intro_message = "Press ? for options",
 					show_header_separator = true, -- Show header separators in the chat buffer? Set this to false if you're using an external markdown formatting plugin
-					separator = "─", -- The separator between the different messages in the chat buffer
+					separator = "-─", -- The separator between the different messages in the chat buffer
 					show_references = true, -- Show references (from slash commands and variables) in the chat buffer?
 					show_settings = true, -- Show LLM settings at the top of the chat buffer?
 					show_token_count = true, -- Show the token count for each response?
 					start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-					adapter = "deepseek",
+					adapter = "qwen",
 					keymaps = {
 						send = {
 							modes = {n = "<Enter>", i = "<C-s>"}
 						},
 						close = {
-							modes = {n = "<Esc>", i = "<C-c>"}
+							modes = {n = "<C-d>"}
 						}
 						-- Add further custom keymaps here
 					}
@@ -98,10 +152,52 @@ function M:setup_codecomp()
 							description = "Choose our"
 						}
 					},
-					adapter = "deepseek"
-				}
+					adapter = "qwen"
+				},
 			},
 			display = {
+				chat = {
+					-- Change the default icons
+					icons = {
+						pinned_buffer = "",
+						watched_buffer = "👀"
+					},
+					-- Alter the sizing of the debug window
+					debug_window = {
+						---@return number|fun(): number
+						width = vim.o.columns - 5,
+						---@return number|fun(): number
+						height = vim.o.lines - 2
+					},
+					-- Options to customize the UI of the chat buffer
+					window = {
+						layout = "vertical", -- float|vertical|horizontal|buffer
+						position = "right", -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
+						border = "single",
+						height = 0.8,
+						width = 0.30,
+						relative = "editor",
+						opts = {
+							breakindent = true,
+							cursorcolumn = false,
+							cursorline = false,
+							foldcolumn = "0",
+							linebreak = true,
+							list = false,
+							numberwidth = 1,
+							signcolumn = "no",
+							spell = false,
+							wrap = true
+						}
+					},
+					---Customize how tokens are displayed
+					---@param tokens number
+					---@param adapter CodeCompanion.Adapter
+					---@return string
+					token_count = function(tokens, adapter)
+						return " (" .. tokens .. " tokens)"
+					end
+				},
 				action_palette = {
 					width = 95,
 					height = 10,

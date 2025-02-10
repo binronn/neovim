@@ -198,13 +198,13 @@ vim.api.nvim_create_autocmd(
 		once = true,
 		pattern = "*",
 		callback = function()
-			vim.notify('Reset workdir path and generate ctags', vim.log.levels.INFO, { title = 'Workspace Setup' })
 
 			vim.schedule(
 				function()
 					vim.g.reset_workspace_dir_nop()
 					vim.fn.chdir(vim.g.workspace_dir.get())
-					vim.g.generate_ctags(true)
+					-- vim.g.generate_ctags(true)
+					vim.notify('Workdir: ' .. vim.g.workspace_dir.get(), vim.log.levels.INFO, { title = 'Workspace Setup' })
 				end
 				-- 1000
 				)
@@ -215,14 +215,14 @@ vim.api.nvim_create_autocmd(
 ----------------------------------------------------------------
 -- 在 Vim 启动时执行 generate_ctags 函数
 ----------------------------------------------------------------
-vim.cmd(
-	[[
-augroup GenerateCtags
-    autocmd!
-    autocmd VimEnter * lua vim.schedule(function()vim.g.generate_ctags(true)end) 
-augroup END
-]]
-)
+-- vim.cmd(
+-- 	[[
+-- augroup GenerateCtags
+--     autocmd!
+--     autocmd VimEnter * lua vim.schedule(function()vim.g.generate_ctags(true)end) 
+-- augroup END
+-- ]]
+-- )
 
 ----------------------------------------------------------------
 -- 主题切换部分设置重新设置
@@ -240,3 +240,78 @@ vim.api.nvim_create_autocmd(
 		end
 	}
 )
+
+
+----------------------------------------------------------------
+-- Session保存与恢复
+----------------------------------------------------------------
+function SaveCurrentSession()
+	local wsdir = vim.g.workspace_dir2()
+	local session_file_path = wsdir .. "/Session.vim"
+
+	vim.cmd("AerialClose")
+	vim.cmd("NvimTreeClose")
+
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.api.nvim_buf_get_option(buf, "filetype") == "Avante" then
+			vim.cmd("AvanteToggle")
+			break
+		end
+	end
+
+	local function jmp_active_buffers()
+		local all_windows = vim.api.nvim_list_wins()
+		for _, win_id in ipairs(all_windows) do
+			local bufnr = vim.api.nvim_win_get_buf(win_id)
+			vim.api.nvim_command("buffer " .. bufnr)
+			break
+		end
+	end
+	jmp_active_buffers()
+
+	vim.cmd("mksession! " .. session_file_path)
+
+	-- Check for Avante window and append 'AvanteToggle' to the session file if it exists
+	-- local avante_toggle_added = false
+	-- local file = io.open(session_file_path, "a")
+	-- for _, win in ipairs(vim.api.nvim_list_wins()) do
+	-- 	local buf = vim.api.nvim_win_get_buf(win)
+	-- 	if vim.api.nvim_buf_get_option(buf, "filetype") == "Avante" then
+	-- 		file:write("\nAvanteChat")
+	-- 	elseif vim.api.nvim_buf_get_option(buf, "filetype") == "NvimTree" then
+	-- 		file:write("\n lua vim.g.toggle_nvimtree()")
+	-- 	elseif vim.api.nvim_buf_get_option(buf, "filetype") == "aerial" then
+	-- 		file:write("\n vim.g.toggle_tagbar()")
+	-- 	end
+	-- end
+	-- file:close()
+	
+	-- local mark_name = wsdir:gsub("[:/\\ \\.]", "_") .. "_Session"
+	-- local mark_name = vim.g.hash_djb2(session_file_path)
+	-- print(mark_namd)
+	-- vim.cmd("silent MarkSave")
+	vim.notify("Session saved to: " .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
+end
+
+-- 注册加载会话的命令
+function LoadSavedSession()
+	local wsdir = vim.g.workspace_dir2()
+	local session_file_path = wsdir .. "/Session.vim"
+	if vim.fn.filereadable(session_file_path) == 1 then
+
+		-- vim.cmd("silent! MarkLoad")
+		vim.cmd("source " .. session_file_path)
+		vim.notify("Session loaded from: " .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
+	else
+		vim.notify("No session file found at: " .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
+	end
+end
+
+-- 注册command用于保存和加载会话
+vim.api.nvim_create_user_command('Ss', SaveCurrentSession, {desc = 'Abbreviation command to save the current session', bang = true})
+vim.api.nvim_create_user_command('Sq', function()
+	SaveCurrentSession()
+	vim.cmd('q')
+end, {desc = 'Abbreviation command to save the current session', bang = true})
+vim.api.nvim_create_user_command('Ls', LoadSavedSession, {desc = 'Abbreviation command to load a saved session', bang = true})

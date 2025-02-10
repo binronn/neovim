@@ -26,9 +26,9 @@ xmap("<Space>", "<nop>")
 ------------------------------------------------------------------------------------------
 -- CMake-tools 映射
 ------------------------------------------------------------------------------------------
-cmap2("Cst", "CMakeSelectBuildType")
-cmap2("Cb", "CMakeBuild")
-cmap2("Cg", "CMakeGenerate")
+-- cmap2("Cst", "CMakeSelectBuildType")
+-- cmap2("Cb", "CMakeBuild")
+-- cmap2("Cg", "CMakeGenerate")
 -- cmap('SS', 'Leaderf! rg -g *.{}')
 
 -- 重置工作目录

@@ -238,3 +238,13 @@ local function toggle_tagbar()
 	end
 end
 vim.g.toggle_tagbar = toggle_tagbar
+
+
+local function hash_djb2(str)
+	local hash = 5381
+	for i = 1, #str do
+		hash = (hash * 33) + str:byte(i)
+	end
+    return string.format("%d", math.abs(hash)):gsub('-', '')
+end
+vim.g.hash_djb2 = hash_djb2

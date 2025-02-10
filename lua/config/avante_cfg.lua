@@ -26,7 +26,7 @@ return require("avante").setup(
 				endpoint = "https://integrate.api.nvidia.com/v1",
 				model = "deepseek-ai/deepseek-r1",
 				api_key_name = "GTX",
-				disable_tools = true,
+				-- disable_tools = true,
 				-- proxy = 'http://127.0.0.1:10808',
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,

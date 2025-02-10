@@ -68,6 +68,7 @@ local programming_filetypes = {
 }
 
 local pcfg = require("config/plugins_cfg")
+local ai_provider = "codecomp" -- "avante"
 
 return {
 	-- {
@@ -115,7 +116,7 @@ return {
 	-- },
 	{
 		"LunarVim/bigfile.nvim",
-		config = pcfg.bigfile_init,
+		config = pcfg.bigfile_init
 	},
 	{
 		"jiangmiao/auto-pairs", -- 自动括号
@@ -145,11 +146,12 @@ return {
 	},
 	{
 		"inkarkat/vim-mark", -- 高亮
-		event = {'VeryLazy'},
+		event = {"VeryLazy"},
 		dependencies = {
 			"inkarkat/vim-ingo-library" -- 通用函数库
 		},
 		init = function()
+			vim.g.marks_save_file = "~/.vim_marks"
 			vim.g.mw_no_mappings = 1
 			vim.g.mwDefaultHighlightingPalette = "maximum"
 		end,
@@ -199,8 +201,9 @@ return {
 
 			-- 定义一个函数，用于设置自定义高亮
 			local function set_custom_highlights()
-				vim.cmd('highlight NvimTreeEndOfBuffer guibg=#282828') -- nvimtree 背景色
-				vim.cmd('highlight NvimTreeNormal guibg=#282828') -- nvimtree 背景色
+				vim.cmd("highlight NvimTreeEndOfBuffer guibg=#282828") -- nvimtree 背景色
+				vim.cmd("highlight NvimTreeNormal guibg=#282828") -- nvimtree 背景色
+				vim.cmd("highlight NvimTreeCursorLine guibg=#32302f") -- nvimtree 高亮当前行
 
 				vim.api.nvim_set_hl(0, "FloatBorder", {bg = "NONE"}) -- 浮动窗口边框透明
 				vim.api.nvim_set_hl(0, "NormalFloat", {bg = "NONE"}) -- 浮动窗口背景透明
@@ -266,7 +269,7 @@ return {
 	{
 		"sindrets/diffview.nvim", -- GIT DIFF MERGE WINDOW
 		lazy = true,
-		event = {"BufRead"},
+		event = {"VeryLazy"},
 		config = pcfg.diffview_init
 	},
 	{
@@ -289,7 +292,8 @@ return {
 			hooks.register(
 				hooks.type.HIGHLIGHT_SETUP,
 				function()
-					vim.api.nvim_set_hl(0, "iblhl_default", {fg = "#4f5756"})
+					-- vim.api.nvim_set_hl(0, "iblhl_default", {fg = "#4f5756"})
+					vim.api.nvim_set_hl(0, "iblhl_default", {fg = "#404040"})
 				end
 			)
 
@@ -389,82 +393,63 @@ return {
 		config = pcfg.cmake_tools_init
 	},
 	-- 会话保存与恢复
-	{
-		"Shatur/neovim-session-manager",
-		lazy = true,
-		event = {"VeryLazy"},
-		dependencies = {"nvim-lua/plenary.nvim"},
-		config = pcfg.session_manager_init
-	},
+	-- {
+	-- 	"Shatur/neovim-session-manager",
+	-- 	lazy = true,
+	-- 	event = {"VeryLazy"},
+	-- 	dependencies = {"nvim-lua/plenary.nvim"},
+	-- 	config = pcfg.session_manager_init
+	-- },
 	{
 		"stevearc/dressing.nvim",
 		event = {"VeryLazy"},
 		config = pcfg.dressing_init
 	},
-	-- {
-	-- 	"MeanderingProgrammer/render-markdown.nvim",
-	-- 	config = function()
-	-- 		require("render-markdown").setup(
-	-- 		{
-	-- 			file_types = {"markdown", "Avante"},
-	-- 			-- 使用主题颜色而不是自定义颜色
-	-- 			use_theme_colors = true,
-	-- 			-- 禁用可能覆盖主题的自定义高亮
-	-- 			custom_highlights = false
-	-- 		}
-	-- 		)
-	-- 	end,
-	-- 	ft = {"markdown", "Avante"}
-	-- },
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		lazy = true,
+		config = function()
+			require("render-markdown").setup()
+		end,
+	},
 	------------------------------------------
 	----     codecompanion AI             ----
 	------------------------------------------
-	-- {
-	-- 	"olimorris/codecompanion.nvim",
-	-- 	dependencies = {
-	-- 		"nvim-lualine/lualine.nvim",
-	-- 		"nvim-lua/plenary.nvim",
-	-- 		"nvim-treesitter/nvim-treesitter",
-	-- 		{
-	-- 			"MeanderingProgrammer/render-markdown.nvim",
-	-- 			config = function()
-	-- 				require("render-markdown").setup(
-	-- 					{
-	-- 						file_types = {"markdown", "Avante"},
-	-- 						-- 使用主题颜色而不是自定义颜色
-	-- 						use_theme_colors = false,
-	-- 						-- 禁用可能覆盖主题的自定义高亮
-	-- 						custom_highlights = true,
-	-- 						-- 确保在正常模式下也能正确显示
-	-- 						highlight = {
-	-- 							enabled = true,
-	-- 							-- 设置高亮模式为始终启用
-	-- 							always_enabled = true,
-	-- 							-- 设置高亮组
-	-- 							highlight_groups = {
-	-- 								normal = "Normal",
-	-- 								visual = "Visual",
-	-- 								insert = "Insert",
-	-- 								replace = "Replace",
-	-- 								command = "Command"
-	-- 							}
-	-- 						}
-	-- 					}
-	-- 				)
-	-- 			end,
-	-- 			ft = {"markdown", "Avante"}
-	-- 		}
-	-- 	},
-	-- 	config = function()
-	-- 		local comp = require("config.codecomp_cfg"):new()
-	-- 		comp.setup_codecomp()
-	-- 		-- comp.init({})
-	-- 		nmap('<leader>ac', ':CodeCompanionActions<CR>')
-	-- 		nmap('<leader>aa', ':CodeCompanionChat Toggle<CR>')
-	-- 		nmap2('<leader>ae', ':CodeCompanion ')
-	-- 		vmap2('<leader>ae', ':CodeCompanion ')
-	-- 	end,
-	-- }
+	{
+		"olimorris/codecompanion.nvim",
+		enabled = ai_provider == "codecomp" and true or false,
+		dependencies = {
+			"nvim-lualine/lualine.nvim",
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+			{
+				"MeanderingProgrammer/render-markdown.nvim",
+				config = function()
+					if ai_provider == 'codecomp' then
+						require("render-markdown").setup(
+							{
+								file_types = {"markdown", "codecompanion"}
+							}
+						)
+					end
+				end
+			}
+		},
+		-- opt = require("config.codecomp_cfg").opts(),
+		config = function()
+			if ai_provider == 'codecomp' then
+				local comp = require("config.codecomp_cfg"):new()
+				comp:setup_codecomp()
+				comp:init()
+				nmap("<leader>ac", ":CodeCompanionActions<CR>")
+				nmap("<leader>aa", ":CodeCompanionChat Toggle<CR>")
+				vmap("<leader>aa", ":CodeCompanionChat<CR>")
+				nmap2("<leader>as", ":CodeCompanionChat ")
+				nmap2("<leader>ae", ":CodeCompanion ")
+				vmap2("<leader>ae", ":CodeCompanion ")
+			end
+		end
+	},
 	------------------------------------------
 	----     codecompanion AI             ----
 	------------------------------------------
@@ -477,10 +462,15 @@ return {
 		-- event = {"BufRead", "BufNewFile"},
 		-- event = {"VeryLazy"},
 		lazy = false,
-		version = false,
+		enabled = ai_provider == "avante" and true or false,
+		-- version = '*', -- 最新tag
+		-- version = nil, -- 最新提交
 		-- ft = programming_filetypes,
 		config = function()
-			require("config/avante_cfg")
+
+			if ai_provider == 'avante' then
+				require("config/avante_cfg")
+			end
 
 			-- nmap(
 			-- 	"<leader>aa",
@@ -525,31 +515,27 @@ return {
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
 				config = function()
-					require("render-markdown").setup(
-						{
-							file_types = {"markdown", "Avante"},
-							-- 使用主题颜色而不是自定义颜色
-							use_theme_colors = false,
-							-- 禁用可能覆盖主题的自定义高亮
-							custom_highlights = true,
-							-- 确保在正常模式下也能正确显示
-							highlight = {
-								enabled = true,
-								-- 设置高亮模式为始终启用
-								always_enabled = true,
-								-- 设置高亮组
-								highlight_groups = {
-									normal = "Normal",
-									visual = "Visual",
-									insert = "Insert",
-									replace = "Replace",
-									command = "Command"
+					if ai_provider == 'avante' then
+						require("render-markdown").setup(
+							{
+								file_types = {"markdown", "Avante"},
+								highlight = {
+									enabled = true,
+									-- 设置高亮模式为始终启用
+									always_enabled = true,
+									-- 设置高亮组
+									highlight_groups = {
+										normal = "Normal",
+										visual = "Visual",
+										insert = "Insert",
+										replace = "Replace",
+										command = "Command"
+									}
 								}
 							}
-						}
-					)
+						)
+					end
 				end,
-				ft = {"markdown", "Avante"}
 			}
 		}
 	}

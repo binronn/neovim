@@ -24,6 +24,7 @@ local g_is_avante_open = false
 local g_is_nvimtree_open = false
 local g_temp_side_window_groupid = nil
 local g_dapui_closed = false
+local g_debug_tab_num = nil
 
 -----------------------------------------------
 -- 默认调试UI
@@ -463,16 +464,16 @@ function start_debug_session()
 	-- close_windows()
 	local file_path = vim.fn.expand("%")
     if vim.fn.filereadable(file_path) ~= 1 then
-		vim.notify('Cursor not in file', vim.log.levels.INFO, { title = 'Lsp debug' })
+		vim.notify('Cursor not in file buffer', vim.log.levels.INFO, { title = 'Lsp debug' })
 		return
 	end
 
 	local current_cursor = vim.api.nvim_win_get_cursor(0)
-	local current_buffer = vim.api.nvim_get_current_buf()
 	-- Wait until the new tab is ready
 	vim.api.nvim_create_autocmd({"BufWinEnter"}, {
 		once = true,
 		callback = function()
+			g_debug_tab_num = vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0))
 			vim.api.nvim_win_set_cursor(0, {current_cursor[1], current_cursor[2]})
 			reset_debug_session_ui_continue()
 		end
@@ -496,7 +497,10 @@ function close_debug_session()
 		dap.terminate() -- 终止调试会话
 		dapui.close() -- 关闭调试器
 		-- restore_window()
-		vim.cmd('tabc')
+		if g_debug_tab_num and g_debug_tab_num == vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0)) then
+			vim.cmd('tabc')
+			g_debug_tab_num = -1
+		end
 	end
 
 	-- 关闭 dap-ui 的界面

@@ -99,8 +99,9 @@ function M.bigfile_init()
 	-- default config
 	require("bigfile").setup {
 		filesize = 2, -- size of the file in MiB, the plugin round file sizes to the closest MiB
-		pattern = { "*" }, -- autocmd pattern or function see <### Overriding the detection of big files>
-		features = { -- features to disable
+		pattern = {"*"}, -- autocmd pattern or function see <### Overriding the detection of big files>
+		features = {
+			-- features to disable
 			"indent_blankline",
 			"illuminate",
 			"lsp",
@@ -108,8 +109,8 @@ function M.bigfile_init()
 			"syntax",
 			"matchparen",
 			"vimopts",
-			"filetype",
-		},
+			"filetype"
+		}
 	}
 end
 
@@ -269,6 +270,7 @@ function M.dressing_init()
 end
 
 function M.lualine_init()
+	local codecomp = require('config.codecomp_cfg')
 	require("lualine").setup {
 		options = {
 			disabled_filetypes = {"NvimTree", "aerial", "qf", "help"},
@@ -297,7 +299,7 @@ function M.lualine_init()
 				{"filename", path = 1}, -- 显示文件名
 				{"gitsigns", blame = true} -- 显示 Git Blame 信息
 			},
-			lualine_x = {"encoding", "fileformat", "filetype"},
+			lualine_x = {codecomp, "encoding", "fileformat", "filetype"},
 			lualine_y = {"progress"},
 			lualine_z = {"location"}
 		},
@@ -375,6 +377,19 @@ function M.dashboard_init()
 					desc = "Recent Projects",
 					action = function(selected_project)
 						local project_path = selected_project:gsub("/", "\\") -- 标准化路径
+
+						-- local session_file = project_path .. "/Session.vim"
+						-- -- 检查Session.vim是否存在
+						-- if vim.fn.filereadable(session_file) == 1 then
+						-- 	-- 询问用户是否加载session
+						-- 	local choice = vim.fn.confirm("发现Session.vim，是否加载？", "&y\n&n", 1)
+						-- 	if choice == 1 then
+						-- 		vim.cmd("silent cd " .. project_path)
+						-- 		vim.cmd("source " .. session_file)
+						-- 		return
+						-- 	end
+						-- end
+
 						vim.cmd("silent cd " .. project_path) -- 安全切换目录
 						vim.g.reset_workspace_dir_nop()
 						require("telescope.builtin").find_files(
@@ -1075,8 +1090,142 @@ function M.cmake_tools_init()
 			cmake_kits_global = {}, -- 全局编译器工具链配置
 			cwd = function()
 				return vim.g.workspace_dir.get()
-			end
+			end,
+			cmake_dap_configuration = {
+				name = "cpp",
+				type = "codelldb",
+				request = "launch",
+				stopOnEntry = false,
+				runInTerminal = true,
+				console = "integratedTerminal"
+			},
+			cmake_executor = {
+				-- executor to use
+				name = "quickfix", -- name of the executor
+				opts = {}, -- the options the executor will get, possible values depend on the executor type. See `default_opts` for possible values.
+				default_opts = {
+					-- a list of default and possible values for executors
+					quickfix = {
+						show = "only_on_error", -- "always", "only_on_error"
+						position = "belowright", -- "vertical", "horizontal", "leftabove", "aboveleft", "rightbelow", "belowright", "topleft", "botright", use `:h vertical` for example to see help on them
+						size = 10,
+						encoding = "utf-8", -- if encoding is not "utf-8", it will be converted to "utf-8" using `vim.fn.iconv`
+						auto_close_when_success = true -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
+					},
+					toggleterm = {
+						direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
+						close_on_exit = false, -- whether close the terminal when exit
+						auto_scroll = true, -- whether auto scroll to the bottom
+						singleton = true -- single instance, autocloses the opened one, if present
+					},
+					overseer = {
+						new_task_opts = {
+							strategy = {
+								"toggleterm",
+								direction = "horizontal",
+								autos_croll = true,
+								quit_on_exit = "success"
+							}
+						}, -- options to pass into the `overseer.new_task` command
+						on_new_task = function(task)
+							require("overseer").open({enter = false, direction = "right"})
+						end -- a function that gets overseer.Task when it is created, before calling `task:start`
+					},
+					terminal = {
+						name = "Main Terminal",
+						prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
+						split_direction = "horizontal", -- "horizontal", "vertical"
+						split_size = 11,
+						-- Window handling
+						single_terminal_per_instance = true, -- Single viewport, multiple windows
+						single_terminal_per_tab = true, -- Single viewport per tab
+						keep_terminal_static_location = true, -- Static location of the viewport if avialable
+						auto_resize = true, -- Resize the terminal if it already exists
+						-- Running Tasks
+						start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
+						focus = false, -- Focus on terminal when cmake task is launched.
+						do_not_add_newline = false -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
+					} -- terminal executor uses the values in cmake_terminal
+				}
+			},
+			cmake_runner = {
+				-- runner to use
+				name = "terminal", -- name of the runner
+				opts = {}, -- the options the runner will get, possible values depend on the runner type. See `default_opts` for possible values.
+				default_opts = {
+					-- a list of default and possible values for runners
+					quickfix = {
+						show = "always", -- "always", "only_on_error"
+						position = "belowright", -- "bottom", "top"
+						size = 10,
+						encoding = "utf-8",
+						auto_close_when_success = true -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
+					},
+					toggleterm = {
+						direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
+						close_on_exit = false, -- whether close the terminal when exit
+						auto_scroll = true, -- whether auto scroll to the bottom
+						singleton = true -- single instance, autocloses the opened one, if present
+					},
+					overseer = {
+						new_task_opts = {
+							strategy = {
+								"toggleterm",
+								direction = "horizontal",
+								autos_croll = true,
+								quit_on_exit = "success"
+							}
+						}, -- options to pass into the `overseer.new_task` command
+						on_new_task = function(task)
+						end -- a function that gets overseer.Task when it is created, before calling `task:start`
+					},
+					terminal = {
+						name = "Main Terminal",
+						prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
+						split_direction = "horizontal", -- "horizontal", "vertical"
+						split_size = 11,
+						-- Window handling
+						single_terminal_per_instance = true, -- Single viewport, multiple windows
+						single_terminal_per_tab = true, -- Single viewport per tab
+						keep_terminal_static_location = true, -- Static location of the viewport if avialable
+						auto_resize = true, -- Resize the terminal if it already exists
+						-- Running Tasks
+						start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
+						focus = false, -- Focus on terminal when cmake task is launched.
+						do_not_add_newline = false -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
+					}
+				}
+			},
+			cmake_notifications = {
+				runner = {enabled = true},
+				executor = {enabled = true},
+				spinner = {"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}, -- icons used for progress display
+				refresh_rate_ms = 100 -- how often to iterate icons
+			},
+			cmake_virtual_text_support = true -- Show the target related to current file using virtual text (at right corner)
 		}
+	)
+
+	vim.api.nvim_create_user_command(
+		"Cs",
+		function()
+			vim.cmd("CMakeSelectBuildType")
+		end,
+		{bang = true}
+	)
+	vim.api.nvim_create_user_command(
+		"Cb",
+		function()
+			vim.cmd("CMakeBuild")
+		end,
+		{bang = true}
+	)
+	vim.api.nvim_create_user_command(
+		"Cst",
+		function()
+			vim.cmd("CMakeGenerate")
+		end,
+		{bang = true}
 	)
 end
 
@@ -1244,20 +1393,20 @@ end
 ------------------------------------------------------------------------------------------
 -- session_manager 配置
 ------------------------------------------------------------------------------------------
-function M.session_manager_init()
-	require("session_manager").setup {
-		sessions_dir = require("plenary.path"):new(vim.fn.stdpath("data"), "sessions"), -- 会话保存目录
-		path_replacer = "__", -- 替换路径中的目录分隔符
-		colon_replacer = "++", -- 替换路径中的冒号
-		autoload_mode = require("session_manager.config").AutoloadMode.Disabled, -- 自动加载模式
-		-- autoload_mode = false, -- 自动加载模式
-		autosave_last_session = true, -- 自动保存最后会话
-		autosave_ignore_not_normal = false, -- 忽略非正常缓冲区的自动保存
-		autosave_only_in_session = true -- 仅在会话中自动保存
-	}
+-- function M.session_manager_init()
+-- 	require("session_manager").setup {
+-- 		sessions_dir = require("plenary.path"):new(vim.fn.stdpath("data"), "sessions"), -- 会话保存目录
+-- 		path_replacer = "__", -- 替换路径中的目录分隔符
+-- 		colon_replacer = "++", -- 替换路径中的冒号
+-- 		autoload_mode = require("session_manager.config").AutoloadMode.Disabled, -- 自动加载模式
+-- 		-- autoload_mode = false, -- 自动加载模式
+-- 		autosave_last_session = true, -- 自动保存最后会话
+-- 		autosave_ignore_not_normal = false, -- 忽略非正常缓冲区的自动保存
+-- 		autosave_only_in_session = true -- 仅在会话中自动保存
+-- 	}
 
-	nmap("<leader>sm", ":SessionManager available_commands<CR>") -- 会话管理
-end
+-- 	nmap("<leader>sm", ":SessionManager available_commands<CR>") -- 会话管理
+-- end
 
 -- Call the setup function to change the default behavior
 function M.aerial_init()
