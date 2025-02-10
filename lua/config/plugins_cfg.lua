@@ -18,7 +18,46 @@ local vmap2 = keymap.vmap2
 vim.g.asyncrun_open = 12
 ------------------------------------------------------------------------------------------
 --
---
+
+function M.plenary_init()
+	-- 导入plenary.path模块
+	if vim.g.is_win32 == 1 then
+		local Path = require('plenary.path')
+
+		local original_tostring = Path.__tostring
+		local original_absolute = Path.absolute
+		local original_new = Path.new
+
+		-- Path.absolute = function(self)
+		-- 	local original_path = original_absolute(self)
+		-- 	return original_path:gsub('/', '\\')
+		-- end
+
+		-- Path.__tostring = function(self)
+		-- 	local original_path = original_tostring(self)
+		-- 	return original_path:gsub('/', '\\')
+		-- end
+
+
+		Path.new = function (...)
+			-- 检查参数数量
+			local args = {...}
+			if #args == 0 then return original_new(unpack(args)) end
+
+			-- 检查参数类型并处理路径
+			for i, path in ipairs(args) do
+				if type(path) == "string" then
+					args[i] = string.gsub(path, "/", "\\")
+				end
+			end
+
+			local result = original_new(unpack(args))
+			return result
+		end
+	end
+end
+
+
 function M.nordic_init()
 	require("nordic").setup(
 		{

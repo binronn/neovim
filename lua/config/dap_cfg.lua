@@ -25,6 +25,7 @@ local g_is_nvimtree_open = false
 local g_temp_side_window_groupid = nil
 local g_dapui_closed = false
 local g_debug_tab_num = nil
+local g_origin_tab_num = nil
 
 -----------------------------------------------
 -- 默认调试UI
@@ -478,6 +479,7 @@ function start_debug_session()
 			reset_debug_session_ui_continue()
 		end
 	})
+	g_origin_tab_num = vim.api.nvim_tabpage_get_number(0) -- 获取当前tabpage的编号并保存
 	vim.cmd('tabnew %')
 end
 function start_debug_session_new()
@@ -499,6 +501,7 @@ function close_debug_session()
 		-- restore_window()
 		if g_debug_tab_num and g_debug_tab_num == vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0)) then
 			vim.cmd('tabc')
+			vim.cmd('tabnext ' .. g_origin_tab_num)
 			g_debug_tab_num = -1
 		end
 	end

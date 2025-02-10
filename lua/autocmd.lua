@@ -153,7 +153,7 @@ vim.cmd(
 	[[
   augroup NvimTreeWindowSize
     autocmd!
-    autocmd WinEnter * if winnr('$') == 1 && (&filetype == 'aerial' || &filetype == 'NvimTree' || &filetype == 'qf') | qa! | endif
+    autocmd WinEnter * if winnr('$') == 1 && (&filetype == 'aerial' || &filetype == 'NvimTree' || &filetype == 'qf' || &filetype == 'codecompanion') | qa! | endif
   augroup END
 ]]
 )
@@ -190,14 +190,28 @@ vim.api.nvim_create_autocmd(
 )
 
 ----------------------------------------------------------------
+-- 关闭 codecompanion 的行号
+----------------------------------------------------------------
+-- 为特定文件类型（这里是python）设置局部选项来关闭行号和相对行号
+-- vim.api.nvim_create_autocmd("BufReadPost", 
+-- {
+-- 	-- pattern = "codecompanion",
+-- 	callback = function()
+-- 		if vim.bo.filetype == 'codecompanion' then
+-- 			vim.cmd('setlocal nonumber norelativenumber')
+-- 		end
+-- 	end,
+-- })
+
+----------------------------------------------------------------
 -- 首次进入设置工作目录
 ----------------------------------------------------------------
 vim.api.nvim_create_autocmd(
-	"BufReadPost", -- 修改为在缓冲区加载完成之后执行
-	{
-		once = true,
-		pattern = "*",
-		callback = function()
+"BufReadPost", -- 修改为在缓冲区加载完成之后执行
+{
+	once = true,
+	pattern = "*",
+	callback = function()
 
 			vim.schedule(
 				function()

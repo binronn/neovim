@@ -171,12 +171,17 @@ function M:setup_codecomp()
 					},
 					-- Options to customize the UI of the chat buffer
 					window = {
-						layout = "vertical", -- float|vertical|horizontal|buffer
-						position = "right", -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
-						border = "single",
-						height = 0.8,
-						width = 0.30,
+						layout = "float", -- float|vertical|horizontal|buffer
+						position = nil, -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
+						border = "rounded",
+						height = 0.95,
+						width = 0.3,
 						relative = "editor",
+						-- col = 2,
+						col = vim.o.columns - math.floor(vim.o.columns * 0.31), -- 计算使得窗口位于编辑器的右侧，并占据宽度的70%
+						row = 1,
+						anchor = 'NE',
+						style = 'minimal',  -- 使用最小化的样式
 						opts = {
 							breakindent = true,
 							cursorcolumn = false,
@@ -213,7 +218,7 @@ function M:setup_codecomp()
 					close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
 					layout = "vertical", -- vertical|horizontal split for default provider
 					opts = {"internal", "filler", "closeoff", "algorithm:patience", "followwrap", "linematch:120"},
-					provider = "default" -- default|mini_diff
+					provider = "mini_diff" -- default|mini_diff
 				}
 			}
 		}

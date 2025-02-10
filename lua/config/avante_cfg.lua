@@ -109,7 +109,10 @@ return require("avante").setup(
 				hint = "<leader>ah",
 				suggestion = "<leader>as",
 				repomap = "<nop>"
-			}
+			},
+			files = {
+				add_current = "<leader>ac", -- Add current buffer to selected files
+			},
 		},
 		hints = {enabled = true},
 		windows = {

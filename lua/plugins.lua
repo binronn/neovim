@@ -68,13 +68,18 @@ local programming_filetypes = {
 }
 
 local pcfg = require("config/plugins_cfg")
-local ai_provider = "codecomp" -- "avante"
+-- local ai_provider = "codecomp" -- "codecomp" or "avante"
 
 return {
 	-- {
 	-- 	"andymass/vim-matchup", -- 高亮匹配
 	-- 	lazy = true,
 	-- },
+	{
+		"nvim-lua/plenary.nvim",
+		priority = 1000,
+		config = pcfg.plenary_init
+	},
 	{
 		"itchyny/vim-cursorword" -- 高亮光标下内容
 	},
@@ -410,44 +415,41 @@ return {
 		lazy = true,
 		config = function()
 			require("render-markdown").setup()
-		end,
+		end
 	},
 	------------------------------------------
 	----     codecompanion AI             ----
 	------------------------------------------
 	{
 		"olimorris/codecompanion.nvim",
-		enabled = ai_provider == "codecomp" and true or false,
 		dependencies = {
+			"echasnovski/mini.diff",
 			"nvim-lualine/lualine.nvim",
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
 				config = function()
-					if ai_provider == 'codecomp' then
-						require("render-markdown").setup(
-							{
-								file_types = {"markdown", "codecompanion"}
-							}
-						)
-					end
+					require("render-markdown").setup(
+						{
+							file_types = {"markdown", "codecompanion"}
+						}
+					)
 				end
 			}
 		},
 		-- opt = require("config.codecomp_cfg").opts(),
 		config = function()
-			if ai_provider == 'codecomp' then
-				local comp = require("config.codecomp_cfg"):new()
-				comp:setup_codecomp()
-				comp:init()
-				nmap("<leader>ac", ":CodeCompanionActions<CR>")
-				nmap("<leader>aa", ":CodeCompanionChat Toggle<CR>")
-				vmap("<leader>aa", ":CodeCompanionChat<CR>")
-				nmap2("<leader>as", ":CodeCompanionChat ")
-				nmap2("<leader>ae", ":CodeCompanion ")
-				vmap2("<leader>ae", ":CodeCompanion ")
-			end
+			local comp = require("config.codecomp_cfg"):new()
+			comp:setup_codecomp()
+			comp:init()
+			nmap("<leader>ca", ":CodeCompanionActions<CR>")
+			nmap("<leader>cc", ":CodeCompanionChat Toggle<CR>")
+			vmap("<leader>cc", ":CodeCompanionChat<CR>")
+			nmap2("<leader>cs", ":CodeCompanionChat ")
+			nmap2("<leader>ce", ":CodeCompanion ")
+			vmap2("<leader>ce", ":CodeCompanion ")
+			cmap("CC", "CodeCompanion", {noremap = true, silent = false})
 		end
 	},
 	------------------------------------------
@@ -462,23 +464,11 @@ return {
 		-- event = {"BufRead", "BufNewFile"},
 		-- event = {"VeryLazy"},
 		lazy = false,
-		enabled = ai_provider == "avante" and true or false,
 		-- version = '*', -- 最新tag
 		-- version = nil, -- 最新提交
 		-- ft = programming_filetypes,
 		config = function()
-
-			if ai_provider == 'avante' then
-				require("config/avante_cfg")
-			end
-
-			-- nmap(
-			-- 	"<leader>aa",
-			-- 	function()
-			-- 		require("avante").toggle() -- Assuming the function is named toggle and exported by avante.nvim
-			-- 	end,
-			-- 	{noremap = true, silent = true}
-			-- )
+			require("config/avante_cfg")
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
@@ -515,27 +505,25 @@ return {
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
 				config = function()
-					if ai_provider == 'avante' then
-						require("render-markdown").setup(
-							{
-								file_types = {"markdown", "Avante"},
-								highlight = {
-									enabled = true,
-									-- 设置高亮模式为始终启用
-									always_enabled = true,
-									-- 设置高亮组
-									highlight_groups = {
-										normal = "Normal",
-										visual = "Visual",
-										insert = "Insert",
-										replace = "Replace",
-										command = "Command"
-									}
+					require("render-markdown").setup(
+						{
+							file_types = {"markdown", "Avante"},
+							highlight = {
+								enabled = true,
+								-- 设置高亮模式为始终启用
+								always_enabled = true,
+								-- 设置高亮组
+								highlight_groups = {
+									normal = "Normal",
+									visual = "Visual",
+									insert = "Insert",
+									replace = "Replace",
+									command = "Command"
 								}
 							}
-						)
-					end
-				end,
+						}
+					)
+				end
 			}
 		}
 	}
