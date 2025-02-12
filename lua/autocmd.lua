@@ -181,7 +181,9 @@ vim.api.nvim_create_autocmd(
 		callback = function()
 			vim.schedule(
 				function()
-					vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+					if vim.g.is_win32 == 1 then
+						vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+					end
 					vim.opt.laststatus = 3
 				end
 			)
@@ -247,7 +249,9 @@ vim.api.nvim_create_autocmd(
 		callback = function()
 			vim.schedule(
 				function()
-					vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+					if vim.g.is_win32 == 1 then
+						vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+					end
 					vim.opt.laststatus = 3
 				end
 			)

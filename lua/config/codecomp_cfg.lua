@@ -13,7 +13,7 @@ local spinner_symbols = {
 	"⠦",
 	"⠧",
 	"⠇",
-	"⠏",
+	"⠏"
 }
 local spinner_symbols_len = 10
 
@@ -22,17 +22,20 @@ function M:init(options)
 	M.super.init(self, options)
 
 	local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
-	vim.api.nvim_create_autocmd({ "User" }, {
-		pattern = "CodeCompanionRequest*",
-		group = group,
-		callback = function(request)
-			if request.match == "CodeCompanionRequestStarted" then
-				self.processing = true
-			elseif request.match == "CodeCompanionRequestFinished" then
-				self.processing = false
+	vim.api.nvim_create_autocmd(
+		{"User"},
+		{
+			pattern = "CodeCompanionRequest*",
+			group = group,
+			callback = function(request)
+				if request.match == "CodeCompanionRequestStarted" then
+					self.processing = true
+				elseif request.match == "CodeCompanionRequestFinished" then
+					self.processing = false
+				end
 			end
-		end,
-	})
+		}
+	)
 end
 
 -- Function that runs every time statusline is updated
@@ -49,66 +52,102 @@ function M:setup_codecomp()
 	require("codecompanion").setup(
 		{
 			opts = {
-				language = 'Chinese',
+				language = "Chinese"
 			},
 			adapters = {
-			qwen = function()
-				return require("codecompanion.adapters").extend(
-					"openai_compatible",
-					{
-						name = "qwen",
-						env = {
-							url = "http://192.168.0.101:8000", -- optional: default value is ollama url http://127.0.0.1:11434
-							model = "qwen",
-							api_key = vim.fn.getenv("ORG"), -- optional: if your endpoint is authenticated
-							-- api_key = "OpenAI_API_KEY", -- optional: if your endpoint is authenticated
-							chat_url = "/v1/chat/completions" -- optional: default value, override if different
+				qwen = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "qwen",
+							env = {
+								url = "http://192.168.0.101:8000", -- optional: default value is ollama url http://127.0.0.1:11434
+								model = "qwen",
+								api_key = vim.fn.getenv("ORG"), -- optional: if your endpoint is authenticated
+								-- api_key = "OpenAI_API_KEY", -- optional: if your endpoint is authenticated
+								chat_url = "/v1/chat/completions" -- optional: default value, override if different
+							}
 						}
-					}
-				)
-			end,
-			nvidia = function()
-				return require("codecompanion.adapters").extend(
-					"openai_compatible",
-					{
-						name = "nvidia",
-						env = {
-							url = "https://integrate.api.nvidia.com",
-							model = "deepseek-ai/deepseek-r1",
-							api_key = vim.fn.getenv("GTX"),
-							chat_url = "/v1/chat/completions"
+					)
+				end,
+				nvidia = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "nvidia",
+							env = {
+								url = "https://integrate.api.nvidia.com",
+								chat_url = "/v1/chat/completions",
+								model = "deepseek-ai/deepseek-r1",
+								api_key = vim.fn.getenv("GTX"),
+							}
 						}
-					}
-				)
-			end,
-			sil_deepseek = function()
-				return require("codecompanion.adapters").extend(
-					"openai_compatible",
-					{
-						name = "sil_deepseek",
-						env = {
-							url = "https://api.siliconflow.cn",
-							model = "deepseek-ai/DeepSeek-V3",
-							api_key = vim.fn.getenv("SILICONFLOW"),
-							chat_url = "/v1/chat/completions"
+					)
+				end,
+				sil_deepseek = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "sil_deepseek",
+							env = {
+								url = "https://api.siliconflow.cn",
+								chat_url = "/v1/chat/completions",
+								model = "deepseek-ai/DeepSeek-V3",
+								api_key = vim.fn.getenv("SILICONFLOW_DSK"),
+							}
 						}
-					}
-				)
-			end,
-			deepseek = function()
-				return require("codecompanion.adapters").extend(
-					"openai_compatible",
-					{
-						name = "deepseek",
-						env = {
-							url = "https://api.deepseek.com",
-							model = "deepseek-chat",
-							api_key = vim.fn.getenv("DSK"),
-							chat_url = "/v1/chat/completions"
+					)
+				end,
+				deepseek = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "deepseek",
+							env = {
+								url = "https://api.deepseek.com",
+								chat_url = "/v1/chat/completions",
+								model = "deepseek-chat",
+								api_key = vim.fn.getenv("DSK"),
+							}
 						}
-					}
-				)
-			end
+					)
+				end,
+				azure_deepseek = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "azure_deepseek",
+							opts = {
+								proxy = "socks5://127.0.0.1:10807",
+							},
+							env = {
+								url = "https://DeepSeek-R1-jrybg.eastus2.models.ai.azure.com",
+								-- chat_url = "/v1/chat/completions",
+								api_key = vim.fn.getenv("AZURE_DSKR1"),
+							},
+							schema = {
+								model = {
+									default = 'deepseek-r1',
+									-- choices = 'deepseek-r1'
+								}
+							}
+						}
+					)
+				end,
+				luch_deepseek = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "luch_deepseek",
+							env = {
+								url = "https://cloud.luchentech.com",
+								chat_url = "/api/maas/chat/completions",
+								model = "deepseek-ai/DeepSeek-R1",
+								api_key = vim.fn.getenv("LUCHENTECH_DSK"),
+							}
+						}
+					)
+				end
 			},
 			strategies = {
 				chat = {
@@ -121,10 +160,10 @@ function M:setup_codecomp()
 
 						---The header name for your messages
 						---@type string
-						-- user = "Byron ",
+						user = "Byron",
 					},
 					-- intro_message = "Press ? for options",
-					show_header_separator = true, -- Show header separators in the chat buffer? Set this to false if you're using an external markdown formatting plugin
+					show_header_separator = false, -- Show header separators in the chat buffer? Set this to false if you're using an external markdown formatting plugin
 					separator = "-─", -- The separator between the different messages in the chat buffer
 					show_references = true, -- Show references (from slash commands and variables) in the chat buffer?
 					show_settings = true, -- Show LLM settings at the top of the chat buffer?
@@ -136,7 +175,7 @@ function M:setup_codecomp()
 							modes = {n = "<Enter>", i = "<C-s>"}
 						},
 						close = {
-							modes = {n = "<C-d>"}
+							modes = {n = "<C-c>", i = "C-c"}
 						}
 						-- Add further custom keymaps here
 					}
@@ -153,7 +192,7 @@ function M:setup_codecomp()
 						}
 					},
 					adapter = "qwen"
-				},
+				}
 			},
 			display = {
 				chat = {
@@ -163,26 +202,19 @@ function M:setup_codecomp()
 						watched_buffer = "👀"
 					},
 					-- Alter the sizing of the debug window
-					debug_window = {
-						---@return number|fun(): number
-						width = vim.o.columns - 5,
-						---@return number|fun(): number
-						height = vim.o.lines - 2
-					},
+					debug_window = {},
 					-- Options to customize the UI of the chat buffer
 					window = {
 						layout = "float", -- float|vertical|horizontal|buffer
 						position = nil, -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
 						border = "rounded",
-						height = 0.95,
-						width = 0.3,
+						height = 0.6,
+						width = 0.75,
 						relative = "editor",
-						-- col = 2,
-						col = vim.o.columns - math.floor(vim.o.columns * 0.31), -- 计算使得窗口位于编辑器的右侧，并占据宽度的70%
-						row = 1,
-						anchor = 'NE',
-						style = 'minimal',  -- 使用最小化的样式
+						style = "full", -- 使用最小化的样式
 						opts = {
+							number = false,
+							relativenumber = false,
 							breakindent = true,
 							cursorcolumn = false,
 							cursorline = false,
@@ -218,7 +250,7 @@ function M:setup_codecomp()
 					close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
 					layout = "vertical", -- vertical|horizontal split for default provider
 					opts = {"internal", "filler", "closeoff", "algorithm:patience", "followwrap", "linematch:120"},
-					provider = "mini_diff" -- default|mini_diff
+					provider = "default" -- default|mini_diff
 				}
 			}
 		}

@@ -1312,7 +1312,7 @@ function M.telescope_init()
 					"%.venv/",
 					"%.venv_win/",
 					"%.venv_bak/",
-					"%.venv*/"
+					"%.venv.*/"
 				},
 				layout_config = {
 					horizontal = {

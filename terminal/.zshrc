@@ -15,31 +15,24 @@ fi
 export http_proxy=http://127.0.0.1:10808
 export https_proxy=http://127.0.0.1:10808
 export ORG=''
+source "$HOME/.zshrc_pri"
 
 source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-# Load a few important annexes, without Turbo
-# (this is currently required for annexes)
-zinit light-mode for \
-    zdharma-continuum/zinit-annex-as-monitor \
-    zdharma-continuum/zinit-annex-bin-gem-node \
-    zdharma-continuum/zinit-annex-patch-dl \
-    zdharma-continuum/zinit-annex-rust
+# 移除重复的zinit annexes配置
 
-### End of Zinit's installer chunk
-
-# 语法高亮
-zinit ice lucid wait='0' atinit='zpcompinit'
+# 语法高亮（延迟加载）
+zinit ice lucid wait='1' atinit='zpcompinit'
 zinit light zdharma-continuum/fast-syntax-highlighting
 
-# 自动建议
-zinit ice lucid wait="0" atload='_zsh_autosuggest_start'
+# 自动建议（延迟加载）
+zinit ice lucid wait="1" atload='_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
 
-# 补全
-zinit ice lucid wait='0'
+# 补全（延迟加载）
+zinit ice lucid wait='1'
 zinit light zsh-users/zsh-completions
 
 # 加载 OMZ 框架及部分插件
@@ -59,9 +52,14 @@ zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
 bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
 #
+# 异步加载插件
+zinit ice lucid wait='1'
 zinit load zdharma/history-search-multi-word
 
+zinit ice lucid wait='1'
 zinit load djui/alias-tips
+
+# zinit ice lucid wait='0'  # powerlevel10k需要立即加载以保证提示符显示
 zinit load romkatv/powerlevel10k
 
 #zinit wait lucid light-mode \
@@ -99,11 +97,21 @@ alias vim=nvim
 #
 #  移除重复的命令历史
 setopt HIST_IGNORE_ALL_DUPS
-# 设置历史记录的最大数量为200条。
-HISTSIZE=200
-SAVEHIST=200
+# 设置历史记录的最大数量为100条以加快加载
+HISTSIZE=100
+SAVEHIST=100
 ## autojump
 [[ -s /data/data/com.termux/files/home/.autojump/etc/profile.d/autojump.sh ]] && source /data/data/com.termux/files/home/.autojump/etc/profile.d/autojump.sh
 autoload -U compinit && compinit -u
 
 export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:'
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+### End of Zinit's installer chunk

@@ -4,7 +4,7 @@ vim.api.nvim_set_hl(0, "AvanteDiffAdd", {fg = "#000000", bg = "#3d4745"}) -- 黑
 return require("avante").setup(
 	{
 		provider = "qwen",
-		auto_suggestions_provider = "qwen", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
+		auto_suggestions_provider = "copilot", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
 		web_search_engine = {
 			provider = "tavily",
 			api_key_name = "TAVILY",
@@ -12,6 +12,16 @@ return require("avante").setup(
 				time_range = "m",
 				include_answer = "basic"
 			}
+		},
+
+		copilot = {
+			-- endpoint = "https://api.githubcopilot.com",
+			-- model = "gpt-4o-2024-08-06",
+			proxy = 'http://127.0.0.1:10808', -- [protocol://]host[:port] Use this proxy
+			allow_insecure = false, -- Allow insecure server connections
+			timeout = 3000, -- Timeout in milliseconds
+			temperature = 0,
+			max_tokens = 4096,
 		},
 		-- openai = {
 		-- 	endpoint = "",
@@ -43,12 +53,32 @@ return require("avante").setup(
 			},
 			["sil_deepseek"] = {
 				__inherited_from = "openai",
-				endpoint = "https://api.siliconflow.cn/v1/",
+				endpoint = "https://api.siliconflow.cn/v1",
 				model = "deepseek-ai/DeepSeek-V3",
-				api_key_name = "SILICONFLOW",
+				api_key_name = "SILICONFLOW_DSK",
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,
 				max_tokens = 4096
+			},
+			["luch_deepseek"] = {
+				__inherited_from = "openai",
+				endpoint = "https://cloud.luchentech.com/api/maas",
+				model = "deepseek-ai/DeepSeek-R1",
+				api_key_name = "LUCHENTECH_DSK",
+				timeout = 3000, -- Timeout in milliseconds
+				temperature = 0,
+				max_tokens = 4096
+			},
+			["azure_deepseekr1"] = {
+				__inherited_from = "openai",
+				endpoint = "https://DeepSeek-R1-jrybg.eastus2.models.ai.azure.com/v1",
+				model = 'deepseek-r1',
+				disable_tools = true,
+				api_key_name = "AZURE_DSKR1",
+				timeout = 3000, -- Timeout in milliseconds
+				temperature = 0,
+				max_tokens = 4096,
+				-- proxy = "http://127.0.0.1:10808",
 			},
 			["deepseek"] = {
 				__inherited_from = "openai",

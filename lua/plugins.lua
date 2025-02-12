@@ -171,10 +171,12 @@ return {
 	},
 	{
 		"numToStr/Comment.nvim", -- 注释插件
+		event = {"BufEnter", "BufRead"},
 		config = pcfg.Comment_init
 	},
 	{
 		"MattesGroeger/vim-bookmarks", -- 书签
+		event = {'VeryLazy'},
 		init = function()
 			vim.g.bookmark_no_default_key_mappings = 1 -- 关闭默认快捷键映射
 			vim.g.bookmark_save_per_working_dir = 1 -- 书签保存到工作目录
@@ -192,11 +194,12 @@ return {
 	},
 	{
 		"skywind3000/asyncrun.vim", -- 异步执行命令插件
-		lazy = true,
-		event = {"VeryLazy"},
-		config = function()
+		cmd = {'AsyncRun'},
+		init = function()
 			vim.api.nvim_set_keymap("c", "Ar", "AsyncRun ", {noremap = true, silent = false})
 			vim.api.nvim_set_keymap("c", "As", "AsyncStop", {noremap = true, silent = false})
+		end,
+		config = function()
 		end
 	},
 	{
@@ -329,7 +332,6 @@ return {
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
-		event = {"VeryLazy"},
 		dependencies = {
 			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
@@ -422,9 +424,9 @@ return {
 	------------------------------------------
 	{
 		"olimorris/codecompanion.nvim",
+		event = { 'VeryLazy' },
 		dependencies = {
-			"echasnovski/mini.diff",
-			"nvim-lualine/lualine.nvim",
+			-- "echasnovski/mini.diff",
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
 			{
@@ -432,7 +434,7 @@ return {
 				config = function()
 					require("render-markdown").setup(
 						{
-							file_types = {"markdown", "codecompanion"}
+							file_types = {"markdown", "codecompanion", "Avante"}
 						}
 					)
 				end
@@ -443,6 +445,20 @@ return {
 			local comp = require("config.codecomp_cfg"):new()
 			comp:setup_codecomp()
 			comp:init()
+			-- require('mini.diff').setup({
+			-- 	view = {
+			-- 		-- Visualization style. Possible values are 'sign' and 'number'.
+			-- 		-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
+			-- 		style = vim.go.number and 'number' or 'sign',
+
+			-- 		-- Signs used for hunks with 'sign' view
+			-- 		signs = { add = '', change = '', delete = '' },
+
+			-- 		-- Priority of used visualization extmarks
+			-- 		priority = 0,
+			-- 	},
+			-- 	-- 在这里添加 mini.diff 的默认配置
+			-- })
 			nmap("<leader>ca", ":CodeCompanionActions<CR>")
 			nmap("<leader>cc", ":CodeCompanionChat Toggle<CR>")
 			vmap("<leader>cc", ":CodeCompanionChat<CR>")
@@ -463,12 +479,14 @@ return {
 		"yetone/avante.nvim",
 		-- event = {"BufRead", "BufNewFile"},
 		-- event = {"VeryLazy"},
-		lazy = false,
+		-- lazy = false,
+		-- event = { 'VeryLazy' },
 		-- version = '*', -- 最新tag
 		-- version = nil, -- 最新提交
 		-- ft = programming_filetypes,
 		config = function()
-			require("config/avante_cfg")
+			require("copilot").setup({})
+			require("config.avante_cfg")
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
@@ -480,7 +498,10 @@ return {
 			"hrsh7th/nvim-cmp",
 			--- The below dependencies are optional,
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-			-- "zbirenbaum/copilot.lua", -- for providers='copilot'
+			{
+				"zbirenbaum/copilot.lua",
+			}, -- for providers='copilot'
+
 			-- {
 			-- 	-- support for image pasting
 			-- 	"HakonHarnes/img-clip.nvim",
@@ -507,7 +528,7 @@ return {
 				config = function()
 					require("render-markdown").setup(
 						{
-							file_types = {"markdown", "Avante"},
+							file_types = {"markdown", "Avante", "codecompanion"},
 							highlight = {
 								enabled = true,
 								-- 设置高亮模式为始终启用

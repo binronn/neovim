@@ -101,6 +101,7 @@ nmap("<leader>wk", "<C-w>k")
 nmap("<leader>wl", "<C-w>l")
 nmap("<leader>wh", "<C-w>h")
 nmap("<leader>wj", "<C-w>j")
+nmap("<leader>wp", ":wincmd p<CR>")
 nmap("<leader>w=", "<C-w>=")
 
 -- 窗口移动
@@ -121,17 +122,16 @@ nmap("<C-h>", "%")
 vmap("<C-h>", "%")
 
 -- 窗口跳转
-nmap("<leader>1", ":1wincmd w<CR>")
-nmap("<leader>2", ":2wincmd w<CR>")
-nmap("<leader>3", ":3wincmd w<CR>")
-nmap("<leader>4", ":4wincmd w<CR>")
-nmap("<leader>5", ":5wincmd w<CR>")
-nmap("<leader>6", ":6wincmd w<CR>")
-nmap("<leader>7", ":7wincmd w<CR>")
-nmap("<leader>8", ":8wincmd w<CR>")
-nmap("<leader>9", ":9wincmd w<CR>")
-nmap("<leader>0", ":0wincmd w<CR>")
-nmap("<leader>p", ":wincmd p<CR>")
+-- nmap("<leader>1", ":1wincmd w<CR>")
+-- nmap("<leader>2", ":2wincmd w<CR>")
+-- nmap("<leader>3", ":3wincmd w<CR>")
+-- nmap("<leader>4", ":4wincmd w<CR>")
+-- nmap("<leader>5", ":5wincmd w<CR>")
+-- nmap("<leader>6", ":6wincmd w<CR>")
+-- nmap("<leader>7", ":7wincmd w<CR>")
+-- nmap("<leader>8", ":8wincmd w<CR>")
+-- nmap("<leader>9", ":9wincmd w<CR>")
+-- nmap("<leader>0", ":0wincmd w<CR>")
 
 ------------------------------------------------------------------------------------------
 -- 选中文字加括号引号
