@@ -26,6 +26,7 @@ function M.plenary_init()
 
 		local original_joinpath = Path.joinpath
 		local original_make_relative = Path.make_relative
+		local original_normalize = Path.normalize
 		local original_new = Path.new
 
 		-- Path.absolute = function(self)
@@ -37,6 +38,14 @@ function M.plenary_init()
 		-- 	local original_path = original_tostring(self)
 		-- 	return original_path:gsub('/', '\\')
 		-- end
+
+
+		Path.normalize = function (cwd)
+			if type(cmd) == "string" then
+				cwd = string.gsub(cwd, "/", "\\")
+			end
+			return original_normalize(cwd)
+		end
 
 		Path.make_relative = function (cwd)
 			if type(cmd) == "string" then
