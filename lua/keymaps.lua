@@ -54,8 +54,10 @@ nmap("<leader>wq", ":wq<CR>")
 nmap("<leader>wQ", ":wqa<CR>")
 
 -- 文件不保存退出
-nmap("<leader>q", ":q<CR>")
-nmap("<leader>Q", ":q!<CR>")
+-- nmap("<leader>q", ":q<CR>")
+nmap("<leader>fq", "<cmd>lua if vim.bo.buftype == '' then vim.cmd('q') end<CR>")
+nmap("qw", "<cmd>lua if vim.bo.buftype ~= '' then vim.cmd('q') end<CR>")
+nmap("<leader>fQ", ":q!<CR>")
 
 -- 上/下一个 buffer
 nmap("<leader>fn", ":bn<CR>")

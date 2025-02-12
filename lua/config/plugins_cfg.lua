@@ -1,5 +1,7 @@
 local M = {}
 
+
+
 local keymap = require("keymap_help")
 local map = keymap.map
 local nmap = keymap.nmap
@@ -180,7 +182,8 @@ function M.notify_init()
 		{
 			-- 你的自定义配置选项
 			background_colour = "#777777",
-			timeout = 3000 -- 默认通知显示时间5秒
+			timeout = 3000, -- 默认通知显示时间5秒
+			stages = 'static'
 			-- 其他你想要设置的选项
 		}
 	)
@@ -336,7 +339,9 @@ function M.lualine_init()
 			disabled_filetypes = {"NvimTree", "aerial", "qf", "help"},
 			icons_enabled = true,
 			theme = "auto",
-			component_separators = {left = "|", right = "|"},
+			-- component_separators = {left = "|", right = "|"},
+			component_separators = {left = "·", right = "·"},
+			-- component_separators = { left = '', right = '' }
 			section_separators = {left = "", right = ""},
 			disabled_filetypes = {
 				statusline = {},
@@ -481,12 +486,42 @@ end
 ----     bufferline 语法高亮配置      ----
 ------------------------------------------
 function M.bufferline_init()
-	nmap("<leader>bc", ":BufferLinePick<CR>")
-	require("bufferline").setup {
+	nmap("<leader>fc", ":BufferLinePick<CR>")
+	nmap("<leader>fD", ":BufferLinePickClose<CR>")
+	local bufl = require('bufferline')
+	-- local hex = require('bufferline.colors').get_color
+
+	-- local bufl_constant = require('bufferline.constants')
+	-- bufl_constant.sep_chars = {
+	--   [bufl_constant.sep_names.slant] = { "", "" },
+	-- }
+
+	-- local bufl_config = require('bufferline.config'):new(nil)
+	-- require('bufferline.config').setup({})
+	-- local bufl_config = require('bufferline.config').get()
+	bufl.setup {
+		-- highlights = {
+		-- 	fill = {
+		-- 		fg = '#000000',
+		-- 		bg = '#000000',
+		-- 	},
+		-- 	separator = {
+		-- 		bg = '#000000',
+		-- 		fg = '#282828',
+		-- 	},
+		-- 	separator_visible = {
+		-- 		bg = '#000000',
+		-- 		fg = '#282828',
+		-- 	},
+		-- 	separator_selected = {
+		-- 		bg = '#000000',
+		-- 		fg = '#282828',
+		-- 	},
+		-- },
 		options = {
 			mode = "buffers",
 			numbers = "none",
-			separator_style = "slant",
+			separator_style = "slope",
 			show_close_icon = false,
 			show_buffer_close_icons = false,
 			show_buffer_icons = true,
@@ -577,8 +612,8 @@ function M.FTerm_init()
 		{
 			border = "double",
 			dimensions = {
-				height = 0.70,
-				width = 0.8
+				height = 0.6,
+				width = 0.75
 			},
 			---Filetype of the terminal buffer
 			---@type string
@@ -610,10 +645,10 @@ function M.FTerm_init()
 			---The value for each field should be between `0` and `1`
 			---@type table<string,number>
 			dimensions = {
-				height = 0.8, -- Height of the terminal window
-				width = 0.8, -- Width of the terminal window
-				x = 0.5, -- X axis of the terminal window
-				y = 0.5 -- Y axis of the terminal window
+				height = 0.61, -- Height of the terminal window
+				width = 0.75, -- Width of the terminal window
+				-- x = 0.5, -- X axis of the terminal window
+				-- y = 0.5 -- Y axis of the terminal window
 			},
 			---Replace instead of extend the current environment with `env`.
 			---See `:h jobstart-options`
@@ -1273,10 +1308,11 @@ function M.cmake_tools_init()
 		end,
 		{bang = true}
 	)
+
 	vim.api.nvim_create_user_command(
 		"Cb",
 		function()
-			vim.cmd("CMakeBuild")
+			vim.cmd(":wa | CMakeBuild")
 		end,
 		{bang = true}
 	)

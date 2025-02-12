@@ -5,14 +5,16 @@
 
 | 快捷键         | 功能描述                     |
 |----------------|------------------------------|
-| `<leader>fs`   | 保存当前文件                 |
-| `<leader>fS`   | 保存所有文件                 |
-| `<leader>fd`   | 关闭当前文件                 |
+| `<leader>fs`   | 保存当前buffer               |
+| `<leader>fS`   | 保存所有buffer               |
+| `<leader>fd`   | 关闭当前buffer               |
+| `<leader>fD`   | 选择并关闭buffer(bufferline) |
 | `<leader>fo`   | 打开文件                     |
 | `<leader>wq`   | 保存并退出当前文件           |
 | `<leader>wQ`   | 保存并退出所有文件           |
-| `<leader>q`    | 退出当前文件                 |
-| `<leader>Q`    | 强制退出当前文件             |
+| `<leader>fq`   | 退出当前buffer               |
+| `qw`           | 退出当前非buffer窗口         |
+| `<leader>fQ`    | 强制退出当前文件             |
 | `<leader>fn`   | 切换到下一个 buffer          |
 | `<leader>fp`   | 切换到上一个 buffer          |
 | `<leader>ls`   | 上一个文件横向分屏           |

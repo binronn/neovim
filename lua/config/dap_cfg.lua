@@ -32,7 +32,7 @@ local g_origin_tab_num = nil
 -----------------------------------------------
 ---
 local function default_dapui()
-	require("dapui").setup(
+	dapui.setup(
 		{
 			layouts = {
 				{
@@ -57,6 +57,7 @@ local function default_dapui()
 		}
 	)
 end
+default_dapui()
 -----------------------------------------------
 -- 保存并恢复窗口
 -----------------------------------------------
@@ -159,12 +160,12 @@ local function restore_window()
 
 	-- 检查 NvimTree 是否打开
 	if g_is_nvimtree_open == true then
-		vim.cmd("NvimTreeOpen") -- 确保命令名称正确
+		vim.g.toggle_nvimtree()
 	end
 
 	-- 检查 Aerial 是否打开
 	if g_is_tagbar_open == true then
-		vim.cmd("AerialOpen") -- 确保命令名称正确
+		vim.g.toggle_tagbar()
 	end
 
 	-- if g_is_avante_open == true or g_is_tagbar_open == true or g_is_avante_open == true then
@@ -408,16 +409,27 @@ local function clear_debug_keymaps()
 	-- vim.api.nvim_del_keymap("n", "<leader>dK")
 end
 
-local function reset_debug_session_ui_continue()
+local function reset_debug_session_ui()
 
+	-- 当启动调试，单步进入一个函数，此函数所在的文件若未打开，会导致无法显示行号与侧栏图标，在此修复
+	vim.api.nvim_create_augroup('DapBufRepair', { clear = true })
+
+	-- 定义autocmd，在BufRead事件触发时执行
+	vim.api.nvim_create_autocmd("BufReadPost", {
+		group = 'DapBufRepair',
+		callback = function()
+			vim.cmd('set relativenumber')
+			vim.cmd('set signcolumn=yes')
+		end,
+	})
 	------------------------------------------------
 	-- cpp 单独设置UI配置项
 	------------------------------------------------
 	local filetype = vim.bo.filetype
 	if vim.g.g_dapui_closed == nil and (filetype == "c" or filetype == "cpp") then
 		-- local btm_win_elements = {
-		-- 	{id = "repl", size = 1} -- REPL 窗口，占 100% 高度
-		-- }
+			-- 	{id = "repl", size = 1} -- REPL 窗口，占 100% 高度
+			-- }
 
 		-- local btm_unix_elements = {
 		-- 	{id = "repl", size = 0.5}, -- REPL 窗口，占 50% 高度
@@ -452,7 +464,9 @@ local function reset_debug_session_ui_continue()
 		default_dapui()
 	end
 
-	require("dap").continue()
+	setup_debug_keymaps() -- 设置快捷键
+	g_dapui_closed = false
+
 	vim.notify('Debugger is running ...', vim.log.levels.INFO, { title = 'Lsp debug' })
 end
 
@@ -463,24 +477,22 @@ function start_debug_session()
 	-- end
 	-- save_window_status()
 	-- close_windows()
+	if dap.session() then
+
+		if g_debug_tab_num ~= nil then
+			vim.cmd('tabnext ' .. g_debug_tab_num)
+		end
+
+		vim.notify('Debug session is running', vim.log.levels.INFO, { title = 'Lsp debug' })
+		return
+	end
 	local file_path = vim.fn.expand("%")
     if vim.fn.filereadable(file_path) ~= 1 then
 		vim.notify('Cursor not in file buffer', vim.log.levels.INFO, { title = 'Lsp debug' })
 		return
 	end
 
-	local current_cursor = vim.api.nvim_win_get_cursor(0)
-	-- Wait until the new tab is ready
-	vim.api.nvim_create_autocmd({"BufWinEnter"}, {
-		once = true,
-		callback = function()
-			g_debug_tab_num = vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0))
-			vim.api.nvim_win_set_cursor(0, {current_cursor[1], current_cursor[2]})
-			reset_debug_session_ui_continue()
-		end
-	})
-	g_origin_tab_num = vim.api.nvim_tabpage_get_number(0) -- 获取当前tabpage的编号并保存
-	vim.cmd('tabnew %')
+	require("dap").continue()
 end
 function start_debug_session_new()
 	vim.g.build_bin_path = nil
@@ -492,17 +504,22 @@ function close_debug_session()
 	clear_debug_keymaps()
 	-- 获取 dap 和 dapui 模块
 	local dap = require("dap")
-	local dapui = require("dapui")
+
+	if pcall(vim.api.nvim_get_autocmds, { group = 'DapBufRepair' }) then
+		vim.api.nvim_del_augroup_by_name('DapBufRepair')
+	end
 
 	-- 关闭当前 DAP 会话
 	if dap.session() then
 		dap.terminate() -- 终止调试会话
 		dapui.close() -- 关闭调试器
 		-- restore_window()
-		if g_debug_tab_num and g_debug_tab_num == vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0)) then
-			vim.cmd('tabc')
+		-- if g_debug_tab_num and g_debug_tab_num == vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0)) then
+		if g_debug_tab_num ~= nil then
+			vim.cmd('tabclose ' .. g_debug_tab_num)
 			vim.cmd('tabnext ' .. g_origin_tab_num)
-			g_debug_tab_num = -1
+			g_debug_tab_num = nil
+			g_origin_tab_num = nil
 		end
 	end
 
@@ -574,9 +591,29 @@ nmap("<leader>dc", ":Telescope dap commands<CR>", {noremap = true, silent = true
 ---
 -- 监听调试器启动事件
 dap.listeners.after.event_initialized["dapui_config"] = function()
-	setup_debug_keymaps() -- 设置快捷键
-	dapui.open() -- 打开 dapui
-	g_dapui_closed = false
+
+	-- 保存当前 tab
+	local current_cursor = vim.api.nvim_win_get_cursor(0)
+
+	-- 创建新 tab 显示UI
+	-- Wait until the new tab is ready
+	vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+		once = true,
+		callback = function()
+			g_debug_tab_num = vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0))
+			vim.api.nvim_win_set_cursor(0, {current_cursor[1], current_cursor[2]})
+			reset_debug_session_ui()
+		end
+	})
+
+	if g_debug_tab_num == nil then
+		g_origin_tab_num = vim.api.nvim_tabpage_get_number(0) -- 获取当前tabpage的编号并保存
+		vim.cmd('tabnew %')
+
+		-- 这里可能有BUG，在tab还未创建好就已经展示dapui了
+		-- dapui.open 不可放到 tabnew 的回调中(reset_debug_session_ui)，否则dapui无法与dap进行链接，无法查看程序输出!!!!!!
+		dapui.open() -- 打开 dapui
+	end
 end
 
 -- 监听调试器终止事件

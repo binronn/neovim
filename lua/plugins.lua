@@ -125,8 +125,42 @@ return {
 	},
 	{
 		"jiangmiao/auto-pairs", -- 自动括号
-		event = {"BufRead"}
+		event = {"InsertEnter"},
+		ft = programming_filetypes
 	},
+	-- {
+	-- 	'windwp/nvim-autopairs',
+	-- 	event = "InsertEnter",
+	-- 	config = function()
+	-- 		require('nvim-autopairs').setup({
+	-- 			disable_filetype = { "TelescopePrompt", "vim" }, -- 可选：禁用某些文件类型
+	-- 			enable_check_bracket_line = true, -- 可选：检查当前行是否有未闭合的括号
+	-- 			ignored_next_char = "[%w%.]", -- 可选：忽略某些字符后的自动配对
+	-- 			enable_afterquote = true, -- 可选：启用引号后的自动配对
+	-- 			enable_moveright = true, -- 可选：启用光标右移
+	-- 			fast_wrap = {}, -- 可选：配置 fastwrap
+	-- 			-- rules = {
+	-- 			-- 	["("] = {
+	-- 			-- 		action = function(opts)
+	-- 			-- 			local pair = opts.line:sub(opts.col - 1, opts.col)
+	-- 			-- 			-- 仅在输入单个 ( 时触发
+	-- 			-- 			if pair == "(" then
+	-- 			-- 				-- 插入 ( + 空格 + ) + 退格到中间
+	-- 			-- 				return vim.api.nvim_replace_termcodes("(  )<Left><Left>", true, false, true)
+	-- 			-- 			end
+	-- 			-- 		end,
+	-- 			-- 		pair = "()", -- 声明配对符号
+	-- 			-- 		next_char = "[^%)%]]", -- 仅在下一个字符不是 ) 或 ] 时触发
+	-- 			-- 		opener = true,
+	-- 			-- 		closer = false,
+	-- 			-- 	},
+	-- 			-- }
+	-- 		})
+	-- 	end
+
+	-- 	-- use opts = {} for passing setup options
+	-- 	-- this is equivalent to setup({}) function
+	-- },
 	{
 		"nvimdev/dashboard-nvim", -- 启动面板
 		event = "VimEnter",
@@ -147,6 +181,7 @@ return {
 	-- },
 	{
 		"stevearc/aerial.nvim", -- 类窗口
+		event = {'BufReadPost'},
 		config = pcfg.aerial_init
 	},
 	{
@@ -327,6 +362,7 @@ return {
 	{
 		"nvim-tree/nvim-tree.lua", -- 文件浏览器
 		-- cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeOpen" },
+		event = {'BufReadPost'},
 		config = pcfg.nvim_tree_init
 	},
 	-- LSP 和补全
