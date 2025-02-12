@@ -12,6 +12,16 @@ if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
     command bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 fi
 
+# 检查并安装 zoxide
+if ! command -v zoxide &> /dev/null; then
+    echo "zoxide 未安装，正在尝试使用 apt 安装..."
+    sudo apt update && sudo apt install -y zoxide fzf
+fi
+
+# 初始化 zoxide
+autoload -U compinit && compinit -u
+eval "$(zoxide init zsh)" # z <dir> 快速跳转
+
 export http_proxy=http://127.0.0.1:10808
 export https_proxy=http://127.0.0.1:10808
 export ORG=''
@@ -32,15 +42,31 @@ zinit ice lucid wait="1" atload='_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
 
 # 补全（延迟加载）
-zinit ice lucid wait='1'
-zinit light zsh-users/zsh-completions
+zinit ice lucid 
 
+
+##################################################
 # 加载 OMZ 框架及部分插件
+##################################################
+# zinit ice lucid wait='1'
+# zinit snippet OMZ::lib/completion.zsh
+
+# zinit ice lucid wait='1'
+# zinit snippet OMZ::lib/history.zsh
+
+# zinit ice lucid wait='1'
+# zinit snippet OMZ::lib/theme-and-appearance.zsh
+
+# zinit ice lucid wait='1'
+# zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
+
+# zinit ice lucid wait='1'
+# zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+
 zinit snippet OMZ::lib/completion.zsh
 zinit snippet OMZ::lib/history.zsh
 zinit snippet OMZ::lib/theme-and-appearance.zsh
-zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
-zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+# zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
 
 # zinit light-mode load OMZ::lib/completion.zsh
 # zinit light-mode load OMZ::lib/history.zsh
@@ -98,13 +124,14 @@ alias vim=nvim
 #  移除重复的命令历史
 setopt HIST_IGNORE_ALL_DUPS
 # 设置历史记录的最大数量为100条以加快加载
-HISTSIZE=100
-SAVEHIST=100
-## autojump
-[[ -s /data/data/com.termux/files/home/.autojump/etc/profile.d/autojump.sh ]] && source /data/data/com.termux/files/home/.autojump/etc/profile.d/autojump.sh
+HISTSIZE=300
+SAVEHIST=300
+
+# 初始化 zoxide
 autoload -U compinit && compinit -u
 
-export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:'
+# export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:'
+export LS_COLORS='di=34;1:ln=36;1:so=32;1:pi=33;1:ex=31;1:bd=34;46;1:cd=34;43;1:su=30;41;1:sg=30;46;1:tw=30;42;1:ow=30;43;1:'
 
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
@@ -114,4 +141,10 @@ zinit light-mode for \
     zdharma-continuum/zinit-annex-patch-dl \
     zdharma-continuum/zinit-annex-rust
 
-### End of Zinit's installer chunk
+# 移除任何可能存在的 zi 别名以避免冲突
+unalias zi 2>/dev/null
+
+# 初始化 zoxide
+autoload -U compinit && compinit -u
+eval "$(zoxide init zsh --cmd j)" # z <dir> 快速跳转
+# alias j=zoxide

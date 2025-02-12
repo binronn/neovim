@@ -175,7 +175,7 @@ vim.api.nvim_create_autocmd(
 -- 设置Windows路径分隔符
 ----------------------------------------------------------------
 vim.api.nvim_create_autocmd(
-	"BufRead",
+	"BufWinEnter",
 	{
 		pattern = "*",
 		callback = function()
