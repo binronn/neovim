@@ -121,6 +121,7 @@ nmap2("<leader>wv", ":resize ")
 nmap("<C-h>", "%")
 vmap("<C-h>", "%")
 
+vim.keymap.set("t", "<Esc>", '<C-\\><C-n>', {noremap = true}) -- 在终端中按下 ESC 切换normal模式
 -- 窗口跳转
 -- nmap("<leader>1", ":1wincmd w<CR>")
 -- nmap("<leader>2", ":2wincmd w<CR>")
