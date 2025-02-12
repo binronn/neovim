@@ -24,8 +24,8 @@ function M.plenary_init()
 	if vim.g.is_win32 == 1 then
 		local Path = require('plenary.path')
 
-		local original_tostring = Path.__tostring
-		local original_absolute = Path.absolute
+		local original_joinpath = Path.joinpath
+		local original_make_relative = Path.make_relative
 		local original_new = Path.new
 
 		-- Path.absolute = function(self)
@@ -38,11 +38,17 @@ function M.plenary_init()
 		-- 	return original_path:gsub('/', '\\')
 		-- end
 
+		Path.make_relative = function (cwd)
+			if type(cmd) == "string" then
+				cwd = string.gsub(cwd, "/", "\\")
+			end
+			return original_make_relative(cwd)
+		end
 
-		Path.new = function (...)
+		Path.joinpath = function (...)
 			-- 检查参数数量
 			local args = {...}
-			if #args == 0 then return original_new(unpack(args)) end
+			if #args == 0 then return original_joinpath() end
 
 			-- 检查参数类型并处理路径
 			for i, path in ipairs(args) do
@@ -51,8 +57,22 @@ function M.plenary_init()
 				end
 			end
 
-			local result = original_new(unpack(args))
-			return result
+			return original_joinpath(unpack(args))
+		end
+
+		Path.new = function (...)
+			-- 检查参数数量
+			local args = {...}
+			if #args == 0 then return original_new() end
+
+			-- 检查参数类型并处理路径
+			for i, path in ipairs(args) do
+				if type(path) == "string" then
+					args[i] = string.gsub(path, "/", "\\")
+				end
+			end
+
+			return original_new(unpack(args))
 		end
 	end
 end
