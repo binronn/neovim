@@ -77,7 +77,7 @@ vim.o.wrap = false
 
 -- 文件备份问题
 vim.cmd('set noswapfile')
-vim.cmd('set nobackup')
+-- vim.cmd('set nobackup')
 
 -- 实时显示搜索内容
 vim.g.incsearch = true

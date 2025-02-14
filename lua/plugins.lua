@@ -121,6 +121,7 @@ return {
 	-- },
 	{
 		"LunarVim/bigfile.nvim",
+		event = "BufReadPre", -- 在读取文件之前加载
 		config = pcfg.bigfile_init
 	},
 	{
@@ -169,10 +170,9 @@ return {
 	},
 	{
 		"nvim-lualine/lualine.nvim", -- 状态栏
-		event = {"BufEnter", "BufRead"},
+		event = {"VimEnter"},
 		dependencies = {
 			{"kyazdani42/nvim-web-devicons", opt = true}
-			-- {'AlexvZyl/nordic.nvim'}
 		},
 		config = pcfg.lualine_init
 	},
@@ -275,7 +275,7 @@ return {
 	},
 	{
 		"rcarriga/nvim-notify", -- 通知窗口
-		lazy = false,
+		event = { "VimEnter" },
 		config = pcfg.notify_init
 	},
 	{
@@ -293,11 +293,12 @@ return {
 	},
 	{
 		"akinsho/bufferline.nvim", -- 缓冲区标签栏
-		-- dependencies = {'AlexvZyl/nordic.nvim'}, -- 必须优先加载主题
+		event = { "VimEnter" },
 		config = pcfg.bufferline_init
 	},
 	{
 		"nvim-treesitter/nvim-treesitter", -- 语法高亮
+		event = { "VimEnter" },
 		build = function()
 			require("nvim-treesitter.install").update({with_sync = true})
 		end,
@@ -392,8 +393,7 @@ return {
 	-- 安装 Telescope 插件
 	{
 		"nvim-telescope/telescope.nvim",
-		lazy = true,
-		event = {"VeryLazy"},
+		event = {"VimEnter"},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-telescope/telescope-file-browser.nvim", -- 文件浏览器
@@ -460,9 +460,9 @@ return {
 	------------------------------------------
 	{
 		"olimorris/codecompanion.nvim",
-		event = { 'VeryLazy' },
+		event = { 'VimEnter' },
 		dependencies = {
-			-- "echasnovski/mini.diff",
+			'nvim-lualine/lualine.nvim',
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
 			{
@@ -514,7 +514,7 @@ return {
 	{
 		"yetone/avante.nvim",
 		-- event = {"BufRead", "BufNewFile"},
-		-- event = {"VeryLazy"},
+		event = {"VimEnter"},
 		-- lazy = false,
 		-- event = { 'VeryLazy' },
 		-- version = '*', -- 最新tag

@@ -105,6 +105,7 @@ nmap("<leader>wh", "<C-w>h")
 nmap("<leader>wj", "<C-w>j")
 nmap("<leader>wp", ":wincmd p<CR>")
 nmap("<leader>w=", "<C-w>=")
+nmap("<leader>w|", "<C-w>|")
 
 -- 窗口移动
 nmap("<leader>wK", "<C-w>K")

@@ -158,12 +158,12 @@ function M.nordic_init()
 end
 
 function M.bigfile_init()
-	-- default config
+	-- 优化后的配置
 	require("bigfile").setup {
-		filesize = 2, -- size of the file in MiB, the plugin round file sizes to the closest MiB
-		pattern = {"*"}, -- autocmd pattern or function see <### Overriding the detection of big files>
+		filesize = 1, -- 设置触发阈值为 1 MiB
+		pattern = {"*.txt", "*.log", "*.csv", "*.cpp", "*.py"}, -- 只对文本文件、日志文件和 CSV 文件触发
 		features = {
-			-- features to disable
+			-- 禁用的功能
 			"indent_blankline",
 			"illuminate",
 			"lsp",
@@ -171,8 +171,12 @@ function M.bigfile_init()
 			"syntax",
 			"matchparen",
 			"vimopts",
-			"filetype"
-		}
+			"filetype",
+			-- "folding", -- 禁用折叠功能
+			-- "searchhighlight" -- 禁用搜索高亮
+		},
+		delay = 200, -- 延迟 200 毫秒加载
+		-- log_level = vim.log.levels.WARN -- 设置日志级别为 WARN
 	}
 end
 

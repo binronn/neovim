@@ -30,7 +30,16 @@ vim.g.is_unix = vim.fn.has('unix')
 ---
 
 require("lazy").setup("plugins")
-require "config.basic_cfg"
-require "common_func"
-require "autocmd"
-require "keymaps"
+require("config.basic_cfg")
+require("common_func")
+require("autocmd")
+require("keymaps")
+
+
+vim.api.nvim_create_autocmd("VimEnter", {
+	-- pattern = "*",
+	once = true,
+	callback = function()
+		require("config.basic_cfg")
+	end,
+})

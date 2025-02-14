@@ -597,14 +597,29 @@ dap.listeners.after.event_initialized["dapui_config"] = function()
 
 	-- 创建新 tab 显示UI
 	-- Wait until the new tab is ready
-	vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+	vim.api.nvim_create_autocmd({"TabEnter"}, {
 		once = true,
 		callback = function()
 			g_debug_tab_num = vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0))
-			vim.api.nvim_win_set_cursor(0, {current_cursor[1], current_cursor[2]})
+			-- 使用 pcall 来防止 nvim_win_set_cursor 抛出的任何错误
+			local success, err = pcall(vim.api.nvim_win_set_cursor, 0, {current_cursor[1], current_cursor[2]})
+			if not success then
+				vim.notify('Error setting cursor position: ' .. err, vim.log.levels.INFO, { title = 'Lsp debug' })
+				return
+			end
 			reset_debug_session_ui()
 		end
 	})
+
+	if g_debug_tab_num ~= nil then
+		if not vim.api.nvim_tabpage_is_valid(g_debug_tab_num) then
+			g_debug_tab_num = nil
+		end
+
+		if not dap.session() then
+			g_debug_tab_num = nil
+		end
+	end
 
 	if g_debug_tab_num == nil then
 		g_origin_tab_num = vim.api.nvim_tabpage_get_number(0) -- 获取当前tabpage的编号并保存
@@ -612,6 +627,7 @@ dap.listeners.after.event_initialized["dapui_config"] = function()
 
 		-- 这里可能有BUG，在tab还未创建好就已经展示dapui了
 		-- dapui.open 不可放到 tabnew 的回调中(reset_debug_session_ui)，否则dapui无法与dap进行链接，无法查看程序输出!!!!!!
+		-- 也可能不会有BUG，tabnew是同步的 maybe
 		dapui.open() -- 打开 dapui
 	end
 end

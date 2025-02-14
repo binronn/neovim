@@ -49,6 +49,7 @@ function M:update_status()
 end
 
 function M:setup_codecomp()
+	require('config.codecomp_nfy').setup()
 	require("codecompanion").setup(
 		{
 			opts = {
@@ -61,11 +62,14 @@ function M:setup_codecomp()
 						{
 							name = "qwen",
 							env = {
-								url = "http://192.168.0.101:8000", -- optional: default value is ollama url http://127.0.0.1:11434
-								model = "qwen",
-								api_key = vim.fn.getenv("ORG"), -- optional: if your endpoint is authenticated
-								-- api_key = "OpenAI_API_KEY", -- optional: if your endpoint is authenticated
-								chat_url = "/v1/chat/completions" -- optional: default value, override if different
+								url = "http://192.168.0.101:8000", 
+								api_key = vim.fn.getenv("ORG"), 
+								chat_url = "/v1/chat/completions",
+							},
+							schema = {
+								model = {
+									default = "qwen-max-2025-01-25",
+								}
 							}
 						}
 					)
@@ -78,8 +82,12 @@ function M:setup_codecomp()
 							env = {
 								url = "https://integrate.api.nvidia.com",
 								chat_url = "/v1/chat/completions",
-								model = "deepseek-ai/deepseek-r1",
 								api_key = vim.fn.getenv("GTX"),
+							},
+							schema = {
+								model = {
+									default = "deepseek-ai/deepseek-r1",
+								}
 							}
 						}
 					)
@@ -92,8 +100,12 @@ function M:setup_codecomp()
 							env = {
 								url = "https://api.siliconflow.cn",
 								chat_url = "/v1/chat/completions",
-								model = "deepseek-ai/DeepSeek-V3",
 								api_key = vim.fn.getenv("SILICONFLOW_DSK"),
+							},
+							schema = {
+								model = {
+									default = "deepseek-ai/DeepSeek-V3",
+								}
 							}
 						}
 					)
@@ -106,8 +118,12 @@ function M:setup_codecomp()
 							env = {
 								url = "https://api.deepseek.com",
 								chat_url = "/v1/chat/completions",
-								model = "deepseek-chat",
 								api_key = vim.fn.getenv("DSK"),
+							},
+							schema = {
+								model = {
+									default = "deepseek-chat",
+								}
 							}
 						}
 					)
@@ -128,7 +144,6 @@ function M:setup_codecomp()
 							schema = {
 								model = {
 									default = 'deepseek-r1',
-									-- choices = 'deepseek-r1'
 								}
 							}
 						}
@@ -155,7 +170,7 @@ function M:setup_codecomp()
 						---The header name for the LLM's messages
 						---@type string|fun(adapter: CodeCompanion.Adapter): string
 						llm = function(adapter)
-							return "CodeCompanion (" .. adapter.name .. ")"
+							return adapter.name .. '/' .. adapter.schema.model.default
 						end,
 
 						---The header name for your messages
@@ -205,6 +220,7 @@ function M:setup_codecomp()
 					debug_window = {},
 					-- Options to customize the UI of the chat buffer
 					window = {
+						title = 'CodeCompanion',
 						layout = "float", -- float|vertical|horizontal|buffer
 						position = nil, -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
 						border = "rounded",

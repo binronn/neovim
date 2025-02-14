@@ -5,6 +5,10 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+export http_proxy=http://127.0.0.1:10808
+export https_proxy=http://127.0.0.1:10808
+source "$HOME/.zshrc_pri"
+
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
     print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
@@ -20,12 +24,7 @@ fi
 
 # 初始化 zoxide
 autoload -U compinit && compinit -u
-eval "$(zoxide init zsh)" # z <dir> 快速跳转
-
-export http_proxy=http://127.0.0.1:10808
-export https_proxy=http://127.0.0.1:10808
-export ORG=''
-source "$HOME/.zshrc_pri"
+eval "$(zoxide init zsh --cmd j)" # j <dir> 快速跳转
 
 source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
 autoload -Uz _zinit
@@ -127,9 +126,6 @@ setopt HIST_IGNORE_ALL_DUPS
 HISTSIZE=300
 SAVEHIST=300
 
-# 初始化 zoxide
-autoload -U compinit && compinit -u
-
 # export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:'
 export LS_COLORS='di=34;1:ln=36;1:so=32;1:pi=33;1:ex=31;1:bd=34;46;1:cd=34;43;1:su=30;41;1:sg=30;46;1:tw=30;42;1:ow=30;43;1:'
 
@@ -144,7 +140,3 @@ zinit light-mode for \
 # 移除任何可能存在的 zi 别名以避免冲突
 unalias zi 2>/dev/null
 
-# 初始化 zoxide
-autoload -U compinit && compinit -u
-eval "$(zoxide init zsh --cmd j)" # z <dir> 快速跳转
-# alias j=zoxide
