@@ -45,7 +45,11 @@ function build_project(compile_command)
 				'-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
 		else
 			cmake_pam =
-				' -G "Ninja" -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
+				' -G "MinGW Makefiles"'..
+				' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path ..
+				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path .. 
+				' -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"' ..
+				' -DCMAKE_BUILD_TYPE=Debug'
 		end
 		-- '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug'
 		-- 在 Fterm 中执行 cmake 命令
@@ -53,7 +57,8 @@ function build_project(compile_command)
 			if vim.fn.has("unix") == 1 then
 				cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
 			else
-				cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
+				cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && mingw32-make"
+				-- cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
 			end
 			-- fterm.run(cmd)
 			vim.cmd("AsyncRun " .. cmd)

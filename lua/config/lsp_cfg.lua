@@ -1,3 +1,4 @@
+local M = {}
 -----------------------------------------------------------------------------------------
 -- LSP 配置
 ------------------------------------------------------------------------------------------
@@ -47,16 +48,21 @@ local g_capabilities = require('cmp_nvim_lsp').default_capabilities()
 -- 	  valueSet = { 0 }
 --   }
 -- C++ 配置 (clangd)
-lspconfig.clangd.setup(
-	{
-		cmd = {
+local clangd_default = {
 			"clangd", 
 			"--background-index=true",
 			"--clang-tidy",
 			"--compile-commands-dir=build",
 			"--completion-style=detailed",  -- 增强补全信息
 			-- "--header-insertion=never"      -- 禁用自动头文件插入
-		},
+		}
+
+local function reset_clangd(cmd)
+	if cmd == nil then
+		cmd = clangd_default
+	end
+	lspconfig.clangd.setup({
+		cmd = cmd,
 		filetypes = {"c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx"},
 		capabilities = g_capabilities,
 		diagnostics = {
@@ -89,14 +95,30 @@ lspconfig.clangd.setup(
 			vim.keymap.set("n", "<leader>hs", switch_file_and_search, opts)
 			vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
-			--     buffer = bufnr,
-			--     callback = function()
-			--         vim.lsp.buf.signature_help()
-			--     end
-			-- })
-		end
-	}
-)
+				--     buffer = bufnr,
+				--     callback = function()
+					--         vim.lsp.buf.signature_help()
+					--     end
+					-- })
+				end
+	})
+end
+
+function M.reset_clangdex(clangd_path)
+	local cmd = {
+			clangd_path, 
+			"--background-index=true",
+			"--clang-tidy",
+			"--compile-commands-dir=build",
+			"--completion-style=detailed",  -- 增强补全信息
+			-- "--header-insertion=never"      -- 禁用自动头文件插入
+		}
+	
+	vim.cmd(':LspStop')
+	reset_clangd(cmd)
+	vim.cmd(':LspStart')
+end
+reset_clangd()
 
 ------------------------------------------------------------------------------------------
 -- Python 配置 (pyright)
@@ -364,3 +386,4 @@ cmp.setup({
 })
 
 
+return M

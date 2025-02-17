@@ -495,12 +495,15 @@ return {
 			-- 	},
 			-- 	-- 在这里添加 mini.diff 的默认配置
 			-- })
-			nmap("<leader>ca", ":CodeCompanionActions<CR>")
 			nmap("<leader>cc", ":CodeCompanionChat Toggle<CR>")
 			vmap("<leader>cc", ":CodeCompanionChat<CR>")
-			nmap2("<leader>cs", ":CodeCompanionChat ")
+
 			nmap2("<leader>ce", ":CodeCompanion ")
 			vmap2("<leader>ce", ":CodeCompanion ")
+
+			nmap2("<leader>cs", ":CodeCompanionChat ")
+			nmap("<leader>ca", ":CodeCompanionActions<CR>")
+
 			cmap("CC", "CodeCompanion", {noremap = true, silent = false})
 		end
 	},

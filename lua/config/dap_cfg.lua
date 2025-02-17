@@ -5,6 +5,8 @@ local nmapd = keymap.nmapd
 local dap = require("dap")
 local dapui = require("dapui")
 
+local original_leader_mappings = {}
+
 -- dap.defaults.fallback.terminal_win_cmd = "enew | set filetype=dap-terminal"
 require("telescope").load_extension("dap")
 require("nvim-dap-virtual-text").setup()
@@ -238,10 +240,17 @@ end
 
 local function get_debug_option(case)
 	if vim.g.build_bin_path == nil or vim.fn.filereadable(vim.g.build_bin_path) == 0 then
-		if vim.fn.isdirectory(vim.g.build_dir) == 1 then
-			vim.g.build_bin_path = vim.fn.input("Path to executable: ", vim.g.build_dir .. "/", "file")
+
+		local status, m = pcall(require, 'cmake-tools')
+		local p = ''
+		if status then
+			p = m.get_launch_target_path()
+		end
+
+		if p ~= nil and p ~= '' then
+			vim.g.build_bin_path = vim.fn.input("Path to executable: ", p, "file")
 		else
-			vim.g.build_bin_path = vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+			vim.g.build_bin_path = vim.fn.input("Path to executable: ", vim.g.workspace_dir.get() .. "/", "file")
 		end
 	elseif debug_args == nil then
 		debug_args = vim.fn.input("Debug args: ", "-", "file")
@@ -368,6 +377,38 @@ dap.configurations.python = {
 -- 调试函数定义
 -----------------------------------------------
 ---
+-- local function setup_debug_keymaps()
+-- 	if vim.g.debuger_short == true then
+-- 		return
+-- 	else
+-- 		vim.g.debuger_short = true
+-- 	end
+-- 	-- 设置调试快捷键
+-- 	original_K_mapping = vim.fn.maparg("K", "n")
+-- 	nmap("<F5>", dap.continue)
+-- 	nmap("<F8>", dap.step_over)
+-- 	nmap("<F7>", dap.step_into)
+-- 	nmap("I", dapui.eval)
+-- 	-- 杀死调试器
+-- 	nmap("<leader>dk", close_debug_session)
+
+-- 	-- 杀死调试器
+-- 	--     vim.api.nvim_set_keymap(
+-- 	--         "n",
+-- 	--         "<leader>dK",
+-- 	--         "<cmd>lua terminate_tmux_split_and_get_pty(); close_debug_session(); <CR>",
+-- 	--         {noremap = true, silent = true}
+-- 	-- )
+-- end
+
+local function save_and_override_leader_mappings()
+	for i = 1, 9 do
+		local leader_key = "<leader>" .. tostring(i)
+		original_leader_mappings[leader_key] = vim.fn.maparg(leader_key, "n")
+		nmap(leader_key, ":" .. i .. "wincmd w<CR>")
+	end
+end
+
 local function setup_debug_keymaps()
 	if vim.g.debuger_short == true then
 		return
@@ -375,7 +416,8 @@ local function setup_debug_keymaps()
 		vim.g.debuger_short = true
 	end
 	-- 设置调试快捷键
-	original_K_mapping = vim.fn.maparg("K", "n")
+	-- original_K_mapping = vim.fn.maparg("K", "n")
+	save_and_override_leader_mappings()
 	nmap("<F5>", dap.continue)
 	nmap("<F8>", dap.step_over)
 	nmap("<F7>", dap.step_into)
@@ -383,13 +425,17 @@ local function setup_debug_keymaps()
 	-- 杀死调试器
 	nmap("<leader>dk", close_debug_session)
 
-	-- 杀死调试器
-	--     vim.api.nvim_set_keymap(
-	--         "n",
-	--         "<leader>dK",
-	--         "<cmd>lua terminate_tmux_split_and_get_pty(); close_debug_session(); <CR>",
-	--         {noremap = true, silent = true}
-	-- )
+	nmap("<F4>", dap.run_to_cursor, {noremap = true, silent = true})
+end
+local function restore_original_leader_mappings()
+	for i = 1, 9 do
+		local leader_key = "<leader>" .. tostring(i)
+		if original_leader_mappings[leader_key] then
+			vim.api.nvim_set_keymap("n", leader_key, original_leader_mappings[leader_key], { noremap = true, silent = true })
+		else
+			vim.api.nvim_del_keymap("n", leader_key)
+		end
+	end
 end
 
 local function clear_debug_keymaps()
@@ -399,8 +445,10 @@ local function clear_debug_keymaps()
 		vim.g.debuger_short = false
 	end
 	-- 恢复 K 的原始映射
+	restore_original_leader_mappings()
 	-- 删除调试快捷键
 	nmapd("<F5>")
+	nmapd("<F4>")
 	nmapd("<F7>")
 	nmapd("<F8>")
 	nmapd("I")
@@ -501,6 +549,30 @@ function start_debug_session_new()
 end
 
 function close_debug_session()
+
+	if not dap.session() then
+		return
+	end
+
+	if g_debug_tab_num ~= nil and dap.session() then
+		dapui.close() -- 关闭调试器
+		g_dapui_closed = true
+
+		local status, err = pcall(function()
+			vim.cmd('tabnext ' .. g_origin_tab_num)
+		end)
+		if not status then
+			vim.notify('Failed to switch editor tab', vim.log.levels.INFO, { title = 'Lsp debug' })
+		else
+			pcall(function()
+				vim.cmd('tabclose ' .. g_debug_tab_num)
+			end)
+		end
+
+		g_debug_tab_num = nil
+		g_origin_tab_num = nil
+	end
+
 	clear_debug_keymaps()
 	-- 获取 dap 和 dapui 模块
 	local dap = require("dap")
@@ -512,22 +584,13 @@ function close_debug_session()
 	-- 关闭当前 DAP 会话
 	if dap.session() then
 		dap.terminate() -- 终止调试会话
-		dapui.close() -- 关闭调试器
-		-- restore_window()
-		-- if g_debug_tab_num and g_debug_tab_num == vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0)) then
-		if g_debug_tab_num ~= nil then
-			vim.cmd('tabclose ' .. g_debug_tab_num)
-			vim.cmd('tabnext ' .. g_origin_tab_num)
-			g_debug_tab_num = nil
-			g_origin_tab_num = nil
-		end
 	end
 
 	-- 关闭 dap-ui 的界面
-	if g_dapui_closed == false then
-		dapui.close()
-		g_dapui_closed = true
-	end
+	-- if g_dapui_closed == false then
+	-- 	dapui.close()
+	-- 	
+	-- end
 end
 
 -----------------------------------------------
@@ -596,38 +659,30 @@ dap.listeners.after.event_initialized["dapui_config"] = function()
 	local current_cursor = vim.api.nvim_win_get_cursor(0)
 
 	-- 创建新 tab 显示UI
-	-- Wait until the new tab is ready
-	vim.api.nvim_create_autocmd({"TabEnter"}, {
-		once = true,
-		callback = function()
-			g_debug_tab_num = vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0))
-			-- 使用 pcall 来防止 nvim_win_set_cursor 抛出的任何错误
-			local success, err = pcall(vim.api.nvim_win_set_cursor, 0, {current_cursor[1], current_cursor[2]})
-			if not success then
-				vim.notify('Error setting cursor position: ' .. err, vim.log.levels.INFO, { title = 'Lsp debug' })
-				return
-			end
-			reset_debug_session_ui()
-		end
-	})
-
-	if g_debug_tab_num ~= nil then
-		if not vim.api.nvim_tabpage_is_valid(g_debug_tab_num) then
-			g_debug_tab_num = nil
-		end
-
-		if not dap.session() then
-			g_debug_tab_num = nil
-		end
-	end
-
+	-- 多次进入？？
 	if g_debug_tab_num == nil then
-		g_origin_tab_num = vim.api.nvim_tabpage_get_number(0) -- 获取当前tabpage的编号并保存
-		vim.cmd('tabnew %')
-
+		vim.api.nvim_create_autocmd({"TabEnter"}, {
+			once = true,
+			callback = function()
+				g_debug_tab_num = vim.api.nvim_tabpage_get_number(vim.api.nvim_win_get_tabpage(0))
+				-- 使用 pcall 来防止 nvim_win_set_cursor 抛出的任何错误
+				local success, err = pcall(vim.api.nvim_win_set_cursor, 0, {current_cursor[1], current_cursor[2]})
+				if not success then
+					vim.notify('Error setting cursor position: ' .. err, vim.log.levels.INFO, { title = 'Lsp debug' })
+					return
+				else
+					vim.api.nvim_win_set_cursor(0, {current_cursor[1], current_cursor[2]})
+				end
+				reset_debug_session_ui()
+			end
+		})
+		------------------------------------------------------------
 		-- 这里可能有BUG，在tab还未创建好就已经展示dapui了
 		-- dapui.open 不可放到 tabnew 的回调中(reset_debug_session_ui)，否则dapui无法与dap进行链接，无法查看程序输出!!!!!!
 		-- 也可能不会有BUG，tabnew是同步的 maybe
+		------------------------------------------------------------
+		g_origin_tab_num = vim.api.nvim_tabpage_get_number(0) -- 获取当前tabpage的编号并保存
+		vim.cmd('tabnew %')
 		dapui.open() -- 打开 dapui
 	end
 end

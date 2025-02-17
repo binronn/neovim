@@ -172,11 +172,7 @@ function M.bigfile_init()
 			"matchparen",
 			"vimopts",
 			"filetype",
-			-- "folding", -- 禁用折叠功能
-			-- "searchhighlight" -- 禁用搜索高亮
 		},
-		delay = 200, -- 延迟 200 毫秒加载
-		-- log_level = vim.log.levels.WARN -- 设置日志级别为 WARN
 	}
 end
 
@@ -1179,16 +1175,30 @@ end
 ------------------------------------------------------------------------------------------
 -- cmake-tools.nvim 配置
 ------------------------------------------------------------------------------------------
-function M.cmake_tools_init()
+function M.cmake_tools_init(cc_path, cxx_path)
 	require("cmake-tools").setup(
 		{
 			cmake_command = "cmake", -- CMake 可执行文件路径
 			ctest_command = "ctest", -- CTest 可执行文件路径
-			cmake_build_directory = "build", -- 构建目录
+			-- cmake_build_directory = "build", -- 构建目录
 			cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
-			cmake_kits_global = {}, -- 全局编译器工具链配置
+			-- cmake_kits_global = {
+			-- 	{
+			-- 		
+			-- 	}
+			-- }, -- 全局编译器工具链配置
+			cmake_generate_options = { 
+				'-DCMAKE_EXPORT_COMPILE_COMMANDS=1',
+			},
+			cmake_kits_path = nil,
 			cwd = function()
 				return vim.g.workspace_dir.get()
+			end,
+			cmake_build_directory = function()
+				if vim.g.is_win32 == 1 then
+					return "build\\${variant:buildType}"
+				end
+				return "build/${variant:buildType}"
 			end,
 			cmake_dap_configuration = {
 				name = "cpp",
@@ -1306,7 +1316,7 @@ function M.cmake_tools_init()
 	)
 
 	vim.api.nvim_create_user_command(
-		"Cs",
+		"Cst",
 		function()
 			vim.cmd("CMakeSelectBuildType")
 		end,
@@ -1321,9 +1331,14 @@ function M.cmake_tools_init()
 		{bang = true}
 	)
 	vim.api.nvim_create_user_command(
-		"Cst",
+		"Cg",
 		function()
-			vim.cmd("CMakeGenerate")
+			local c = 'CMakeGenerate ' .. 
+			' -G ' .. [[MinGW\ Makefiles]] ..
+			' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path:gsub(' ', '\\ ') ..
+			' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path:gsub(' ', '\\ ')
+			print(c)
+			vim.cmd(c)
 		end,
 		{bang = true}
 	)
