@@ -441,7 +441,7 @@ function M.dashboard_init()
 					icon = " ",
 					desc = "Recent Projects",
 					action = function(selected_project)
-						local project_path = selected_project:gsub("/", "\\") -- 标准化路径
+						local project_path = selected_project:gsub("\\", "/") -- 标准化路径
 
 						-- local session_file = project_path .. "/Session.vim"
 						-- -- 检查Session.vim是否存在
@@ -1175,12 +1175,18 @@ end
 ------------------------------------------------------------------------------------------
 -- cmake-tools.nvim 配置
 ------------------------------------------------------------------------------------------
-function M.cmake_tools_init(cc_path, cxx_path)
+function M.cmake_tools_init(m, cc, cxx)
+	local build_type = 'Makefiles'
+	
+	if vim.g.is_win32 == 1 then
+		build_type = 'MinGW Makefiles'
+	end
+
 	require("cmake-tools").setup(
 		{
 			cmake_command = "cmake", -- CMake 可执行文件路径
 			ctest_command = "ctest", -- CTest 可执行文件路径
-			-- cmake_build_directory = "build", -- 构建目录
+			cmake_build_directory = "build", -- 构建目录
 			cmake_soft_link_compile_commands = false, -- 软链接 compile_commands.json
 			-- cmake_kits_global = {
 			-- 	{
@@ -1189,17 +1195,22 @@ function M.cmake_tools_init(cc_path, cxx_path)
 			-- }, -- 全局编译器工具链配置
 			cmake_generate_options = { 
 				'-DCMAKE_EXPORT_COMPILE_COMMANDS=1',
+				-- '-DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path, --:gsub(' ', '\\ '),
+				-- '-DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path, --:gsub(' ', '\\ '),
+				'-DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path, --:gsub(' ', '\\ '),
+				'-DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path, --:gsub(' ', '\\ '),
+				'-G ' .. build_type,
 			},
 			cmake_kits_path = nil,
 			cwd = function()
 				return vim.g.workspace_dir.get()
 			end,
-			cmake_build_directory = function()
-				if vim.g.is_win32 == 1 then
-					return "build\\${variant:buildType}"
-				end
-				return "build/${variant:buildType}"
-			end,
+			-- cmake_build_directory = function()
+			-- 	if vim.g.is_win32 == 1 then
+			-- 		return "build\\${variant:buildType}"
+			-- 	end
+			-- 	return "build/${variant:buildType}"
+			-- end,
 			cmake_dap_configuration = {
 				name = "cpp",
 				type = "codelldb",
@@ -1219,7 +1230,7 @@ function M.cmake_tools_init(cc_path, cxx_path)
 						position = "belowright", -- "vertical", "horizontal", "leftabove", "aboveleft", "rightbelow", "belowright", "topleft", "botright", use `:h vertical` for example to see help on them
 						size = 10,
 						encoding = "utf-8", -- if encoding is not "utf-8", it will be converted to "utf-8" using `vim.fn.iconv`
-						auto_close_when_success = true -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
+						auto_close_when_success = false -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
 					},
 					toggleterm = {
 						direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
@@ -1257,54 +1268,54 @@ function M.cmake_tools_init(cc_path, cxx_path)
 					} -- terminal executor uses the values in cmake_terminal
 				}
 			},
-			cmake_runner = {
-				-- runner to use
-				name = "terminal", -- name of the runner
-				opts = {}, -- the options the runner will get, possible values depend on the runner type. See `default_opts` for possible values.
-				default_opts = {
-					-- a list of default and possible values for runners
-					quickfix = {
-						show = "always", -- "always", "only_on_error"
-						position = "belowright", -- "bottom", "top"
-						size = 10,
-						encoding = "utf-8",
-						auto_close_when_success = true -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
-					},
-					toggleterm = {
-						direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
-						close_on_exit = false, -- whether close the terminal when exit
-						auto_scroll = true, -- whether auto scroll to the bottom
-						singleton = true -- single instance, autocloses the opened one, if present
-					},
-					overseer = {
-						new_task_opts = {
-							strategy = {
-								"toggleterm",
-								direction = "horizontal",
-								autos_croll = true,
-								quit_on_exit = "success"
-							}
-						}, -- options to pass into the `overseer.new_task` command
-						on_new_task = function(task)
-						end -- a function that gets overseer.Task when it is created, before calling `task:start`
-					},
-					terminal = {
-						name = "Main Terminal",
-						prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
-						split_direction = "horizontal", -- "horizontal", "vertical"
-						split_size = 11,
-						-- Window handling
-						single_terminal_per_instance = true, -- Single viewport, multiple windows
-						single_terminal_per_tab = true, -- Single viewport per tab
-						keep_terminal_static_location = true, -- Static location of the viewport if avialable
-						auto_resize = true, -- Resize the terminal if it already exists
-						-- Running Tasks
-						start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
-						focus = false, -- Focus on terminal when cmake task is launched.
-						do_not_add_newline = false -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
-					}
-				}
-			},
+			-- cmake_runner = {
+			-- 	-- runner to use
+			-- 	name = "terminal", -- name of the runner
+			-- 	opts = {}, -- the options the runner will get, possible values depend on the runner type. See `default_opts` for possible values.
+			-- 	default_opts = {
+			-- 		-- a list of default and possible values for runners
+			-- 		quickfix = {
+			-- 			show = "always", -- "always", "only_on_error"
+			-- 			position = "belowright", -- "bottom", "top"
+			-- 			size = 10,
+			-- 			encoding = "utf-8",
+			-- 			auto_close_when_success = true -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
+			-- 		},
+			-- 		toggleterm = {
+			-- 			direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
+			-- 			close_on_exit = false, -- whether close the terminal when exit
+			-- 			auto_scroll = true, -- whether auto scroll to the bottom
+			-- 			singleton = true -- single instance, autocloses the opened one, if present
+			-- 		},
+			-- 		overseer = {
+			-- 			new_task_opts = {
+			-- 				strategy = {
+			-- 					"toggleterm",
+			-- 					direction = "horizontal",
+			-- 					autos_croll = true,
+			-- 					quit_on_exit = "success"
+			-- 				}
+			-- 			}, -- options to pass into the `overseer.new_task` command
+			-- 			on_new_task = function(task)
+			-- 			end -- a function that gets overseer.Task when it is created, before calling `task:start`
+			-- 		},
+			-- 		terminal = {
+			-- 			name = "Main Terminal",
+			-- 			prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
+			-- 			split_direction = "horizontal", -- "horizontal", "vertical"
+			-- 			split_size = 11,
+			-- 			-- Window handling
+			-- 			single_terminal_per_instance = true, -- Single viewport, multiple windows
+			-- 			single_terminal_per_tab = true, -- Single viewport per tab
+			-- 			keep_terminal_static_location = true, -- Static location of the viewport if avialable
+			-- 			auto_resize = true, -- Resize the terminal if it already exists
+			-- 			-- Running Tasks
+			-- 			start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
+			-- 			focus = false, -- Focus on terminal when cmake task is launched.
+			-- 			do_not_add_newline = false -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
+			-- 		}
+			-- 	}
+			-- },
 			cmake_notifications = {
 				runner = {enabled = true},
 				executor = {enabled = true},
@@ -1333,12 +1344,16 @@ function M.cmake_tools_init(cc_path, cxx_path)
 	vim.api.nvim_create_user_command(
 		"Cg",
 		function()
-			local c = 'CMakeGenerate ' .. 
-			' -G ' .. [[MinGW\ Makefiles]] ..
-			' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path:gsub(' ', '\\ ') ..
-			' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path:gsub(' ', '\\ ')
-			print(c)
-			vim.cmd(c)
+			if vim.g.is_win32 == 1 then
+				local c = 'CMakeGenerate ' .. 
+				' -G ' .. [[MinGW\ Makefiles]] ..
+				' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path:gsub(' ', '\\ ') ..
+				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path:gsub(' ', '\\ ')
+				print(c)
+				vim.cmd(c)
+			else
+			vim.cmd('CMakeGenerate')
+			end
 		end,
 		{bang = true}
 	)
@@ -1376,19 +1391,25 @@ function M.telescope_init()
 				sorting_strategy = "ascending",
 				file_ignore_patterns = {
 					"build.*/",
+					"build.*\\",
 					"dist/",
+					"dist\\",
 					"out/",
+					"out//",
 					"tags",
+					"node_modules\\",
 					"node_modules/",
-					"%.git/",
-					"%.vs/",
-					"%.cache/",
-					"%.vscode/",
-					"%.github/",
-					"%.venv/",
-					"%.venv_win/",
-					"%.venv_bak/",
-					"%.venv.*/"
+					"%.git",
+					"%.vs",
+					"%.cache",
+					"%.vscode",
+					"%.github",
+					"%.venv",
+					"%.venv_win",
+					"%.venv_bak",
+					"%.venv.*",
+					"%.exe",
+					"%.qt",
 				},
 				layout_config = {
 					horizontal = {

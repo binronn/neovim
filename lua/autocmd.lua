@@ -95,9 +95,9 @@ function build_project(compile_command)
 		local compiler = ""
 		local output_file = '"' .. wsdir .. "/main" .. '"'
 		if file_extension == "cpp" then
-			compiler = "clang++ -g "
+			compiler = require('config.compiles_cfg').cxx_path .. " -g "
 		elseif file_extension == "c" then
-			compiler = "clang -g "
+			compiler = require('config.compiles_cfg').cc_path .. " -g "
 		else
 			print("Unsupported file type. Only .c and .cpp files are supported.")
 			return

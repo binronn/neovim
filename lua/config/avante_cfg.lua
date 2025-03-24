@@ -3,7 +3,7 @@ vim.api.nvim_set_hl(0, "AvanteDiffAdd", {fg = "#000000", bg = "#3d4745"}) -- 黑
 
 return require("avante").setup(
 	{
-		provider = "qwen",
+		provider = "geminix",
 		auto_suggestions_provider = "copilot", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
 		web_search_engine = {
 			provider = "tavily",
@@ -13,7 +13,6 @@ return require("avante").setup(
 				include_answer = "basic"
 			}
 		},
-
 		copilot = {
 			-- endpoint = "https://api.githubcopilot.com",
 			-- model = "gpt-4o-2024-08-06",
@@ -31,6 +30,12 @@ return require("avante").setup(
 		-- 	max_tokens = 4096
 		-- },
 		vendors = {
+			["geminix"] = {
+				__inherited_from = "gemini",
+				model = "gemini-2.0-flash",
+				api_key_name = "GEMINI_API_KEY",
+				proxy = 'http://127.0.0.1:10808',
+			},
 			["nvidia"] = {
 				__inherited_from = "openai",
 				endpoint = "https://integrate.api.nvidia.com/v1",
@@ -60,25 +65,23 @@ return require("avante").setup(
 				temperature = 0,
 				max_tokens = 4096
 			},
-			["luch_deepseek"] = {
+			["hw_deepseek"] = {
 				__inherited_from = "openai",
-				endpoint = "https://cloud.luchentech.com/api/maas",
-				model = "deepseek-ai/DeepSeek-R1",
-				api_key_name = "LUCHENTECH_DSK",
+				endpoint = "https://infer-modelarts-cn-southwest-2.modelarts-infer.com/v1/infers/f354eacc-a2c5-43b4-a785-e5aadca988b3/v1",
+				model = "DeepSeek-V3",
+				api_key_name = "HUAWEI_CLOUD_API",
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,
 				max_tokens = 4096
 			},
-			["azure_deepseekr1"] = {
+			["gemini"] = {
 				__inherited_from = "openai",
-				endpoint = "https://DeepSeek-R1-jrybg.eastus2.models.ai.azure.com/v1",
-				model = 'deepseek-r1',
-				disable_tools = true,
-				api_key_name = "AZURE_DSKR1",
+				endpoint = "https://api.deepseek.com/v1",
+				model = "deepseek-chat",
+				api_key_name = "DSK",
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,
-				max_tokens = 4096,
-				-- proxy = "http://127.0.0.1:10808",
+				max_tokens = 4096
 			},
 			["deepseek"] = {
 				__inherited_from = "openai",

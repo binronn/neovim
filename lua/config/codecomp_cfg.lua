@@ -53,7 +53,7 @@ function M:setup_codecomp()
 	require("codecompanion").setup(
 		{
 			opts = {
-				language = "Chinese"
+				language = "Chinese",
 			},
 			adapters = {
 				qwen = function()
@@ -74,24 +74,6 @@ function M:setup_codecomp()
 						}
 					)
 				end,
-				nvidia = function()
-					return require("codecompanion.adapters").extend(
-						"openai_compatible",
-						{
-							name = "nvidia",
-							env = {
-								url = "https://integrate.api.nvidia.com",
-								chat_url = "/v1/chat/completions",
-								api_key = vim.fn.getenv("GTX"),
-							},
-							schema = {
-								model = {
-									default = "deepseek-ai/deepseek-r1",
-								}
-							}
-						}
-					)
-				end,
 				sil_deepseek = function()
 					return require("codecompanion.adapters").extend(
 						"openai_compatible",
@@ -105,6 +87,10 @@ function M:setup_codecomp()
 							schema = {
 								model = {
 									default = "deepseek-ai/DeepSeek-V3",
+									choices = {
+										'deepseek-ai/DeepSeek-V3',
+										["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = true } },
+									}
 								}
 							}
 						}
@@ -112,7 +98,7 @@ function M:setup_codecomp()
 				end,
 				deepseek = function()
 					return require("codecompanion.adapters").extend(
-						"openai_compatible",
+						"deepseek",
 						{
 							name = "deepseek",
 							env = {
@@ -128,41 +114,27 @@ function M:setup_codecomp()
 						}
 					)
 				end,
-				azure_deepseek = function()
+				gemini = function()
 					return require("codecompanion.adapters").extend(
-						"openai_compatible",
+						"gemini",
 						{
-							name = "azure_deepseek",
+							name = "gemini",
 							opts = {
-								proxy = "socks5://127.0.0.1:10807",
+								proxy = 'socks5://127.0.0.1:10807'
 							},
+							-- url = "https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${api_key}",
 							env = {
-								url = "https://DeepSeek-R1-jrybg.eastus2.models.ai.azure.com",
-								-- chat_url = "/v1/chat/completions",
-								api_key = vim.fn.getenv("AZURE_DSKR1"),
+								api_key = vim.fn.getenv("GEMINI_API_KEY"),
+								-- model = "schema.model.default",
 							},
 							schema = {
 								model = {
-									default = 'deepseek-r1',
+									-- default = "gemini-2.0-flash",
 								}
 							}
 						}
 					)
 				end,
-				luch_deepseek = function()
-					return require("codecompanion.adapters").extend(
-						"openai_compatible",
-						{
-							name = "luch_deepseek",
-							env = {
-								url = "https://cloud.luchentech.com",
-								chat_url = "/api/maas/chat/completions",
-								model = "deepseek-ai/DeepSeek-R1",
-								api_key = vim.fn.getenv("LUCHENTECH_DSK"),
-							}
-						}
-					)
-				end
 			},
 			strategies = {
 				chat = {
@@ -184,7 +156,7 @@ function M:setup_codecomp()
 					show_settings = true, -- Show LLM settings at the top of the chat buffer?
 					show_token_count = true, -- Show the token count for each response?
 					start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-					adapter = "qwen",
+					adapter = "gemini",
 					keymaps = {
 						send = {
 							modes = {n = "<Enter>", i = "<C-s>"}
@@ -206,7 +178,7 @@ function M:setup_codecomp()
 							description = "Choose our"
 						}
 					},
-					adapter = "qwen"
+					adapter = "gemini"
 				}
 			},
 			display = {
@@ -222,10 +194,12 @@ function M:setup_codecomp()
 					window = {
 						title = 'CodeCompanion',
 						layout = "float", -- float|vertical|horizontal|buffer
-						position = nil, -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
+						position = "left", -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
 						border = "rounded",
-						height = 0.6,
-						width = 0.75,
+						height = 0.9,
+						width = 0.3,
+						col = vim.o.columns * 0.7,
+						row = vim.o.lines * 0.03,
 						relative = "editor",
 						style = "full", -- 使用最小化的样式
 						opts = {

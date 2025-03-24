@@ -48,14 +48,14 @@ local g_capabilities = require('cmp_nvim_lsp').default_capabilities()
 -- 	  valueSet = { 0 }
 --   }
 -- C++ 配置 (clangd)
-local clangd_default = {
-			"clangd", 
-			"--background-index=true",
-			"--clang-tidy",
-			"--compile-commands-dir=build",
-			"--completion-style=detailed",  -- 增强补全信息
-			-- "--header-insertion=never"      -- 禁用自动头文件插入
-		}
+-- local clangd_default = {
+-- 			"clangd", 
+-- 			"--background-index=true",
+-- 			"--clang-tidy",
+-- 			"--compile-commands-dir=build",
+-- 			"--completion-style=detailed",  -- 增强补全信息
+-- 			-- "--header-insertion=never"      -- 禁用自动头文件插入
+-- 		}
 
 local function reset_clangd(cmd)
 	if cmd == nil then
@@ -104,21 +104,13 @@ local function reset_clangd(cmd)
 	})
 end
 
-function M.reset_clangdex(clangd_path)
-	local cmd = {
-			clangd_path, 
-			"--background-index=true",
-			"--clang-tidy",
-			"--compile-commands-dir=build",
-			"--completion-style=detailed",  -- 增强补全信息
-			-- "--header-insertion=never"      -- 禁用自动头文件插入
-		}
+function M.reset_clangdex()
+	local cmd = require('config.compiles_cfg').clangd_param
 	
-	vim.cmd(':LspStop')
 	reset_clangd(cmd)
-	vim.cmd(':LspStart')
+	vim.cmd(':LspRestart')
 end
-reset_clangd()
+M.reset_clangdex()
 
 ------------------------------------------------------------------------------------------
 -- Python 配置 (pyright)
@@ -127,18 +119,17 @@ lspconfig.pyright.setup(
 	{
 		filetypes = {"py", "python"},
 		on_attach = function(client, bufnr)
-			local opts = {noremap = true, silent = true}
-			local keymap = vim.api.nvim_buf_set_keymap
-			keymap(bufnr, "n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
-			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<cr>", {desc = "Find implementations"})
-			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", {desc = "Find references"})
-			vim.keymap.set("n", "gl", "<cmd>Telescope lsp_document_symbols<cr>", {desc = "Find references"})
-			vim.keymap.set("n", "ga", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", {desc = "Find references"})
-			keymap(bufnr, "n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
-			keymap(bufnr, "n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
-			keymap(bufnr, "n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
-			keymap(bufnr, "n", "<leader>fx", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-			keymap(bufnr, "i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
+			local opts = {noremap = true, silent = true, buffer = bufnr}
+			vim.keymap.set("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
+			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<cr>", {desc = "Find implementations", buffer = bufnr})
+			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", {desc = "Find references", buffer = bufnr})
+			vim.keymap.set("n", "gl", "<cmd>Telescope lsp_document_symbols<cr>", {desc = "Find references", buffer = bufnr})
+			vim.keymap.set("n", "ga", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", {desc = "Find references", buffer = bufnr})
+			vim.keymap.set("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
+			vim.keymap.set("n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
+			vim.keymap.set("n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
+			vim.keymap.set("n", "<leader>fx", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+			vim.keymap.set("i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
 		end,
 		settings = {
 			python = {

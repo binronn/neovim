@@ -123,7 +123,7 @@ local function generate_ctags(np)
 	 then
 		-- 过滤掉不需要的目录
 		local exclude_dirs =
-			" --exclude=.venv --exclude=.vs --exclude=.venv_wsl --exclude=.vscode --exclude=.git" ..
+			" --exclude=.cache --exclude=.qt --exclude=.exe --exclude=.venv --exclude=.vs --exclude=.venv_wsl --exclude=.vscode --exclude=.git" ..
 			" --exclude='build*' --exclude='.venv*' --exclude=.github --exclude=out --exclude='*.txt' --exclude='*.json' --exclude='*.md' --exclude='.cache'"
 		local ctags_cmd = string.format("ctags -R %s -f %s/tags %s", exclude_dirs, current_dir, current_dir)
 
