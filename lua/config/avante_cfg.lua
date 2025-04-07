@@ -3,8 +3,8 @@ vim.api.nvim_set_hl(0, "AvanteDiffAdd", {fg = "#000000", bg = "#3d4745"}) -- 黑
 
 return require("avante").setup(
 	{
-		provider = "geminix",
-		auto_suggestions_provider = "copilot", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
+		provider = "gemini",
+		auto_suggestions_provider = "gemini", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
 		web_search_engine = {
 			provider = "tavily",
 			api_key_name = "TAVILY",
@@ -13,40 +13,12 @@ return require("avante").setup(
 				include_answer = "basic"
 			}
 		},
-		copilot = {
-			-- endpoint = "https://api.githubcopilot.com",
-			-- model = "gpt-4o-2024-08-06",
-			proxy = 'http://127.0.0.1:10808', -- [protocol://]host[:port] Use this proxy
-			allow_insecure = false, -- Allow insecure server connections
-			timeout = 3000, -- Timeout in milliseconds
-			temperature = 0,
-			max_tokens = 4096,
+		gemini = {
+			model = "gemini-2.0-flash",
+			api_key_name = "GEMINI_API_KEY",
+			proxy = 'http://127.0.0.1:10808',
 		},
-		-- openai = {
-		-- 	endpoint = "",
-		-- 	model = "",
-		-- 	timeout = 3000, -- Timeout in milliseconds
-		-- 	temperature = 0,
-		-- 	max_tokens = 4096
-		-- },
 		vendors = {
-			["geminix"] = {
-				__inherited_from = "gemini",
-				model = "gemini-2.0-flash",
-				api_key_name = "GEMINI_API_KEY",
-				proxy = 'http://127.0.0.1:10808',
-			},
-			["nvidia"] = {
-				__inherited_from = "openai",
-				endpoint = "https://integrate.api.nvidia.com/v1",
-				model = "deepseek-ai/deepseek-r1",
-				api_key_name = "GTX",
-				-- disable_tools = true,
-				-- proxy = 'http://127.0.0.1:10808',
-				timeout = 3000, -- Timeout in milliseconds
-				temperature = 0,
-				max_tokens = 4096
-			},
 			["qwen"] = {
 				__inherited_from = "openai",
 				model = "qwen",
@@ -61,24 +33,6 @@ return require("avante").setup(
 				endpoint = "https://api.siliconflow.cn/v1",
 				model = "deepseek-ai/DeepSeek-V3",
 				api_key_name = "SILICONFLOW_DSK",
-				timeout = 3000, -- Timeout in milliseconds
-				temperature = 0,
-				max_tokens = 4096
-			},
-			["hw_deepseek"] = {
-				__inherited_from = "openai",
-				endpoint = "https://infer-modelarts-cn-southwest-2.modelarts-infer.com/v1/infers/f354eacc-a2c5-43b4-a785-e5aadca988b3/v1",
-				model = "DeepSeek-V3",
-				api_key_name = "HUAWEI_CLOUD_API",
-				timeout = 3000, -- Timeout in milliseconds
-				temperature = 0,
-				max_tokens = 4096
-			},
-			["gemini"] = {
-				__inherited_from = "openai",
-				endpoint = "https://api.deepseek.com/v1",
-				model = "deepseek-chat",
-				api_key_name = "DSK",
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,
 				max_tokens = 4096
@@ -156,7 +110,7 @@ return require("avante").setup(
 			sidebar_header = {
 				enabled = true, -- true, false to enable/disable the header
 				align = "center", -- left, center, right for title
-				rounded = true
+				rounded = false
 			},
 			input = {
 				prefix = "> ",

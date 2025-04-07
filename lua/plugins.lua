@@ -464,6 +464,7 @@ return {
 		dependencies = {
 			'nvim-lualine/lualine.nvim',
 			"nvim-lua/plenary.nvim",
+			'echasnovski/mini.diff',
 			"nvim-treesitter/nvim-treesitter",
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
@@ -481,20 +482,20 @@ return {
 			local comp = require("config.codecomp_cfg"):new()
 			comp:setup_codecomp()
 			comp:init()
-			-- require('mini.diff').setup({
-			-- 	view = {
-			-- 		-- Visualization style. Possible values are 'sign' and 'number'.
-			-- 		-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
-			-- 		style = vim.go.number and 'number' or 'sign',
+			require('mini.diff').setup({
+				view = {
+					-- Visualization style. Possible values are 'sign' and 'number'.
+					-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
+					style = vim.go.number and 'number' or 'sign',
 
-			-- 		-- Signs used for hunks with 'sign' view
-			-- 		signs = { add = '', change = '', delete = '' },
+					-- Signs used for hunks with 'sign' view
+					signs = { add = '', change = '', delete = '' },
 
-			-- 		-- Priority of used visualization extmarks
-			-- 		priority = 0,
-			-- 	},
-			-- 	-- 在这里添加 mini.diff 的默认配置
-			-- })
+					-- Priority of used visualization extmarks
+					priority = 0,
+				},
+				-- 在这里添加 mini.diff 的默认配置
+			})
 			nmap("<leader>cc", ":CodeCompanionChat Toggle<CR>")
 			vmap("<leader>cc", ":CodeCompanionChat<CR>")
 
@@ -514,79 +515,79 @@ return {
 	------------------------------------------
 	----     avante AI                    ----
 	------------------------------------------
-	-- {
-	-- 	"yetone/avante.nvim",
-	-- 	-- event = {"BufRead", "BufNewFile"},
-	-- 	event = {"VimEnter"},
-	-- 	-- lazy = false,
-	-- 	-- event = { 'VeryLazy' },
-	-- 	-- version = '*', -- 最新tag
-	-- 	-- version = nil, -- 最新提交
-	-- 	-- ft = programming_filetypes,
-	-- 	config = function()
-	-- 		require("copilot").setup({})
-	-- 		require("config.avante_cfg")
-	-- 	end,
-	-- 	build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-	-- 	-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-	-- 	dependencies = {
-	-- 		"nvim-treesitter/nvim-treesitter",
-	-- 		"stevearc/dressing.nvim",
-	-- 		"nvim-lua/plenary.nvim",
-	-- 		"MunifTanjim/nui.nvim",
-	-- 		"hrsh7th/nvim-cmp",
-	-- 		--- The below dependencies are optional,
-	-- 		"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-	-- 		{
-	-- 			"zbirenbaum/copilot.lua",
-	-- 		}, -- for providers='copilot'
+	{
+		"yetone/avante.nvim",
+		-- event = {"BufRead", "BufNewFile"},
+		event = {"VimEnter"},
+		-- lazy = false,
+		-- event = { 'VeryLazy' },
+		-- version = '*', -- 最新tag
+		-- version = nil, -- 最新提交
+		-- ft = programming_filetypes,
+		config = function()
+			require("copilot").setup({})
+			require("config.avante_cfg")
+		end,
+		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"stevearc/dressing.nvim",
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			"hrsh7th/nvim-cmp",
+			--- The below dependencies are optional,
+			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+			{
+				"zbirenbaum/copilot.lua",
+			}, -- for providers='copilot'
 
-	-- 		-- {
-	-- 		-- 	-- support for image pasting
-	-- 		-- 	"HakonHarnes/img-clip.nvim",
-	-- 		-- 	event = "VeryLazy",
-	-- 		-- 	config = function()
-	-- 		-- 		require("img-clip").setup(
-	-- 		-- 			{
-	-- 		-- 				-- recommended settings
-	-- 		-- 				default = {
-	-- 		-- 					embed_image_as_base64 = false,
-	-- 		-- 					prompt_for_file_name = false,
-	-- 		-- 					drag_and_drop = {
-	-- 		-- 						insert_mode = true
-	-- 		-- 					},
-	-- 		-- 					-- required for Windows users
-	-- 		-- 					use_absolute_path = true
-	-- 		-- 				}
-	-- 		-- 			}
-	-- 		-- 		)
-	-- 		-- 	end
-	-- 		-- },
-	-- 		{
-	-- 			"MeanderingProgrammer/render-markdown.nvim",
-	-- 			config = function()
-	-- 				require("render-markdown").setup(
-	-- 					{
-	-- 						file_types = {"markdown", "Avante", "codecompanion"},
-	-- 						highlight = {
-	-- 							enabled = true,
-	-- 							-- 设置高亮模式为始终启用
-	-- 							always_enabled = true,
-	-- 							-- 设置高亮组
-	-- 							highlight_groups = {
-	-- 								normal = "Normal",
-	-- 								visual = "Visual",
-	-- 								insert = "Insert",
-	-- 								replace = "Replace",
-	-- 								command = "Command"
-	-- 							}
-	-- 						}
-	-- 					}
-	-- 				)
-	-- 			end
-	-- 		}
-	-- 	}
-	-- }
+			-- {
+			-- 	-- support for image pasting
+			-- 	"HakonHarnes/img-clip.nvim",
+			-- 	event = "VeryLazy",
+			-- 	config = function()
+			-- 		require("img-clip").setup(
+			-- 			{
+			-- 				-- recommended settings
+			-- 				default = {
+			-- 					embed_image_as_base64 = false,
+			-- 					prompt_for_file_name = false,
+			-- 					drag_and_drop = {
+			-- 						insert_mode = true
+			-- 					},
+			-- 					-- required for Windows users
+			-- 					use_absolute_path = true
+			-- 				}
+			-- 			}
+			-- 		)
+			-- 	end
+			-- },
+			{
+				"MeanderingProgrammer/render-markdown.nvim",
+				config = function()
+					require("render-markdown").setup(
+						{
+							file_types = {"markdown", "Avante", "codecompanion"},
+							highlight = {
+								enabled = true,
+								-- 设置高亮模式为始终启用
+								always_enabled = true,
+								-- 设置高亮组
+								highlight_groups = {
+									normal = "Normal",
+									visual = "Visual",
+									insert = "Insert",
+									replace = "Replace",
+									command = "Command"
+								}
+							}
+						}
+					)
+				end
+			}
+		}
+	}
 	------------------------------------------
 	----     avante AI END                ----
 	------------------------------------------

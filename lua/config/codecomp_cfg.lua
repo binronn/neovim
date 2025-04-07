@@ -109,6 +109,10 @@ function M:setup_codecomp()
 							schema = {
 								model = {
 									default = "deepseek-chat",
+								},
+								choices = {
+									'deepseek-chat',
+									["deepseek-reasoner"] = { opts = { can_reason = true } },
 								}
 							}
 						}
@@ -196,10 +200,10 @@ function M:setup_codecomp()
 						layout = "float", -- float|vertical|horizontal|buffer
 						position = "left", -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
 						border = "rounded",
-						height = 0.9,
-						width = 0.3,
-						col = vim.o.columns * 0.7,
-						row = vim.o.lines * 0.03,
+						height = 0.6,
+						width = 0.85,
+						-- col = vim.o.columns * 0.69,
+						-- row = vim.o.lines * 0.03,
 						relative = "editor",
 						style = "full", -- 使用最小化的样式
 						opts = {
@@ -240,7 +244,7 @@ function M:setup_codecomp()
 					close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
 					layout = "vertical", -- vertical|horizontal split for default provider
 					opts = {"internal", "filler", "closeoff", "algorithm:patience", "followwrap", "linematch:120"},
-					provider = "default" -- default|mini_diff
+					provider = "mini_diff" -- default|mini_diff
 				}
 			}
 		}
