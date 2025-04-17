@@ -53,32 +53,56 @@ function M:setup_codecomp()
 	require("codecompanion").setup(
 		{
 			opts = {
-				language = "Chinese",
+				language = "中文",
 			},
 			adapters = {
-				qwen = function()
+				dskfee = function()
 					return require("codecompanion.adapters").extend(
 						"openai_compatible",
 						{
-							name = "qwen",
+							name = "dskfee",
 							env = {
-								url = "http://192.168.0.101:8000", 
-								api_key = vim.fn.getenv("ORG"), 
+								url = "http://rm.basicbit.cn:43408", 
+								api_key = vim.fn.getenv("DSK_FEE_TKN"), 
 								chat_url = "/v1/chat/completions",
 							},
 							schema = {
 								model = {
-									default = "qwen-max-2025-01-25",
+									default = "deepseek_chat",
 								}
 							}
 						}
 					)
 				end,
-				sil_deepseek = function()
+				kimi = function()
 					return require("codecompanion.adapters").extend(
 						"openai_compatible",
 						{
-							name = "sil_deepseek",
+							name = "kimi_free",
+							env = {
+								url = "http://rm.basicbit.cn:43408", 
+								api_key = vim.fn.getenv("KIMI"), 
+								chat_url = "/v1/chat/completions",
+							},
+							schema = {
+								model = {
+									default = "kimi",
+								},
+							},
+							handlers = {
+								form_parameters = function(self, params, messages)
+									params['use_search'] = true
+									return params
+								end,
+							}
+						}
+					)
+				end,
+				siliconflow = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "siliconflow",
 							env = {
 								url = "https://api.siliconflow.cn",
 								chat_url = "/v1/chat/completions",
@@ -90,6 +114,7 @@ function M:setup_codecomp()
 									choices = {
 										'deepseek-ai/DeepSeek-V3',
 										["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = true } },
+										["Qwen/QwQ-32B"] = { opts = { can_reason = true } },
 									}
 								}
 							}
@@ -110,10 +135,10 @@ function M:setup_codecomp()
 								model = {
 									default = "deepseek-chat",
 								},
-								choices = {
-									'deepseek-chat',
-									["deepseek-reasoner"] = { opts = { can_reason = true } },
-								}
+								-- choices = {
+								-- 	'deepseek-chat',
+								-- 	["deepseek-reasoner"] = { opts = { can_reason = true } },
+								-- }
 							}
 						}
 					)
@@ -126,10 +151,8 @@ function M:setup_codecomp()
 							opts = {
 								proxy = 'socks5://127.0.0.1:10807'
 							},
-							-- url = "https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${api_key}",
 							env = {
 								api_key = vim.fn.getenv("GEMINI_API_KEY"),
-								-- model = "schema.model.default",
 							},
 							schema = {
 								model = {
@@ -160,7 +183,7 @@ function M:setup_codecomp()
 					show_settings = true, -- Show LLM settings at the top of the chat buffer?
 					show_token_count = true, -- Show the token count for each response?
 					start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-					adapter = "gemini",
+					adapter = "kimi",
 					keymaps = {
 						send = {
 							modes = {n = "<Enter>", i = "<C-s>"}
@@ -182,7 +205,10 @@ function M:setup_codecomp()
 							description = "Choose our"
 						}
 					},
-					adapter = "gemini"
+					adapter = "kimi"
+				},
+				cmd = {
+					adapter = 'kimi'
 				}
 			},
 			display = {
@@ -197,15 +223,15 @@ function M:setup_codecomp()
 					-- Options to customize the UI of the chat buffer
 					window = {
 						title = 'CodeCompanion',
-						layout = "float", -- float|vertical|horizontal|buffer
-						position = "left", -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
+						layout = "vertical", -- float|vertical|horizontal|buffer
+						position = "right", -- left|right|top|bottom (nil will default depending on vim.opt.plitright|vim.opt.splitbelow)
 						border = "rounded",
-						height = 0.6,
-						width = 0.85,
-						-- col = vim.o.columns * 0.69,
-						-- row = vim.o.lines * 0.03,
+						height = 0.9,
+						width = 0.3,
+						col = vim.o.columns * 0.7, -- 调整到屏幕右侧
+						row = vim.o.lines * 0.03, -- 调整到屏幕顶部
 						relative = "editor",
-						style = "full", -- 使用最小化的样式
+						style = "full",
 						opts = {
 							number = false,
 							relativenumber = false,

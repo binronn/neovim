@@ -222,7 +222,8 @@ vim.api.nvim_create_autocmd(
 
 			vim.schedule(
 				function()
-					vim.g.reset_workspace_dir_nop()
+					-- vim.g.reset_workspace_dir_nop()
+					vim.g.workspace_dir.get()
 					vim.fn.chdir(vim.g.workspace_dir.get())
 					-- vim.g.generate_ctags(true)
 					vim.notify('Workdir: ' .. vim.g.workspace_dir.get(), vim.log.levels.INFO, { title = 'Workspace Setup' })

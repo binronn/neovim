@@ -127,7 +127,10 @@ return {
 	{
 		"jiangmiao/auto-pairs", -- 自动括号
 		event = {"InsertEnter"},
-		ft = programming_filetypes
+		ft = programming_filetypes,
+		config = function()
+			-- vim.api.nvim_del_keymap("", "<M-p>")
+		end
 	},
 	-- {
 	-- 	'windwp/nvim-autopairs',
@@ -369,6 +372,7 @@ return {
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
+		event = "BufReadPre",
 		dependencies = {
 			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
@@ -496,8 +500,8 @@ return {
 				},
 				-- 在这里添加 mini.diff 的默认配置
 			})
-			nmap("<leader>cc", ":CodeCompanionChat Toggle<CR>")
-			vmap("<leader>cc", ":CodeCompanionChat<CR>")
+			nmap("<M-c>", ":CodeCompanionChat Toggle<CR>")
+			vmap("<M-c>", ":CodeCompanionChat<CR>")
 
 			nmap2("<leader>ce", ":CodeCompanion ")
 			vmap2("<leader>ce", ":CodeCompanion ")
@@ -519,13 +523,14 @@ return {
 		"yetone/avante.nvim",
 		-- event = {"BufRead", "BufNewFile"},
 		event = {"VimEnter"},
+		version = false,
 		-- lazy = false,
 		-- event = { 'VeryLazy' },
 		-- version = '*', -- 最新tag
 		-- version = nil, -- 最新提交
 		-- ft = programming_filetypes,
 		config = function()
-			require("copilot").setup({})
+			-- require("copilot").setup({})
 			require("config.avante_cfg")
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
@@ -539,7 +544,7 @@ return {
 			--- The below dependencies are optional,
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 			{
-				"zbirenbaum/copilot.lua",
+				-- "zbirenbaum/copilot.lua",
 			}, -- for providers='copilot'
 
 			-- {

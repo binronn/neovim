@@ -3,8 +3,8 @@ vim.api.nvim_set_hl(0, "AvanteDiffAdd", {fg = "#000000", bg = "#3d4745"}) -- 黑
 
 return require("avante").setup(
 	{
-		provider = "gemini",
-		auto_suggestions_provider = "gemini", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
+		provider = "kimi",
+		auto_suggestions_provider = "kimi", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
 		web_search_engine = {
 			provider = "tavily",
 			api_key_name = "TAVILY",
@@ -19,14 +19,23 @@ return require("avante").setup(
 			proxy = 'http://127.0.0.1:10808',
 		},
 		vendors = {
-			["qwen"] = {
+			["dskfee"] = {
 				__inherited_from = "openai",
-				model = "qwen",
-				endpoint = "http://192.168.0.101:8000/v1",
-				api_key_name = "ORG",
+				model = "dskfee",
+				endpoint = "http://rm.basicbit.cn:43408/v1",
+				api_key_name = "DSK_FEE_TKN",
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,
 				max_tokens = 4096
+			},
+			["kimi"] = {
+				__inherited_from = "openai",
+				model = "kimi",
+				endpoint = "http://rm.basicbit.cn:43408/v1",
+				api_key_name = "KIMI",
+				timeout = 3000, -- Timeout in milliseconds
+				temperature = 0,
+				max_tokens = 8196
 			},
 			["sil_deepseek"] = {
 				__inherited_from = "openai",
