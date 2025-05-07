@@ -49,7 +49,7 @@ function M:update_status()
 end
 
 function M:setup_codecomp()
-	require('config.codecomp_nfy').setup()
+	-- require('config.codecomp_nfy').setup()
 	require("codecompanion").setup(
 		{
 			opts = {
@@ -74,27 +74,41 @@ function M:setup_codecomp()
 						}
 					)
 				end,
-				kimi = function()
+				qwen = function()
 					return require("codecompanion.adapters").extend(
 						"openai_compatible",
 						{
-							name = "kimi_free",
+							name = "qwen",
 							env = {
 								url = "http://rm.basicbit.cn:43408", 
-								api_key = vim.fn.getenv("KIMI"), 
+								api_key = vim.fn.getenv("QWEN_FEE"), 
 								chat_url = "/v1/chat/completions",
 							},
 							schema = {
 								model = {
-									default = "kimi",
+									default = "qwen",
+									choices = {}
 								},
 							},
-							handlers = {
-								form_parameters = function(self, params, messages)
-									params['use_search'] = true
-									return params
-								end,
-							}
+						}
+					)
+				end,
+				qwen_deep = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "qwen_deep",
+							env = {
+								url = "http://rm.basicbit.cn:43409", 
+								api_key = vim.fn.getenv("QWEN_FEE"), 
+								chat_url = "/v1/chat/completions",
+							},
+							schema = {
+								model = {
+									default = "qwen-deepresearch",
+									choices = {}
+								},
+							},
 						}
 					)
 				end,
@@ -110,11 +124,12 @@ function M:setup_codecomp()
 							},
 							schema = {
 								model = {
-									default = "deepseek-ai/DeepSeek-V3",
+									default = "Qwen/Qwen3-30B-A3B",
 									choices = {
 										'deepseek-ai/DeepSeek-V3',
-										["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = true } },
-										["Qwen/QwQ-32B"] = { opts = { can_reason = true } },
+										["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = false } },
+										["Qwen/Qwen3-32B"] = { opts = { can_reason = false } },
+										["Qwen/Qwen3-30B-A3B"] = { opts = { can_reason = false } },
 									}
 								}
 							}
@@ -183,7 +198,7 @@ function M:setup_codecomp()
 					show_settings = true, -- Show LLM settings at the top of the chat buffer?
 					show_token_count = true, -- Show the token count for each response?
 					start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-					adapter = "kimi",
+					adapter = "qwen",
 					keymaps = {
 						send = {
 							modes = {n = "<Enter>", i = "<C-s>"}
@@ -205,10 +220,10 @@ function M:setup_codecomp()
 							description = "Choose our"
 						}
 					},
-					adapter = "kimi"
+					adapter = "qwen"
 				},
 				cmd = {
-					adapter = 'kimi'
+					adapter = 'qwen'
 				}
 			},
 			display = {

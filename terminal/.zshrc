@@ -9,6 +9,14 @@ export http_proxy=http://127.0.0.1:10808
 export https_proxy=http://127.0.0.1:10808
 source "$HOME/.zshrc_pri"
 
+# FOR pipx
+export PATH=$PATH:/home/byron/.local/bin
+
+# FOR golang
+export GOPATH=/home/byron/.go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$GOBIN
+
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
     print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
@@ -43,43 +51,40 @@ zinit light zsh-users/zsh-autosuggestions
 # 补全（延迟加载）
 zinit ice lucid 
 
-
-##################################################
-# 加载 OMZ 框架及部分插件
-##################################################
-# zinit ice lucid wait='1'
 # zinit snippet OMZ::lib/completion.zsh
-
-# zinit ice lucid wait='1'
 # zinit snippet OMZ::lib/history.zsh
-
-# zinit ice lucid wait='1'
 # zinit snippet OMZ::lib/theme-and-appearance.zsh
 
-# zinit ice lucid wait='1'
-# zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
+zinit light zdharma-continuum/fast-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light marlonrichert/zsh-autocomplete
 
-# zinit ice lucid wait='1'
-# zinit snippet OMZ::plugins/command-not-found/command-not-found.plugin.zsh
+zstyle ':autocomplete:*' delay 0.1  # 将延迟设置为 0.1 秒 (默认是 0.05 秒)
+# zstyle ':autocomplete:*' add-space \
+#     executables aliases functions builtins reserved-words commands
+# zstyle ':completion:*' widget-style menu-select
+# zstyle ':autocomplete:*' default-context history-incremental-search-backward
+# zstyle ':autocomplete:*complete*:*' insert-unambiguous yes
+# zstyle ':autocomplete:menu-search:*' insert-unambiguous yes
+zstyle ':autocomplete:*history*:*' insert-unambiguous yes
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# zstyle ':completion:*' list-max 10
+# zstyle ':completion:::' tag-order '! commands builtins functions aliases'
+zstyle ':autocomplete:*' min-input 3
+zstyle ':autocomplete:*' ignored-input '..##'
+bindkey -M menuselect '^p' reverse-menu-complete
+bindkey -M menuselect '^n' menu-complete
 
-zinit snippet OMZ::lib/completion.zsh
-zinit snippet OMZ::lib/history.zsh
-zinit snippet OMZ::lib/theme-and-appearance.zsh
-# zinit snippet OMZ::plugins/autojump/autojump.plugin.zsh
+# bindkey -M menuselect '^I' menu-complete
+# Bind Shift + Tab to move up
+# bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 
-# zinit light-mode load OMZ::lib/completion.zsh
-# zinit light-mode load OMZ::lib/history.zsh
-# zinit light-mode load OMZ::lib/theme-and-appearance.zsh
-# zinit light-mode load OMZ::plugins/autojump/autojump.plugin.zsh
-# zinit light-mode wait'0' load OMZ::plugins/command-not-found/command-not-found.plugin.zsh
-
-
-bindkey '^k' history-search-backward
-bindkey '^j' history-search-forward
+# bindkey '^p' history-search-backward
+# bindkey '^n' history-search-forward
 #
 # 异步加载插件
 zinit ice lucid wait='1'
-zinit load zdharma/history-search-multi-word
+# zinit load zdharma/history-search-multi-word
 
 zinit ice lucid wait='1'
 zinit load djui/alias-tips
@@ -87,14 +92,6 @@ zinit load djui/alias-tips
 # zinit ice lucid wait='0'  # powerlevel10k需要立即加载以保证提示符显示
 zinit load romkatv/powerlevel10k
 
-#zinit wait lucid light-mode \
-	  #atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
-		#for marlonrichert/zsh-autocomplete
-
-#zinit wait lucid light-mode \
-	  #atinit"zstyle ':autocomplete:*' groups 'always'" \
-		#atinit"zstyle ':autocomplete:(slash|space):*' magic 'off'" \
-		  #for marlonrichert/zsh-autocomplete
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -114,7 +111,10 @@ alias gbh="git branch"
 alias grt="git remote"
 alias gdf="git diff"
 alias gl="git log"
+alias gcl="git clone"
 alias vim=nvim
+alias tmux="tmux -u"
+alias ls="ls --color=auto"
 #alias grmadd="git remote add origin https://yuanbi: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@github.com/"
 #alias grmadd="git remote add origin https://biyuan:PqJuwFA_ZNwS7d3s6GL8@git.51gonggui.com/"
 
@@ -122,15 +122,17 @@ alias vim=nvim
 #
 #  移除重复的命令历史
 setopt HIST_IGNORE_ALL_DUPS
+setopt INC_APPEND_HISTORY   # 每次回车后立即追加写入历史文件
+setopt SHARE_HISTORY        # 多终端共享历史记录
+export HISTFILE=$HOME/.zsh_history
 # 设置历史记录的最大数量为100条以加快加载
-HISTSIZE=300
-SAVEHIST=300
+HISTSIZE=3000
+SAVEHIST=3000
 
 # export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43:'
 export LS_COLORS='di=34;1:ln=36;1:so=32;1:pi=33;1:ex=31;1:bd=34;46;1:cd=34;43;1:su=30;41;1:sg=30;46;1:tw=30;42;1:ow=30;43;1:'
 
 # Load a few important annexes, without Turbo
-# (this is currently required for annexes)
 zinit light-mode for \
     zdharma-continuum/zinit-annex-as-monitor \
     zdharma-continuum/zinit-annex-bin-gem-node \
@@ -140,3 +142,7 @@ zinit light-mode for \
 # 移除任何可能存在的 zi 别名以避免冲突
 unalias zi 2>/dev/null
 
+### End of Zinit's installer chunk
+
+# Created by `pipx` on 2025-04-29 07:29:47
+export PATH="$PATH:/home/byron/.local/bin"

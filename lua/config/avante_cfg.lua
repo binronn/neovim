@@ -35,7 +35,7 @@ return require("avante").setup(
 				api_key_name = "KIMI",
 				timeout = 3000, -- Timeout in milliseconds
 				temperature = 0,
-				max_tokens = 8196
+				max_tokens = 819600
 			},
 			["sil_deepseek"] = {
 				__inherited_from = "openai",

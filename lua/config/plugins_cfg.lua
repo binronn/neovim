@@ -1142,10 +1142,10 @@ end
 -- null-ls 配置
 ------------------------------------------------------------------------------------------
 
-function M.null_ls_init()
+--[[ function M.null_ls_init()
 	local null_ls = require("null-ls")
 	local python_path = "pthon3"
-	if vim.g.is_win32 then
+	if vim.g.is_win32 == 1 then
 		python_path = "python"
 	end
 	null_ls.setup(
@@ -1157,20 +1157,21 @@ function M.null_ls_init()
 				-- null_ls.builtins.formatting.gofmt,    -- Go 格式化
 				null_ls.builtins.formatting.yapf.with(
 					{
-						command = python_path,
-						args = {"-m", "yapf"}
+						-- command = python_path,
+						-- args = {"-m", "yapf"}
+						command = 'yapf'
 					}
-				), -- 使用 yapf
-				null_ls.builtins.formatting.clang_format.with(
-					{
-						extra_args = {"-style", "file:" .. vim.fn.stdpath("config") .. "/.clang-format"}, -- 使用项目根目录下的 .clang-format 文件
-						filetypes = {"cpp", "c", "cxx", "hpp", "h"}
-					}
-				)
+				),
+				-- null_ls.builtins.formatting.clang_format.with(
+				-- 	{
+				-- 		-- extra_args = {"-style", "file:" .. vim.fn.stdpath("config") .. "/.clang-format"}, -- 使用项目根目录下的 .clang-format 文件
+				-- 		-- filetypes = {"cpp", "c", "cxx", "hpp", "h"}
+				-- 	}
+				-- )
 			}
 		}
 	)
-end
+end ]]
 
 ------------------------------------------------------------------------------------------
 -- cmake-tools.nvim 配置

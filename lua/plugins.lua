@@ -350,7 +350,7 @@ return {
 						highlight = highlight,
 						char = "╎",
 						smart_indent_cap = true,
-						priority = 1
+						priority = 2
 					},
 					scope = {
 						enabled = false
@@ -372,7 +372,8 @@ return {
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
-		event = "BufReadPre",
+		-- event = "BufReadPre",
+		event = "VimEnter",
 		dependencies = {
 			"hrsh7th/nvim-cmp", -- LSP 补全引擎
 			"hrsh7th/cmp-nvim-lsp", -- LSP 补全源
@@ -386,11 +387,11 @@ return {
 					require("config/luasnip_cfg")
 				end
 			}, -- 代码片段引擎
-			"jose-elias-alvarez/null-ls.nvim" -- 代码格式化插件
+			-- "jose-elias-alvarez/null-ls.nvim" -- 代码格式化插件
 		},
 		config = function()
 			require("config/lsp_cfg")
-			pcfg.null_ls_init()
+			-- pcfg.null_ls_init()
 		end,
 		ft = programming_filetypes
 	},
