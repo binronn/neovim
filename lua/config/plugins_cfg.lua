@@ -362,7 +362,7 @@ function M.lualine_init()
 			lualine_c = {
 				{"aerial"},
 				{"filename", path = 1}, -- 显示文件名
-				{"gitsigns", blame = true} -- 显示 Git Blame 信息
+				-- {"gitsigns", blame = true} -- 显示 Git Blame 信息
 			},
 			lualine_x = {codecomp, "encoding", "fileformat", "filetype"},
 			lualine_y = {"progress"},
@@ -1177,7 +1177,7 @@ end ]]
 -- cmake-tools.nvim 配置
 ------------------------------------------------------------------------------------------
 function M.cmake_tools_init(m, cc, cxx)
-	local build_type = 'Makefiles'
+	local build_type = 'Unix Makefiles'
 	
 	if vim.g.is_win32 == 1 then
 		build_type = 'MinGW Makefiles'

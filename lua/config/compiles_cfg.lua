@@ -23,7 +23,7 @@ if not M.clangd_path then
 	M.clangd_param = clangd_param_base
 end
 
-if vim.g.is_unix == 1 then
+if vim.g.is_win32 == 0 then
 	return M
 end
 

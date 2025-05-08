@@ -291,7 +291,8 @@ return {
 	},
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
-		event = {"BufRead"},
+		commit = '2149fc2009d1117d58e86e56836f70c969f60a82',
+		event = {"VimEnter"},
 		config = pcfg.gitsigns_init
 	},
 	{
@@ -520,7 +521,7 @@ return {
 	------------------------------------------
 	----     avante AI                    ----
 	------------------------------------------
-	{
+	--[[ {
 		"yetone/avante.nvim",
 		-- event = {"BufRead", "BufNewFile"},
 		event = {"VimEnter"},
@@ -593,7 +594,7 @@ return {
 				end
 			}
 		}
-	}
+	} ]]
 	------------------------------------------
 	----     avante AI END                ----
 	------------------------------------------

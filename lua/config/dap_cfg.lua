@@ -277,12 +277,23 @@ dap.configurations.cpp = {
 		name = "Launch",
 		type = function()
 			if vim.g.is_unix == 1 then
-				dap.adapters.lldb = {
+				-- Download from https://github.com/vadimcn/codelldb/releases
+				-- unzip codelldb.vsix to $codelldb
+				-- set command = $codelldb/extension/adapter/codelldb
+				dap.adapters.codelldb = {
 					type = "executable",
-					command = "/usr/bin/lldb-dap", -- adjust as needed, must be absolute path
-					name = "lldb"
+					command = "/home/byron/codelldb/extension/adapter/codelldb", -- adjust as needed, must be absolute path
+					options = {
+						detached = false
+					},
+					name = "codelldb"
 				}
-				return "lldb"
+				dap.adapters.gdb = {
+					type = "executable",
+					command = "gdb",
+					args = { "--interpreter=dap", "--eval-command", "set print pretty on" }
+				}
+				return "codelldb"
 			else
 				dap.adapters.gdb = {
 					id = "gdb",
@@ -296,14 +307,6 @@ dap.configurations.cpp = {
 						"set print pretty on"
 					}
 				}
-				-- dap.adapters.cppdbg = {
-				-- 	id = 'cppdbg',
-				-- 	type = 'executable',
-				-- 	command = vim.fn.getenv("DEVELOP_BASE") .. 'cpptools-windows-x64\\extension\\debugAdapters\\bin\\OpenDebugAD7.exe',
-				-- 	options = {
-				-- 		detached = false
-				-- 	}
-				-- }
 				dap.adapters.codelldb = {
 					id = "codelldb",
 					type = "executable",
