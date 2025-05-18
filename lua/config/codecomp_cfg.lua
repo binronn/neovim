@@ -48,7 +48,6 @@ function M:update_status()
 	end
 end
 
-
 local ips = {}
 function M:get_url_ip(urlxxx)
 	if ips[urlxxx] == nil then
