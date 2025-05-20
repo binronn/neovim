@@ -1,7 +1,7 @@
 local M = require("lualine.component"):extend()
 
-M.processing = false
-M.spinner_index = 1
+local processing = false
+local spinner_index = 1
 
 local spinner_symbols = {
 	"⠋",
@@ -29,9 +29,9 @@ function M:init(options)
 			group = group,
 			callback = function(request)
 				if request.match == "CodeCompanionRequestStarted" then
-					self.processing = true
+					processing = true
 				elseif request.match == "CodeCompanionRequestFinished" then
-					self.processing = false
+					processing = false
 				end
 			end
 		}
@@ -40,9 +40,9 @@ end
 
 -- Function that runs every time statusline is updated
 function M:update_status()
-	if self.processing then
-		self.spinner_index = (self.spinner_index % spinner_symbols_len) + 1
-		return spinner_symbols[self.spinner_index]
+	if processing then
+		spinner_index = (spinner_index % spinner_symbols_len) + 1
+		return spinner_symbols[spinner_index]
 	else
 		return nil
 	end
@@ -50,6 +50,7 @@ end
 
 local ips = {}
 function M:get_url_ip(urlxxx)
+	ips['rm.basicbit.cn'] = '115.120.244.116'
 	if ips[urlxxx] == nil then
 
 		local handle = io.popen("ping -c 1 " .. urlxxx) -- 替换为你的域名

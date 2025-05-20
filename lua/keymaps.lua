@@ -169,6 +169,13 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 ------------------------------------------
+-- 粘贴系统粘贴板的内容
+------------------------------------------
+vim.api.nvim_set_keymap('n', '<C-S-v>', '<C-r>+', { noremap = true, silent = true }) -- normal mode
+vim.api.nvim_set_keymap('i', '<C-S-v>', '<C-r>+', { noremap = true, silent = true }) -- visual mode
+vim.keymap.set('c', '<C-S-v>', '<C-r>+', { noremap = true }) -- command mode
+
+------------------------------------------
 -- 输入分号自动格式化段落（仅限 C/C++ 文件）
 ------------------------------------------
 local function setup_semicolon_formatting()
