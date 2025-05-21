@@ -77,7 +77,7 @@ function M:setup_codecomp()
 						{
 							name = "dskfee",
 							env = {
-								url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43408", -- 使用提取出的IP地址
+								url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43410", -- 使用提取出的IP地址
 								api_key = vim.fn.getenv("DSK_FEE_TKN"), 
 								chat_url = "/v1/chat/completions",
 							},
@@ -220,7 +220,7 @@ function M:setup_codecomp()
 					show_settings = true, -- Show LLM settings at the top of the chat buffer?
 					show_token_count = true, -- Show the token count for each response?
 					start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-					adapter = "qwen",
+					adapter = "dskfee",
 					keymaps = {
 						send = {
 							modes = {n = "<Enter>", i = "<C-s>"}
@@ -242,10 +242,10 @@ function M:setup_codecomp()
 							description = "Choose our"
 						}
 					},
-					adapter = "qwen"
+					adapter = "dskfee"
 				},
 				cmd = {
-					adapter = 'qwen'
+					adapter = 'dskfee'
 				}
 			},
 			display = {
