@@ -56,6 +56,65 @@ local g_capabilities = require('cmp_nvim_lsp').default_capabilities()
 -- 			"--completion-style=detailed",  -- 增强补全信息
 -- 			-- "--header-insertion=never"      -- 禁用自动头文件插入
 -- 		}
+-- lua
+local fmt = [[
+{
+  "Language": "Cpp",
+  "BasedOnStyle": "LLVM",
+  "AlwaysBreakTemplateDeclarations": "Yes",
+  "BreakBeforeBraces": "Allman",
+  "UseTab": "Always",
+  "TabWidth": 4,
+  "IndentWidth": 4,
+  "BraceWrapping": {
+    "AfterClass": true,
+    "AfterControlStatement": true,
+    "AfterEnum": true,
+    "AfterFunction": true,
+    "AfterNamespace": true,
+    "AfterStruct": true,
+    "AfterUnion": true,
+    "BeforeCatch": true,
+    "BeforeElse": true,
+    "IndentBraces": false
+  },
+  "SpacesInParentheses": true,
+  "SpacesInSquareBrackets": true,
+  "SpacesInAngles": true,
+  "SpaceAfterCStyleCast": true,
+  "SpaceBeforeParens": "ControlStatements",
+  "SpaceInEmptyParentheses": false,
+  "AllowShortBlocksOnASingleLine": false,
+  "AllowShortCaseLabelsOnASingleLine": false,
+  "AllowShortFunctionsOnASingleLine": "None",
+  "AllowShortIfStatementsOnASingleLine": false,
+  "AllowShortLoopsOnASingleLine": false,
+  "ColumnLimit": 130,
+  "MaxEmptyLinesToKeep": 2,
+  "KeepEmptyLinesAtTheStartOfBlocks": true,
+  "SpaceBeforeAssignmentOperators": true,
+  "SpaceBeforeCpp11BracedList": true,
+  "SpaceBeforeRangeBasedForLoopColon": true,
+  "SpaceInEmptyBlock": true,
+  "AlignAfterOpenBracket": "Align",
+  "AlignConsecutiveAssignments": true,
+  "AlignConsecutiveDeclarations": true,
+  "AlignEscapedNewlines": "Right",
+  "AlignOperands": true,
+  "AlignTrailingComments": true,
+  "NamespaceIndentation": "All",
+  "PointerAlignment": "Left",
+  "SortIncludes": true,
+  "SortUsingDeclarations": true
+}
+]]
+
+-- 假设 clangd_default 已经被定义，例如：
+-- local clangd_default = {"clangd"}
+
+-- 假设 g_capabilities 已经被定义，例如：
+-- local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+-- local g_capabilities = lsp_capabilities
 
 local function reset_clangd(cmd)
 	if cmd == nil then
@@ -83,7 +142,7 @@ local function reset_clangd(cmd)
 			vim.keymap.set("n", "ga", telescope.lsp_dynamic_workspace_symbols, {buffer=bufnr, desc = "Find references"})
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-			vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, opts)
+			-- vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, opts)
 			vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
 			-- keymap(
 			-- 	bufnr,
@@ -92,7 +151,8 @@ local function reset_clangd(cmd)
 			-- 	"<cmd>lua for _, folder in ipairs(vim.lsp.buf.list_workspace_folders()) do print(folder) end<CR>",
 			-- 	opts
 			-- )
-			vim.keymap.set("n", "<leader>hs", switch_file_and_search, opts)
+            vim.keymap.set("n", "<leader>hS", switch_file_and_search, opts) -- 假设 switch_file_and_search 已经被定义
+            vim.keymap.set("n", "<leader>hs", ':ClangdSwitchSourceHeader<CR>', opts)
 			vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
 				--     buffer = bufnr,
@@ -134,10 +194,22 @@ lspconfig.pyright.setup(
 		settings = {
 			python = {
 				analysis = {
-					typeCheckingMode = "default",
+					typeCheckingMode = "basic",  -- (default)更严格的类型检查
 					autoSearchPaths = true,
-					useLibraryCodeForTypes = true
-				}
+					useLibraryCodeForTypes = true,
+					diagnosticMode = "workspace",  -- 对整个工作区进行检查
+					autoImportCompletions = true,  -- 自动导入补全
+					diagnosticSeverityOverrides = {
+						reportUnusedImport = "warning",  -- 未使用的导入显示为警告
+						reportUnusedVariable = "warning",  -- 未使用的变量显示为警告
+						reportMissingImports = "error",  -- 缺失的导入显示为错误
+						reportUnusedFunction = "warning"  -- 未使用的函数显示为警告
+					},
+					stubPath = vim.fn.stdpath("data") .. "/stubs"  -- 自定义类型存根路径
+				},
+				pythonPath = "python",  -- 指定Python解释器路径
+				venvPath = os.getenv("VIRTUAL_ENV") or ".venv",  -- 自动检测虚拟环境
+				extraPaths = {}  -- 额外的导入搜索路径
 			}
 		}
 	}

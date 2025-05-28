@@ -339,9 +339,10 @@ function M.lualine_init()
 			disabled_filetypes = {"NvimTree", "aerial", "qf", "help"},
 			icons_enabled = true,
 			theme = "auto",
-			-- component_separators = {left = "|", right = "|"},
-			component_separators = {left = "·", right = "·"},
-			-- component_separators = { left = '', right = '' }
+			-- component_separators = { left = "/", right = "/" },
+			-- component_separators = {left = "·", right = "·"},
+			-- component_separators = { left = '', right = '' },
+			component_separators = { left = "❰", right = "❱" },
 			section_separators = {left = "", right = ""},
 			disabled_filetypes = {
 				statusline = {},
@@ -1858,6 +1859,19 @@ function M.aerial_init()
 		}
 	)
 	nmap("<F2>", ":lua vim.g.toggle_tagbar()<CR>")
+
+	nmap(
+		"<F2>",
+	 function()
+			vim.g.toggle_tagbar()
+
+			vim.defer_fn(function()
+				-- 均衡所有窗口大小 (相当于Ctrl+w =)
+				vim.cmd("wincmd =")
+			end, 50)  -- 50ms延迟确保窗口创建完成
+		end,
+		{noremap = true, silent = true}
+	)
 end
 
 return M

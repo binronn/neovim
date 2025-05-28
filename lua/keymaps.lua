@@ -55,7 +55,32 @@ nmap("<leader>wQ", ":wqa<CR>")
 
 -- 文件不保存退出
 -- nmap("<leader>q", ":q<CR>")
-nmap("<leader>fq", "<cmd>lua if vim.bo.buftype == '' then vim.cmd('q') end<CR>")
+-- 关闭窗口或buffer，并根据allowed_filetypes判定是否退出vim
+nmap("<leader>fq", function()
+    local allowed_filetypes = {"qf", "aerial", "NvimTree", "codecompanion", "notify"}  -- 可自定义允许的文件类型列表
+    local current_buf = vim.api.nvim_get_current_buf()
+    local has_other_buffers = false
+    
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if buf ~= current_buf and vim.api.nvim_buf_is_loaded(buf) then
+            local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+            if not vim.tbl_contains(allowed_filetypes, ft) then
+                has_other_buffers = true
+                break
+            end
+        end
+    end
+    
+    if not has_other_buffers then
+        vim.cmd("qa!")
+    else
+		if vim.bo.buftype ~= '' then
+			vim.cmd('q')
+		else
+			vim.cmd("bdelete")
+		end
+    end
+end)
 nmap("qw", "<cmd>lua if vim.bo.buftype ~= '' then vim.cmd('q') end<CR>")
 nmap("<leader>fQ", ":q!<CR>")
 
@@ -149,8 +174,8 @@ local wrappers = {
 
 function wrap_selection(a, b)
 
-    local cmd = string.format("'<,'>s/\\%%V\\(.*\\)\\%%V/%s\\1%s/", a, b)
-    vim.cmd(cmd)
+	local cmd = string.format("'<,'>s/\\%%V\\(.*\\)\\%%V/%s\\1%s/", a, b)
+	vim.cmd(cmd)
 end
 vim.g.wrap_selection = wrap_selection
 
@@ -158,15 +183,6 @@ vmap('S"', ":lua vim.g.wrap_selection('\"', '\"')<CR>")
 vmap('S(', ":lua vim.g.wrap_selection('(', ')')<CR>")
 vmap('S{', ":lua vim.g.wrap_selection('{', '}')<CR>")
 
-------------------------------------------
--- 定义 Lua 文件格式化
-------------------------------------------
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'lua', -- 仅对 Lua 文件生效
-  callback = function()
-    vim.api.nvim_set_keymap('n', '<leader>ff', ':%!npx lua-fmt --use-tabs --stdin<CR>', {noremap = true, silent = true})
-  end,
-})
 
 ------------------------------------------
 -- 粘贴系统粘贴板的内容

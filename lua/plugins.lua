@@ -351,7 +351,7 @@ return {
 						highlight = highlight,
 						char = "╎",
 						smart_indent_cap = true,
-						priority = 2
+						priority = 3
 					},
 					scope = {
 						enabled = false

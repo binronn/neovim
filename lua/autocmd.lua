@@ -154,27 +154,44 @@ vim.api.nvim_create_autocmd(
 ----------------------------------------------------------------
 -- 当只剩下 NvimTree 窗口时，自动退出
 ----------------------------------------------------------------
-vim.cmd(
-	[[
-  augroup NvimTreeWindowSize
-    autocmd!
-    autocmd WinEnter * if winnr('$') == 1 && (&filetype == 'aerial' || &filetype == 'NvimTree' || &filetype == 'qf' || &filetype == 'codecompanion') | qa! | endif
-  augroup END
-]]
-)
+nmap("<leader>fq", function()
+    local allowed_filetypes = {"qf", "aerial", "NvimTree", "codecompanion", "notify"}  -- 可自定义允许的文件类型列表
+    local current_buf = vim.api.nvim_get_current_buf()
+    local has_other_buffers = false
+    
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if buf ~= current_buf and vim.api.nvim_buf_is_loaded(buf) then
+            local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+            if not vim.tbl_contains(allowed_filetypes, ft) then
+                has_other_buffers = true
+                break
+            end
+        end
+    end
+    
+    if not has_other_buffers then
+        vim.cmd("qa!")
+    else
+		if vim.bo.buftype ~= '' then
+			vim.cmd('q')
+		else
+			vim.cmd("bdelete")
+		end
+    end
+end)
 
 ------------------------------------------------------------------------------------------
 -- 格式化代码 null-ls
 ------------------------------------------------------------------------------------------
-vim.api.nvim_create_autocmd(
-	"FileType",
-	{
-		pattern = "lua", -- 仅对 Lua 文件生效
-		callback = function()
-			nmap("<leader>ff", ":lua vim.lsp.buf.format()<CR>")
-		end
-	}
-)
+-- vim.api.nvim_create_autocmd(
+-- 	"FileType",
+-- 	{
+-- 		pattern = "lua", -- 仅对 Lua 文件生效
+-- 		callback = function()
+-- 			nmap("<leader>ff", ":lua vim.lsp.buf.format()<CR>")
+-- 		end
+-- 	}
+-- )
 
 ----------------------------------------------------------------
 -- 设置Windows路径分隔符
@@ -264,6 +281,88 @@ vim.api.nvim_create_autocmd(
 		end
 	}
 )
+
+------------------------------------------
+-- 定义文件格式化函数
+------------------------------------------
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'lua',
+    callback = function(args)
+        -- 获取当前buffer的ID
+        local bufnr = args.buf
+
+        -- 检查npx和lua-fmt是否存在
+        if vim.fn.executable('npx') == 0 then
+            vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ff', '', {
+                noremap = true,
+                silent = true,
+                callback = function()
+                    vim.notify('npx not found! Please install npm first', vim.log.levels.ERROR)
+                end
+            })
+            return
+        end
+
+        local handle = io.popen('npx --no-install lua-fmt --version 2>&1')
+        local result = handle:read('*a')
+        handle:close()
+
+        if not result:match('^%d+%.%d+%.%d+') then
+            vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ff', '', {
+                noremap = true,
+                silent = true,
+                callback = function()
+                    vim.notify('lua-fmt not found! Please install with: npm install -g lua-fmt', vim.log.levels.ERROR)
+                end
+            })
+            return
+        end
+
+        -- 仅对当前buffer设置按键映射
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ff', ':%!npx lua-fmt --use-tabs --stdin<CR>', {noremap = true, silent = true})
+
+            vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ff', '', {
+                noremap = true,
+                silent = true,
+                callback = function()
+                    local cursor_pos = vim.api.nvim_win_get_cursor(0)
+                    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+                    local formatted = vim.fn.systemlist(':%!npx lua-fmt --use-tabs --stdin<CR>', lines)
+                    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
+                    vim.api.nvim_win_set_cursor(0, cursor_pos)
+                end
+            })
+    end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = {'c', 'cpp', 'h', 'hpp', 'json'},
+    callback = function(args)
+        local bufnr = args.buf
+        local config_path = vim.fn.expand('$HOME/.config/nvim/.clangformat')
+
+        if vim.fn.executable('clang-format') == 0 then
+            vim.notify('clang-format not found! Please install clang-format', vim.log.levels.ERROR)
+            return
+        end
+
+        if vim.fn.filereadable(config_path) == 0 then
+            vim.notify('clang-format config not found at: '..config_path, vim.log.levels.WARN)
+        else
+            vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ff', '', {
+                noremap = true,
+                silent = true,
+                callback = function()
+                    local cursor_pos = vim.api.nvim_win_get_cursor(0)
+                    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+                    local formatted = vim.fn.systemlist('clang-format -style=file:'..vim.fn.shellescape(config_path), lines)
+                    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
+                    vim.api.nvim_win_set_cursor(0, cursor_pos)
+                end
+            })
+        end
+    end,
+})
 
 
 ----------------------------------------------------------------
