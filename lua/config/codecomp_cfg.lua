@@ -274,7 +274,7 @@ function M:setup_codecomp()
 								description = "Choose our"
 							}
 						},
-						adapter = "dskfee"
+						adapter = "qwen_deep"
 					},
 					cmd = {
 						adapter = 'dskfee'

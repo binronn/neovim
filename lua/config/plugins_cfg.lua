@@ -488,7 +488,7 @@ end
 ------------------------------------------
 function M.bufferline_init()
 	nmap("<leader>fc", ":BufferLinePick<CR>")
-	nmap("<leader>fD", ":BufferLinePickClose<CR>")
+	nmap("<leader>fd", ":BufferLinePickClose<CR>")
 	local bufl = require('bufferline')
 	-- local hex = require('bufferline.colors').get_color
 

@@ -45,7 +45,7 @@ nmap("<leader>fs", ":w<CR>")
 nmap("<leader>fS", ":wa<CR>")
 
 -- 关闭当前文件
-nmap("<leader>fd", ": bp | bd! #<CR>")
+-- nmap("<leader>fd", ": bp | bd! #<CR>")
 --nmap('<leader>fo',':e ') -- 异常
 vim.cmd "nmap <leader>fo :e "
 
@@ -56,33 +56,39 @@ nmap("<leader>wQ", ":wqa<CR>")
 -- 文件不保存退出
 -- nmap("<leader>q", ":q<CR>")
 -- 关闭窗口或buffer，并根据allowed_filetypes判定是否退出vim
+
+----------------------------------------------------------------
+-- 当只剩下 allowed_filetypes 里的窗口时，自动退出
+----------------------------------------------------------------
 nmap("<leader>fq", function()
-    local allowed_filetypes = {"qf", "aerial", "NvimTree", "codecompanion", "notify"}  -- 可自定义允许的文件类型列表
-    local current_buf = vim.api.nvim_get_current_buf()
+    local allowed_filetypes = {"qf", "aerial", "NvimTree", "codecompanion", "notify", "cmp_menu"}
     local has_other_buffers = false
     
-    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-        if buf ~= current_buf and vim.api.nvim_buf_is_loaded(buf) then
-            local ft = vim.api.nvim_buf_get_option(buf, "filetype")
-            if not vim.tbl_contains(allowed_filetypes, ft) then
-                has_other_buffers = true
-                break
-            end
-        end
+    local current_win = vim.api.nvim_get_current_win()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if win ~= current_win then
+			local buf = vim.api.nvim_win_get_buf(win)
+			local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+			if not vim.tbl_contains(allowed_filetypes, ft) then
+				has_other_buffers = true
+				break
+			end
+		end
     end
     
     if not has_other_buffers then
         vim.cmd("qa!")
     else
-		if vim.bo.buftype ~= '' then
-			vim.cmd('q')
-		else
-			vim.cmd("bdelete")
-		end
+		local success, err = pcall(vim.cmd, 'q')
+        if success then
+            return
+        else
+            vim.cmd("bp | bd! #")
+        end
     end
 end)
 nmap("qw", "<cmd>lua if vim.bo.buftype ~= '' then vim.cmd('q') end<CR>")
-nmap("<leader>fQ", ":q!<CR>")
+nmap("<leader>fQ", ":qa!<CR>")
 
 -- 上/下一个 buffer
 nmap("<leader>fn", ":bn<CR>")

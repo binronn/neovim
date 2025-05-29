@@ -153,7 +153,7 @@ local function reset_clangd(cmd)
 			-- )
             vim.keymap.set("n", "<leader>hS", switch_file_and_search, opts) -- 假设 switch_file_and_search 已经被定义
             vim.keymap.set("n", "<leader>hs", ':ClangdSwitchSourceHeader<CR>', opts)
-			vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts) -- 弹出参数提示
+			vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts) -- 弹出参数提示
 			-- vim.api.nvim_create_autocmd('CursorHoldI', { -- 自动弹出参数提示
 				--     buffer = bufnr,
 				--     callback = function()
@@ -189,7 +189,7 @@ lspconfig.pyright.setup(
 			vim.keymap.set("n", "<leader>rn", "<Cmd>lua vim.lsp.buf.rename()<CR>", opts)
 			vim.keymap.set("n", "<leader>ff", "<Cmd>lua vim.lsp.buf.format()<CR>", opts)
 			vim.keymap.set("n", "<leader>fx", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-			vim.keymap.set("i", "<C-j>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts) -- 弹出参数提示
+			vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts) -- 弹出参数提示
 		end,
 		settings = {
 			python = {
@@ -328,7 +328,7 @@ cmp.setup({
 			end
 		end, { 'i', 's' }),
 
-		['<C-j>'] = cmp.mapping(function(fallback)
+		['<M-j>'] = cmp.mapping(function(fallback)
 			if cmp.visible() then
 				-- 调用 luasnip.lsp_expand
 				cmp.confirm({select = true,})
@@ -339,7 +339,7 @@ cmp.setup({
 			end
 		end, {'i', 's'}),
 
-		['<C-y>'] = cmp.mapping(function(fallback)
+		['<M-h>'] = cmp.mapping(function(fallback)
 			if luasnip.jumpable(-1) then
 				luasnip.jump(-1) -- 跳到luasnip的上一个插入点
 			else
@@ -347,7 +347,7 @@ cmp.setup({
 			end
 		end, { 'i', 's'}),
 
-		['<C-e>'] = cmp.mapping(function(fallback)
+		['<M-l>'] = cmp.mapping(function(fallback)
 			if luasnip.jumpable(1) then
 				luasnip.jump(1) -- 跳到luasnip的下一个插入点
 			else

@@ -151,34 +151,6 @@ vim.api.nvim_create_autocmd(
 	}
 )
 
-----------------------------------------------------------------
--- 当只剩下 NvimTree 窗口时，自动退出
-----------------------------------------------------------------
-nmap("<leader>fq", function()
-    local allowed_filetypes = {"qf", "aerial", "NvimTree", "codecompanion", "notify"}  -- 可自定义允许的文件类型列表
-    local current_buf = vim.api.nvim_get_current_buf()
-    local has_other_buffers = false
-    
-    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-        if buf ~= current_buf and vim.api.nvim_buf_is_loaded(buf) then
-            local ft = vim.api.nvim_buf_get_option(buf, "filetype")
-            if not vim.tbl_contains(allowed_filetypes, ft) then
-                has_other_buffers = true
-                break
-            end
-        end
-    end
-    
-    if not has_other_buffers then
-        vim.cmd("qa!")
-    else
-		if vim.bo.buftype ~= '' then
-			vim.cmd('q')
-		else
-			vim.cmd("bdelete")
-		end
-    end
-end)
 
 ------------------------------------------------------------------------------------------
 -- 格式化代码 null-ls
@@ -339,15 +311,19 @@ vim.api.nvim_create_autocmd('FileType', {
     pattern = {'c', 'cpp', 'h', 'hpp', 'json'},
     callback = function(args)
         local bufnr = args.buf
-        local config_path = vim.fn.expand('$HOME/.config/nvim/.clangformat')
+        local config_path = vim.fn.expand('$HOME/.config/nvim/.clang-format')
+        local cwd_config = vim.g.workspace_dir2()..'/.clang-format'
 
         if vim.fn.executable('clang-format') == 0 then
             vim.notify('clang-format not found! Please install clang-format', vim.log.levels.ERROR)
             return
         end
 
-        if vim.fn.filereadable(config_path) == 0 then
-            vim.notify('clang-format config not found at: '..config_path, vim.log.levels.WARN)
+        local effective_config = vim.fn.filereadable(cwd_config) == 1 and cwd_config or
+                               vim.fn.filereadable(config_path) == 1 and config_path or nil
+
+        if not effective_config then
+            vim.notify('No clang-format config found (checked: '..cwd_config..' and '..config_path..')', vim.log.levels.WARN)
         else
             vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ff', '', {
                 noremap = true,
@@ -355,7 +331,7 @@ vim.api.nvim_create_autocmd('FileType', {
                 callback = function()
                     local cursor_pos = vim.api.nvim_win_get_cursor(0)
                     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-                    local formatted = vim.fn.systemlist('clang-format -style=file:'..vim.fn.shellescape(config_path), lines)
+                    local formatted = vim.fn.systemlist('clang-format -style=file:'..vim.fn.shellescape(effective_config), lines)
                     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
                     vim.api.nvim_win_set_cursor(0, cursor_pos)
                 end

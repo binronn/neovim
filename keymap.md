@@ -7,11 +7,11 @@
 |----------------|------------------------------|
 | `<leader>fs`   | 保存当前buffer               |
 | `<leader>fS`   | 保存所有buffer               |
-| `<leader>fd`   | 关闭当前buffer               |
+| `<leader>fd`   | 关闭当前buffer(弃用)         |
 | `<leader>fo`   | 打开文件                     |
 | `<leader>wq`   | 保存并退出当前文件           |
 | `<leader>wQ`   | 保存并退出所有文件           |
-| `<leader>fq`   | 退出当前buffer               |
+| `<leader>fq`   | 退出当前buffer/窗口          |
 | `qw`           | 退出当前非buffer窗口         |
 | `<leader>fQ`    | 强制退出当前文件            |
 | `<leader>fn`   | 切换到下一个 buffer          |
@@ -50,14 +50,18 @@
 | `gl`           | 查看文档符号                 |
 | `ga`           | 查看工作区符号               |
 | `<C-t>`        | 查看工作区符号               |
-| `K`            | 显示悬停信息                 |
+| `K`            | 显示函数签名                 |
+| `<M-k>`        | 显示函数签名                 |
 | `<leader>rn`   | 重命名符号                   |
 | `<leader>ff`   | 格式化文件                   |
 | `<leader>fx`   | 执行代码操作                 |
 | `<leader>wf`   | 列出工作区文件夹             |
 | `<leader>hs`   | 切换头文件/源文件并搜索      |
-| `<C-j>`        | 显示函数签名帮               |
-| `<C-j>`        | snip补全，默认值轮询         |
+| `<M-j>`        | 弹出补全窗口               |
+| `<M-h>`        | luasnip上一个输入点          |
+| `<M-l>`        | luasnip下一个输入点          |
+| `<M-k>`        | luasnip下一个输入点          |
+| `<M-j>`        | snip补全，默认值轮询         |
 
 ## 调试快捷键
 
@@ -140,7 +144,7 @@
 
 | 快捷键         | 功能描述                     |
 |----------------|------------------------------|
-| `<leader>fD`   | 选择并关闭buffer(bufferline) |
+| `<leader>fd`   | 选择并关闭buffer(bufferline) |
 | `<leader>fc`   | 选择并打开buffer(bufferline) |
 
 ## CMake 快捷键
