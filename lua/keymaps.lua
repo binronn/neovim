@@ -60,32 +60,83 @@ nmap("<leader>wQ", ":wqa<CR>")
 ----------------------------------------------------------------
 -- 当只剩下 allowed_filetypes 里的窗口时，自动退出
 ----------------------------------------------------------------
+-- nmap("<leader>fq", function()
+--     local allowed_filetypes = {"qf", "aerial", "NvimTree", "codecompanion", "notify", "cmp_menu"}
+--     local current_win = vim.api.nvim_get_current_win()
+--     local has_other_buffers = false
+
+
+--     for _, win in ipairs(vim.api.nvim_list_bufs()) do
+-- 		local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+-- 		if not vim.tbl_contains(allowed_filetypes, ft) then
+-- 			has_other_buffers = true
+-- 			break
+-- 		end
+-- 	end
+
+-- 	if not has_other_buffers then
+-- 		for _, win in ipairs(vim.api.nvim_list_wins()) do
+-- 			if win ~= current_win then
+-- 				local buf = vim.api.nvim_win_get_buf(win)
+-- 				local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+-- 				if not vim.tbl_contains(allowed_filetypes, ft) then
+-- 					has_other_buffers = true
+-- 					break
+-- 				end
+-- 			end
+-- 		end
+-- 	end
+--     
+--     if not has_other_buffers then
+--         vim.cmd("qa!")
+--     else
+-- 		local success, err = pcall(vim.cmd, 'q')
+--         if success then
+--             return
+--         else
+--             vim.cmd("bp | bd! #")
+--         end
+--     end
+-- end)
+
+
 nmap("<leader>fq", function()
-    local allowed_filetypes = {"qf", "aerial", "NvimTree", "codecompanion", "notify", "cmp_menu"}
-    local has_other_buffers = false
-    
-    local current_win = vim.api.nvim_get_current_win()
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-		if win ~= current_win then
-			local buf = vim.api.nvim_win_get_buf(win)
-			local ft = vim.api.nvim_buf_get_option(buf, "filetype")
-			if not vim.tbl_contains(allowed_filetypes, ft) then
-				has_other_buffers = true
-				break
+	----------------------------------------------------------------------------------------------------
+	--- 这里需要确保 quickfix 窗口不会出现在缓冲区列表里，详见 autocmd.lua 中 buflist_filter 部分
+	----------------------------------------------------------------------------------------------------
+	-- 如果当前窗口是插件窗口
+	-- buftype == '' 则表示为普通文件
+	----------------------------------------------------------------------------------------------------
+	if vim.bo.buftype ~= '' then -- or vim.tbl_contains({'nofile'}, vim.bo.buftype) then
+		local s, e = pcall(vim.cmd, "close")
+		if not s then
+			vim.cmd('qa!')
+		end
+	else
+		-- 若两个窗口都打开了普通文件，那么当前处于分屏状态
+		local current_win = vim.api.nvim_get_current_win()
+		for _, win in ipairs(vim.api.nvim_list_wins()) do
+			if win ~= current_win then
+				local buf = vim.api.nvim_win_get_buf(win)
+				local bt = vim.api.nvim_buf_get_option(buf, "buftype")
+				if bt == '' then
+					vim.cmd('close') -- 关闭分屏窗口
+					return
+				end
 			end
 		end
-    end
-    
-    if not has_other_buffers then
-        vim.cmd("qa!")
-    else
-		local success, err = pcall(vim.cmd, 'q')
-        if success then
-            return
-        else
-            vim.cmd("bp | bd! #")
-        end
-    end
+
+		local s, e = pcall(vim.cmd, "bp")
+		if not s then
+			vim.cmd("qa!")
+		end
+
+		local s, e = pcall(vim.cmd, 'bd! #')
+		if not s then
+			vim.cmd("qa!")
+		end
+
+	end
 end)
 nmap("qw", "<cmd>lua if vim.bo.buftype ~= '' then vim.cmd('q') end<CR>")
 nmap("<leader>fQ", ":qa!<CR>")

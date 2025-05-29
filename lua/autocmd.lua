@@ -166,21 +166,34 @@ vim.api.nvim_create_autocmd(
 -- )
 
 ----------------------------------------------------------------
--- 设置Windows路径分隔符
+-- 设置Windows路径分隔符 && buflist_filter
 ----------------------------------------------------------------
 vim.api.nvim_create_autocmd(
 	"BufWinEnter",
 	{
 		pattern = "*",
 		callback = function()
+			----------------------------------------------------------------
+			-- buflist_filter quickfix窗口不会出现在缓冲区列表里, bp bn 将不会滚动到quikfix窗口
+			----------------------------------------------------------------
+			---
+			if vim.bo.buftype == 'quickfix' then
+				vim.bo.buflisted = false
+			end
+
+			----------------------------------------------------------------
+			-- 解决Windows下路径分隔符 \\ / 不一致的问题
+			----------------------------------------------------------------
+			---
 			vim.schedule(
 				function()
 					if vim.g.is_win32 == 1 then
-						vim.opt.shellslash = true -- 解决Windows下路径分隔符 \\ / 不一致的问题
+						vim.opt.shellslash = true
 					end
 					vim.opt.laststatus = 3
 				end
 			)
+
 		end
 	}
 )
