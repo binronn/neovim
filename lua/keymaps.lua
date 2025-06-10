@@ -109,9 +109,7 @@ nmap("<leader>fq", function()
 	----------------------------------------------------------------------------------------------------
 	if vim.bo.buftype ~= '' then -- or vim.tbl_contains({'nofile'}, vim.bo.buftype) then
 		local s, e = pcall(vim.cmd, "close")
-		if not s then
-			vim.cmd('qa!')
-		end
+		if not s then vim.cmd('qa!') end
 	else
 		-- 若两个窗口都打开了普通文件，那么当前处于分屏状态
 		local current_win = vim.api.nvim_get_current_win()
@@ -126,15 +124,13 @@ nmap("<leader>fq", function()
 			end
 		end
 
+		if vim.fn.bufnr('#') == -1 then vim.cmd('qa!') end
+
 		local s, e = pcall(vim.cmd, "bp")
-		if not s then
-			vim.cmd("qa!")
-		end
+		if not s then vim.cmd("qa!") end
 
 		local s, e = pcall(vim.cmd, 'bd! #')
-		if not s then
-			vim.cmd("qa!")
-		end
+		if not s then vim.cmd("qa!") end
 
 	end
 end)

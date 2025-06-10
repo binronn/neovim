@@ -511,7 +511,8 @@ return {
 			nmap2("<leader>cs", ":CodeCompanionChat ")
 			nmap("<leader>ca", ":CodeCompanionActions<CR>")
 
-			cmap("CC", "CodeCompanion", {noremap = true, silent = false})
+			-- cmap("CC", "CodeCompanion", {noremap = true, silent = false})
+			vim.cmd([[cab cc CodeCompanion]]) -- press cc<spcace>
 		end
 	},
 	------------------------------------------

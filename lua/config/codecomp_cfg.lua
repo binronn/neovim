@@ -102,6 +102,24 @@ function M:setup_codecomp()
 				language = "中文",
 			},
 			adapters = {
+				dskfeer1 = function()
+					return require("codecompanion.adapters").extend(
+						"openai_compatible",
+						{
+							name = "dskfeer1",
+							env = {
+								url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43410", -- 使用提取出的IP地址
+								api_key = vim.fn.getenv("DSK_FEE_TKN"), 
+								chat_url = "/v1/chat/completions",
+							},
+							schema = {
+								model = {
+									default = "deepseek-think",
+								}
+							}
+						}
+					)
+				end,
 				dskfee = function()
 					return require("codecompanion.adapters").extend(
 						"openai_compatible",
@@ -114,7 +132,7 @@ function M:setup_codecomp()
 							},
 							schema = {
 								model = {
-									default = "deepseek_chat",
+									default = "deepseek-chat",
 								}
 							}
 						}
@@ -274,7 +292,7 @@ function M:setup_codecomp()
 								description = "Choose our"
 							}
 						},
-						adapter = "qwen_deep"
+						adapter = "dskfeer1"
 					},
 					cmd = {
 						adapter = 'dskfee'
