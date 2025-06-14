@@ -100,17 +100,17 @@ nmap("<leader>wQ", ":wqa<CR>")
 -- end)
 
 
-nmap("<leader>fq", function()
+nmap("qw", function()
 	----------------------------------------------------------------------------------------------------
 	--- 这里需要确保 quickfix 窗口不会出现在缓冲区列表里，详见 autocmd.lua 中 buflist_filter 部分
 	----------------------------------------------------------------------------------------------------
 	-- 如果当前窗口是插件窗口
 	-- buftype == '' 则表示为普通文件
 	----------------------------------------------------------------------------------------------------
-	if vim.bo.buftype ~= '' then -- or vim.tbl_contains({'nofile'}, vim.bo.buftype) then
-		local s, e = pcall(vim.cmd, "close")
-		if not s then vim.cmd('qa!') end
-	else
+	-- if vim.bo.buftype ~= '' then -- or vim.tbl_contains({'nofile'}, vim.bo.buftype) then
+	-- 	local s, e = pcall(vim.cmd, "close")
+	-- 	if not s then vim.cmd('qa!') end
+	-- else
 		-- 若两个窗口都打开了普通文件，那么当前处于分屏状态
 		local current_win = vim.api.nvim_get_current_win()
 		for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -124,17 +124,16 @@ nmap("<leader>fq", function()
 			end
 		end
 
-		if vim.fn.bufnr('#') == -1 then vim.cmd('qa!') end
+		-- if vim.fn.bufnr('#') == -1 then vim.cmd('qa!') end
 
 		local s, e = pcall(vim.cmd, "bp")
-		if not s then vim.cmd("qa!") end
+		if not s then return end
 
 		local s, e = pcall(vim.cmd, 'bd! #')
-		if not s then vim.cmd("qa!") end
-
-	end
+	-- end
 end)
-nmap("qw", "<cmd>lua if vim.bo.buftype ~= '' then vim.cmd('q') end<CR>")
+-- nmap("qw", "<cmd>lua if vim.bo.buftype ~= '' then vim.cmd('q') end<CR>")
+nmap("<leader>fq", ":qa!<CR>")
 nmap("<leader>fQ", ":qa!<CR>")
 
 -- 上/下一个 buffer
