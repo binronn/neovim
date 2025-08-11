@@ -48,14 +48,14 @@ local g_capabilities = require('cmp_nvim_lsp').default_capabilities()
 -- 	  valueSet = { 0 }
 --   }
 -- C++ 配置 (clangd)
--- local clangd_default = {
--- 			"clangd", 
--- 			"--background-index=true",
--- 			"--clang-tidy",
--- 			"--compile-commands-dir=build",
--- 			"--completion-style=detailed",  -- 增强补全信息
--- 			-- "--header-insertion=never"      -- 禁用自动头文件插入
--- 		}
+local clangd_default = {
+			"clangd", 
+			"--background-index=true",
+			"--clang-tidy",
+			"--compile-commands-dir=build",
+			"--completion-style=detailed",  -- 增强补全信息
+			-- "--header-insertion=never"      -- 禁用自动头文件插入
+		}
 -- lua
 local fmt = [[
 {
@@ -168,7 +168,7 @@ function M.reset_clangdex()
 	local cmd = require('config.compiles_cfg').clangd_param
 	
 	reset_clangd(cmd)
-	vim.cmd(':LspRestart clangd')
+	vim.cmd(':LspRestart')
 end
 M.reset_clangdex()
 
@@ -379,7 +379,8 @@ cmp.setup({
 
 				vim_item.word = abbr
 			else
-				vim_item.word = vim_item.word:gsub("%W*$", "") -- 删除补全内容尾部的非字母或数字
+				-- vim_item.word = vim_item.word:gsub("%W*$", "") -- 删除补全内容尾部的非字母或数字
+				vim_item.word = vim_item.word:gsub("[^%w{}%=]*$", "")
 			end
 
 			if vim_item.menu and #vim_item.menu > 60 then -- 提示信息中的参数长度限制

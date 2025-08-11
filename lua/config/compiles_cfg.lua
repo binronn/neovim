@@ -63,6 +63,8 @@ local function set_compiler_paths(clangd_path)
     local gcc_cc = clangd_path .. '\\bin\\gcc.exe'
     local clang_cxx = clangd_path .. '\\bin\\clang++.exe'
     local gcc_cxx = clangd_path .. '\\bin\\g++.exe'
+    local clangd = clangd_path .. '\\bin\\clangd.exe'
+
 
     -- Set C compiler path
     if file_exists(clang_cc) then
@@ -98,6 +100,7 @@ local function update_clang_llvm_version(clangd_path)
     end
     
     M.clangd_param = vim.deepcopy(clangd_param_base)
+    M.clangd_param[1] = clangd_path .. '\\bin\\clangd.exe'
     table.insert(M.clangd_param, '--query-driver=' .. query_driver)
 
     -- Update LSP configuration

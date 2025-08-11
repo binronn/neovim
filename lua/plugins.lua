@@ -278,6 +278,7 @@ return {
 	},
 	{
 		"rcarriga/nvim-notify", -- 通知窗口
+		-- commit = 'b5825cf9ee881dd8e43309c93374ed5b87b7a896',
 		event = { "VimEnter" },
 		config = pcfg.notify_init
 	},
@@ -291,7 +292,7 @@ return {
 	},
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
-		commit = '2149fc2009d1117d58e86e56836f70c969f60a82',
+		-- commit = '2149fc2009d1117d58e86e56836f70c969f60a82',
 		event = {"VimEnter"},
 		config = pcfg.gitsigns_init
 	},
@@ -432,15 +433,16 @@ return {
 		end
 	},
 	-- CMAKE 插件
-	{
-		"Civitasv/cmake-tools.nvim",
-		ft = {"cmake", "cpp", "c"}, -- 指定需要延迟加载的文件类型
-		dependencies = {
-			"nvim-lua/plenary.nvim", -- 依赖插件
-			"mfussenegger/nvim-dap" -- 调试支持
-		},
-		config = pcfg.cmake_tools_init
-	},
+	-- {
+	-- 	"Civitasv/cmake-tools.nvim",
+	-- 	commit = '591ae37fc5494677e929118f0a182d2b61fe1af1',
+	-- 	ft = {"cmake", "cpp", "c"}, -- 指定需要延迟加载的文件类型
+	-- 	dependencies = {
+	-- 		"nvim-lua/plenary.nvim", -- 依赖插件
+	-- 		"mfussenegger/nvim-dap" -- 调试支持
+	-- 	},
+	-- 	config = pcfg.cmake_tools_init
+	-- },
 	-- 会话保存与恢复
 	-- {
 	-- 	"Shatur/neovim-session-manager",

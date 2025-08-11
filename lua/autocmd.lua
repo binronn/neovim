@@ -7,117 +7,145 @@ local nmap = keymap.nmap
 ----------------------------------------------------------------
 --- 构建cpp项目函数
 ----------------------------------------------------------------
+local function get_compiler_config()
+    return {
+        cc = require('config.compiles_cfg').cc_path,
+        cxx = require('config.compiles_cfg').cxx_path
+    }
+end
+
+local function get_build_command(is_win32, build_dir, cmd)
+    local make_cmd = is_win32 == 1 and 'mingw32-make' or 'make'
+    return string.format('cd "%s" && %s', build_dir, cmd:gsub("make", make_cmd))
+end
+
+local function setup_cmake_build(build_dir, is_debug, is_win32, compile_command)
+    local param = is_debug and ' -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"' or ' -DCMAKE_BUILD_TYPE=Release' 
+    
+    local compilers = get_compiler_config()
+    local cmake_pam = is_win32 == 0 
+        and ('-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ' .. param)
+        or (' -G "MinGW Makefiles" -DCMAKE_C_COMPILER=' .. compilers.cc .. 
+            ' -DCMAKE_CXX_COMPILER=' .. compilers.cxx .. param)
+
+    local cmd = 'cmake ' .. cmake_pam .. ' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..'
+    if compile_command then
+        cmd = cmd .. ' && make'
+    end
+    
+    return get_build_command(is_win32, build_dir, cmd)
+end
+
+
+function RunCmdHiddenWithPause(command)
+
+    -- Construct the full command to start a new, minimized cmd window that runs the command and then pauses.
+    local full_command = 'cmd.exe /c start /min cmd.exe /c "'..command..' & pause"'
+
+    vim.fn.jobstart(full_command, {
+        detach = true, -- Crucial for preventing resource leaks.
+        on_exit = function(_, code)
+            if code == 0 then
+                print("Build command completed successfully.")
+            else
+                print("Build command failed with exit code: " .. code)
+            end
+        end
+    })
+end
+
+
+function RunCmdHiddenWithPause2(command)
+    -- 构造完整的cmd命令（添加pause）
+    local full_command = 'start "" /min cmd /c "'..command..' & pause"'
+    
+    vim.fn.system(full_command)
+    
+    -- vim.defer_fn(function()
+    --     print(command)
+    -- end, 1)
+end
+
 function build_project(compile_command)
-	local cmd = ""
-	-- 获取当前缓冲区的 LSP 客户端
-	local clients = vim.lsp.get_active_clients()
-	if #clients == 0 then
-		print("No LSP client attached.")
-		return
-	end
+    local is_debug = vim.g.is_cmake_debug
+    local wsdir = vim.g.workspace_dir2()
+    local is_win32 = vim.g.is_win32 == 1
 
-	local wsdir = vim.g.workspace_dir2()
-	local cmake_lists_path = wsdir .. "/CMakeLists.txt"
-	local makefile_path = wsdir .. "/Makefile"
-	local current_file = '"' .. vim.fn.expand("%:p") .. '"' -- 获取当前文件的完整路径
-	local file_extension = vim.fn.expand("%:e") -- 获取当前文件的扩展名
-	local build_makefile_path = wsdir .. "/build/Makefile"
+    -- Check build systems
+    local cmake_path = wsdir .. "/CMakeLists.txt"
+    local makefile_path = wsdir .. "/Makefile"
+	local build_dir = is_debug and (wsdir .. "/build") or (wsdir .. "/build_release")
+    local build_makefile = build_dir .. "/Makefile"
 
-	local build_dir = wsdir .. "/build"
+    local function run_command(cmd)
+		RunCmdHiddenWithPause(cmd)
+		-- require('FTerm').run(cmd)
+        -- local width = math.floor(vim.o.columns * 0.3)
+        -- local height = math.floor(vim.o.lines * 0.3)
+        -- 
+        -- local buf = vim.api.nvim_create_buf(false, true)
+        -- local win = vim.api.nvim_open_win(buf, true, {
+        --     relative = 'editor',
+        --     width = width,
+        --     height = height,
+        --     col = (vim.o.columns - width) / 2,
+        --     row = (vim.o.lines - height) / 2,
+        --     style = 'minimal',
+        --     border = 'single'
+        -- })
+        -- 
+        -- vim.api.nvim_buf_set_keymap(buf, 'n', 'q', ':q<CR>', {noremap = true, silent = true})
+        -- vim.fn.termopen(cmd)
+        -- vim.cmd('startinsert')
+    end
 
-	if vim.fn.isdirectory(build_dir) == 1 and vim.fn.filereadable(build_makefile_path) == 1 and compile_command == true then
-		cmd = "cd " .. build_dir .. "&& make"
-		vim.cmd("AsyncRun " .. cmd)
-	elseif vim.fn.filereadable(cmake_lists_path) == 1 then
-		-- 如果 CMakeLists.txt 存在
-		print("CMakeLists.txt found.")
+    if compile_command and vim.fn.isdirectory(build_dir) == 1 then
+        vim.fn.delete(build_dir, "rf")
+    end
 
-		-- 检查 build 目录是否存在，如果不存在则创建
-		local build_dir = wsdir .. "/build"
-		if vim.fn.isdirectory(build_dir) == 0 then
-			vim.fn.mkdir(build_dir, "p")
-			print("Created build directory: " .. build_dir)
-		end
-
-		local cmake_pam = ""
-		if vim.fn.has("unix") == 1 then
-			cmake_pam =
-				'-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"'
-		else
-			cmake_pam =
-				' -G "MinGW Makefiles"'..
-				' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path ..
-				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path .. 
-				' -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"' ..
-				' -DCMAKE_BUILD_TYPE=Debug'
-		end
-		-- '-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug'
-		-- 在 Fterm 中执行 cmake 命令
-		if compile_command == true then
-			if vim.fn.has("unix") == 1 then
-				cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make"
-			else
-				cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && mingw32-make"
-				-- cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && ninja"
-			end
-			-- fterm.run(cmd)
-			vim.cmd("AsyncRun " .. cmd)
-		else
-			cmd = 'cd "' .. build_dir .. '" && cmake ' .. cmake_pam .. " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .."
-			vim.cmd("AsyncRun " .. cmd)
-		end
-
-		-- 将生成的可执行文件目录保存到全局变量中
-		vim.g.build_dir = build_dir
-		print("CMake build directory saved to global variable: " .. vim.g.build_dir)
-	elseif vim.fn.filereadable(makefile_path) == 1 then
-		-- 如果 Makefile 存在
-		print("Makefile found.")
-
-		-- 在 Fterm 中执行 make 命令
-		if compile_command == true then
-			cmd = 'cd "' .. wsdir .. '" && bear --append -o compile_commands.json make'
-			vim.cmd("AsyncRun " .. cmd)
-		else
-			cmd = 'cd "' .. wsdir .. '" && make'
-			-- fterm.run(cmd)
-			vim.cmd("AsyncRun " .. cmd)
-		end
-
-		-- 将生成的可执行文件目录保存到全局变量中
-		vim.g.build_dir = wsdir
-		print("Make build directory saved to global variable: " .. vim.g.build_dir)
-	else
-		-- 如果既没有 CMakeLists.txt 也没有 Makefile
-		print("No CMakeLists.txt or Makefile found. Compiling directly.")
-
-		-- 根据文件类型选择编译器
-		local compiler = ""
-		local output_file = '"' .. wsdir .. "/main" .. '"'
-		if file_extension == "cpp" then
-			compiler = require('config.compiles_cfg').cxx_path .. " -g "
-		elseif file_extension == "c" then
-			compiler = require('config.compiles_cfg').cc_path .. " -g "
-		else
-			print("Unsupported file type. Only .c and .cpp files are supported.")
-			return
-		end
-
-		-- 在 Fterm 中执行编译命令
-		local cmd = compiler .. " " .. current_file .. " -o " .. output_file
-		vim.cmd("AsyncRun " .. cmd)
-
-		-- 将生成的可执行文件目录保存到全局变量中
-		vim.g.build_dir = wsdir
-		print("Build directory saved to global variable: " .. vim.g.build_dir)
-	end
+    if vim.fn.isdirectory(build_dir) == 1 and vim.fn.filereadable(build_makefile) == 1 and compile_command then
+        run_command(get_build_command(is_win32, build_dir, "make"))
+    elseif vim.fn.filereadable(cmake_path) == 1 then
+        if vim.fn.isdirectory(build_dir) == 0 then
+            vim.fn.mkdir(build_dir, "p")
+        end
+        run_command(setup_cmake_build(build_dir, is_debug, is_win32, compile_command))
+        vim.g.build_dir = build_dir
+    elseif vim.fn.filereadable(makefile_path) == 1 then
+        local cmd = compile_command and 'bear --append -o compile_commands.json make' or 'make'
+        run_command(get_build_command(is_win32, wsdir, cmd))
+        vim.g.build_dir = wsdir
+    else
+        local file = vim.fn.expand("%:p")
+        local ext = vim.fn.expand("%:e")
+        local compilers = get_compiler_config()
+        
+        if ext == "cpp" then
+            run_command(compilers.cxx .. ' -g "' .. file .. '" -o "' .. wsdir .. '/main"')
+        elseif ext == "c" then
+            run_command(compilers.cc .. ' -g "' .. file .. '" -o "' .. wsdir .. '/main"')
+        else
+            print("Unsupported file type. Only .c and .cpp files are supported.")
+            return
+        end
+        vim.g.build_dir = wsdir
+    end
 end
 
 function build_project_bin()
+	if vim.g.is_cmake_debug == nil then
+		vim.g.is_cmake_debug = false
+	end
 	build_project(true)
 end
 
+function build_project_release_sym()
+	vim.g.is_cmake_debug = false
+	build_project(false)
+end
+
 function build_project_sym()
+	vim.g.is_cmake_debug = true
 	build_project(false)
 end
 
@@ -145,8 +173,32 @@ vim.api.nvim_create_autocmd(
 	{
 		pattern = {"*.h", "*.hpp", "*.cxx", "*.c", "*.cpp"}, -- 匹配的文件类型
 		callback = function()
-			vim.keymap.set("n", "<leader>wbd", build_project_bin, {noremap = true, silent = true, buffer = true})
-			vim.keymap.set("n", "<leader>wbg", build_project_sym, {noremap = true, silent = true, buffer = true})
+
+			vim.api.nvim_create_user_command(
+				"Cb",
+				function()
+					build_project_bin()
+				end,
+				{bang = true}
+			)
+
+			vim.api.nvim_create_user_command(
+				"Cg",
+				function()
+					build_project_sym()
+				end,
+				{bang = true}
+			)
+
+			vim.api.nvim_create_user_command(
+				"Cgr",
+				function()
+					build_project_release_sym()
+				end,
+				{bang = true}
+			)
+			-- vim.keymap.set("n", "<leader>wbd", build_project_bin, {noremap = true, silent = true, buffer = true})
+			-- vim.keymap.set("n", "<leader>wbg", build_project_sym, {noremap = true, silent = true, buffer = true})
 		end
 	}
 )
@@ -324,7 +376,8 @@ vim.api.nvim_create_autocmd('FileType', {
     pattern = {'c', 'cpp', 'h', 'hpp', 'json'},
     callback = function(args)
         local bufnr = args.buf
-        local config_path = vim.fn.expand('$HOME/.config/nvim/.clang-format')
+        -- local config_path = vim.fn.expand('$HOME/.config/nvim/.clang-format')
+		local config_path = vim.fn.stdpath("config") .. "/.clang-format"
         local cwd_config = vim.g.workspace_dir2()..'/.clang-format'
 
         if vim.fn.executable('clang-format') == 0 then
