@@ -18,7 +18,7 @@ local function get_build_command(build_dir, cmd)
     -- local make_cmd = vim.g.is_win32 == 1 and 'mingw32-make' or 'make'
     -- return string.format('cd "%s" && %s', build_dir, cmd:gsub("make", make_cmd))
 	
-    return string.format('cd "%s" && make', build_dir)
+    return string.format('cd "%s" && %s', build_dir, cmd)
 end
 
 local function setup_cmake_build(build_dir, compile_command)
@@ -81,23 +81,6 @@ function build_project(compile_command)
     local function run_command(cmd)
 		-- RunCmdHiddenWithPause(cmd)
 		require('FTerm').run(cmd)
-        -- local width = math.floor(vim.o.columns * 0.3)
-        -- local height = math.floor(vim.o.lines * 0.3)
-        -- 
-        -- local buf = vim.api.nvim_create_buf(false, true)
-        -- local win = vim.api.nvim_open_win(buf, true, {
-        --     relative = 'editor',
-        --     width = width,
-        --     height = height,
-        --     col = (vim.o.columns - width) / 2,
-        --     row = (vim.o.lines - height) / 2,
-        --     style = 'minimal',
-        --     border = 'single'
-        -- })
-        -- 
-        -- vim.api.nvim_buf_set_keymap(buf, 'n', 'q', ':q<CR>', {noremap = true, silent = true})
-        -- vim.fn.termopen(cmd)
-        -- vim.cmd('startinsert')
     end
 
     -- if compile_command and vim.fn.isdirectory(build_dir) == 1 then
