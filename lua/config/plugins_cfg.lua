@@ -1009,6 +1009,7 @@ function M.nvim_tree_init()
 		{
 			update_focused_file = {
 				enable = false -- 打开文件时不要聚焦到 nvim-tree
+				debounce_delay = 150 -- 延迟 150ms 更新，防止抖动
 			},
 			-- 禁用 netrw（Neovim 的默认文件浏览器）
 			disable_netrw = true,
@@ -1060,9 +1061,9 @@ function M.nvim_tree_init()
 			},
 			-- Git 状态
 			git = {
-				enable = true, -- 启用 Git 状态显示
-				ignore = false, -- 不忽略 Git 未跟踪的文件
-				timeout = 400 -- Git 状态更新的延迟时间（毫秒）
+				enable = true,
+				ignore = true, -- 将这里改为 true
+				timeout = 400
 			},
 			-- 视图设置
 			view = {
