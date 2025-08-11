@@ -78,8 +78,8 @@ function build_project(compile_command)
     local build_makefile = build_dir .. "/Makefile"
 
     local function run_command(cmd)
-		RunCmdHiddenWithPause(cmd)
-		-- require('FTerm').run(cmd)
+		-- RunCmdHiddenWithPause(cmd)
+		require('FTerm').run(cmd)
         -- local width = math.floor(vim.o.columns * 0.3)
         -- local height = math.floor(vim.o.lines * 0.3)
         -- 

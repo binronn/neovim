@@ -1017,7 +1017,22 @@ function M.nvim_tree_init()
 				sorter = "case_sensitive"
 			},
 			filters = {
-				dotfiles = true
+				dotfiles = true,
+                -- 自定义过滤规则，核心优化点
+				custom = {
+                    -- 过滤掉常见的构建目录
+                    "^build$",
+                    "^build_release$",
+                    "^cmake-build-.*$",
+                    -- 过滤掉其他可能的构建产物目录
+                    "%.out$",
+                    "%.cache$",
+                    "^dist$",
+                    -- 过滤掉 Python 虚拟环境
+                    "%.venv",
+                    "%.venv_wsl",
+                    "%.venv_win",
+                }
 			},
 			-- 文件图标
 			renderer = {
