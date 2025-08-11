@@ -14,16 +14,18 @@ local function get_compiler_config()
     }
 end
 
-local function get_build_command(is_win32, build_dir, cmd)
-    local make_cmd = is_win32 == 1 and 'mingw32-make' or 'make'
-    return string.format('cd "%s" && %s', build_dir, cmd:gsub("make", make_cmd))
+local function get_build_command(build_dir, cmd)
+    -- local make_cmd = vim.g.is_win32 == 1 and 'mingw32-make' or 'make'
+    -- return string.format('cd "%s" && %s', build_dir, cmd:gsub("make", make_cmd))
+	
+    return string.format('cd "%s" && make', build_dir)
 end
 
-local function setup_cmake_build(build_dir, is_debug, is_win32, compile_command)
-    local param = is_debug and ' -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"' or ' -DCMAKE_BUILD_TYPE=Release' 
+local function setup_cmake_build(build_dir, compile_command)
+    local param = vim.g.is_cmake_debug and ' -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-O0 -g" -DCMAKE_C_FLAGS="-O0 -g"' or ' -DCMAKE_BUILD_TYPE=Release' 
     
     local compilers = get_compiler_config()
-    local cmake_pam = is_win32 == 0 
+    local cmake_pam = vim.g.is_win32 == 0 
         and ('-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ' .. param)
         or (' -G "MinGW Makefiles" -DCMAKE_C_COMPILER=' .. compilers.cc .. 
             ' -DCMAKE_CXX_COMPILER=' .. compilers.cxx .. param)
@@ -33,7 +35,7 @@ local function setup_cmake_build(build_dir, is_debug, is_win32, compile_command)
         cmd = cmd .. ' && make'
     end
     
-    return get_build_command(is_win32, build_dir, cmd)
+    return get_build_command(build_dir, cmd)
 end
 
 
@@ -67,14 +69,13 @@ function RunCmdHiddenWithPause2(command)
 end
 
 function build_project(compile_command)
-    local is_debug = vim.g.is_cmake_debug
     local wsdir = vim.g.workspace_dir2()
     local is_win32 = vim.g.is_win32 == 1
 
     -- Check build systems
     local cmake_path = wsdir .. "/CMakeLists.txt"
     local makefile_path = wsdir .. "/Makefile"
-	local build_dir = is_debug and (wsdir .. "/build") or (wsdir .. "/build_release")
+	local build_dir = vim.g.is_cmake_debug and (wsdir .. "/build") or (wsdir .. "/build_release")
     local build_makefile = build_dir .. "/Makefile"
 
     local function run_command(cmd)
@@ -99,21 +100,21 @@ function build_project(compile_command)
         -- vim.cmd('startinsert')
     end
 
-    if compile_command and vim.fn.isdirectory(build_dir) == 1 then
-        vim.fn.delete(build_dir, "rf")
-    end
+    -- if compile_command and vim.fn.isdirectory(build_dir) == 1 then
+    --     vim.fn.delete(build_dir, "rf")
+    -- end
 
     if vim.fn.isdirectory(build_dir) == 1 and vim.fn.filereadable(build_makefile) == 1 and compile_command then
-        run_command(get_build_command(is_win32, build_dir, "make"))
+        run_command(get_build_command(build_dir, "make"))
     elseif vim.fn.filereadable(cmake_path) == 1 then
         if vim.fn.isdirectory(build_dir) == 0 then
             vim.fn.mkdir(build_dir, "p")
         end
-        run_command(setup_cmake_build(build_dir, is_debug, is_win32, compile_command))
+        run_command(setup_cmake_build(build_dir, compile_command))
         vim.g.build_dir = build_dir
     elseif vim.fn.filereadable(makefile_path) == 1 then
-        local cmd = compile_command and 'bear --append -o compile_commands.json make' or 'make'
-        run_command(get_build_command(is_win32, wsdir, cmd))
+        local cmd = compile_command and 'compiledb --output compile_commands.json make' or 'make'
+        run_command(get_build_command(wsdir, cmd))
         vim.g.build_dir = wsdir
     else
         local file = vim.fn.expand("%:p")
@@ -134,7 +135,7 @@ end
 
 function build_project_bin()
 	if vim.g.is_cmake_debug == nil then
-		vim.g.is_cmake_debug = false
+		vim.g.is_cmake_debug = true
 	end
 	build_project(true)
 end
@@ -189,7 +190,6 @@ vim.api.nvim_create_autocmd(
 				end,
 				{bang = true}
 			)
-
 			vim.api.nvim_create_user_command(
 				"Cgr",
 				function()

@@ -1008,7 +1008,7 @@ function M.nvim_tree_init()
 	require("nvim-tree").setup(
 		{
 			update_focused_file = {
-				enable = false -- 打开文件时不要聚焦到 nvim-tree
+				enable = false, -- 打开文件时不要聚焦到 nvim-tree
 				debounce_delay = 150 -- 延迟 150ms 更新，防止抖动
 			},
 			-- 禁用 netrw（Neovim 的默认文件浏览器）

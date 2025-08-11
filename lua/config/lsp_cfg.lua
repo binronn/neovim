@@ -167,8 +167,13 @@ end
 function M.reset_clangdex()
 	local cmd = require('config.compiles_cfg').clangd_param
 	
+	vim.cmd('LspStop')
 	reset_clangd(cmd)
-	vim.cmd(':LspRestart')
+	-- vim.cmd(':LspRestart')
+	--
+    vim.defer_fn(function()
+		vim.cmd('LspRestart')
+    end, 200)
 end
 M.reset_clangdex()
 
