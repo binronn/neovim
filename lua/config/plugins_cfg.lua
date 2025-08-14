@@ -21,6 +21,78 @@ vim.g.asyncrun_open = 12
 ------------------------------------------------------------------------------------------
 --
 
+function M.persistence()
+
+	require("persistence").setup({
+		dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/"), -- 会话保存目录
+		options = { "buffers", "curdir", "tabpages", "winsize", "help", "globals" } -- 保存的选项
+	})
+
+	local persistence = require("persistence")
+	local Path = require("plenary.path")
+
+	function vim.g.telescope_sessions()
+		-- 【KEY FIX】Move all dependencies INSIDE the function.
+		-- This makes the function self-contained and ensures dependencies are
+		-- available every time it's called, regardless of the context.
+		local persistence = require("persistence")
+		local Path = require("plenary.path")
+		local pickers = require("telescope.pickers")
+		local finders = require("telescope.finders")
+		local conf = require("telescope.config").values
+		local actions = require("telescope.actions")
+		local action_state = require("telescope.actions.state")
+		local builtin = require("telescope.builtin") -- <== 【新增】引入 telescope.builtin
+
+		-- Define the helper function as a local inside the main function.
+		local function get_all_sessions()
+			local session_dir = vim.fn.stdpath("state") .. "/sessions/"
+			local files = vim.fn.glob(session_dir .. "*", true, true)
+			local dirs = {}
+
+			for _, file in ipairs(files) do
+				local filename = vim.fn.fnamemodify(file, ":t")
+				local decoded = filename:gsub("%%", Path.path.sep)
+				if vim.loop.os_uname().version:match("Windows") then
+					decoded = decoded:gsub("^(%a)\\", "%1:\\")
+				end
+				decoded = decoded:gsub("%.vim$", "")
+
+				table.insert(dirs, decoded)
+			end
+
+			return dirs
+		end
+
+		-- The rest of the picker logic remains the same.
+		pickers.new({}, {
+			prompt_title = "Project Sessions",
+			finder = finders.new_table({
+				results = get_all_sessions(),
+			}),
+			sorter = conf.generic_sorter({}),
+			attach_mappings = function(_, map)
+				map("i", "<CR>", function(prompt_bufnr)
+					local selection = action_state.get_selected_entry()
+					actions.close(prompt_bufnr)
+					if selection then
+						vim.cmd("cd " .. vim.fn.fnameescape(selection[1]))
+						vim.schedule(function()
+							builtin.find_files()
+						end)
+						-- persistence.load()
+					end
+				end)
+				return true
+			end,
+		}):find()
+	end
+
+	-- 绑定快捷键
+	-- vim.keymap.set("n", "<leader>ps", telescope_sessions, { desc = "List & restore project sessions" })
+	-- vim.g.telescope_sessions = telescope_sessions
+end
+
 function M.plenary_init()
 	-- 导入plenary.path模块
 	if vim.g.is_win32 == 1 then
@@ -385,102 +457,170 @@ function M.lualine_init()
 end
 
 ------------------------------------------
-----     dashboard 配置               ----
+----     Alpha 配置               ----
 ------------------------------------------
-function M.dashboard_init()
-	require("dashboard").setup(
-		{
-			change_to_vcs_root = true,
-			-- theme = 'doom',
-			config = {
-				header = {
-					-- " ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗",
-					-- " ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║",
-					-- " ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║",
-					-- " ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║",
-					-- " ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║",
-					-- " ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝",
-					-- "                                                       ",
-					[[ ,ggg, ,ggggggg,     ,ggggggg,    _,gggggg,_      ,ggg,         ,gg      ,a8a,  ,ggg, ,ggg,_,ggg,  ]],
-					[[dP""Y8,8P"""""Y8b  ,dP""""""Y8b ,d8P""d8P"Y8b,   dP""Y8a       ,8P      ,8" "8,dP""Y8dP""Y88P""Y8b ]],
-					[[Yb, `8dP'     `88  d8'    a  Y8,d8'   Y8   "8b,dPYb, `88       d8'      d8   8bYb, `88'  `88'  `88 ]],
-					[[ `"  88'       88  88     "Y8P'd8'    `Ybaaad88P' `"  88       88       88   88 `"  88    88    88 ]],
-					[[     88        88  `8baaaa     8P       `""""Y8       88       88       88   88     88    88    88 ]],
-					[[     88        88 ,d8P""""     8b            d8       I8       8I       Y8   8P     88    88    88 ]],
-					[[     88        88 d8"          Y8,          ,8P       `8,     ,8'       `8, ,8'     88    88    88 ]],
-					[[     88        88 Y8,          `Y8,        ,8P'        Y8,   ,8P   8888  "8,8"      88    88    88 ]],
-					[[     88        Y8,`Yba,,_____,  `Y8b,,__,,d8P'          Yb,_,dP    `8b,  ,d8b,      88    88    Y8,]],
-					[[     88        `Y8  `"Y8888888    `"Y8888P"'             "Y8P"       "Y88P" "Y8     88    88    `Y8]],
-					[[                                                                                                   ]]
-				},
-				shortcut = {
-					{
-						desc = " Find files",
-						action = "Telescope find_files",
-						key = "f"
-					},
-					{
-						desc = " History files",
-						action = "Telescope oldfiles",
-						key = "h"
-					},
-					{
-						desc = " File browser",
-						action = "Telescope file_browser",
-						key = "b"
-					},
-					{
-						desc = "■ Empty file",
-						action = "enew",
-						key = "e"
-					}
-				},
-				project = {
-					-- 修复项目路径带空格会报错的问题
-					enable = true,
-					key = "shortcut key",
-					icon = " ",
-					desc = "Recent Projects",
-					action = function(selected_project)
-						local project_path = selected_project:gsub("\\", "/") -- 标准化路径
 
-						-- local session_file = project_path .. "/Session.vim"
-						-- -- 检查Session.vim是否存在
-						-- if vim.fn.filereadable(session_file) == 1 then
-						-- 	-- 询问用户是否加载session
-						-- 	local choice = vim.fn.confirm("发现Session.vim，是否加载？", "&y\n&n", 1)
-						-- 	if choice == 1 then
-						-- 		vim.cmd("silent cd " .. project_path)
-						-- 		vim.cmd("source " .. session_file)
-						-- 		return
-						-- 	end
-						-- end
+function M.alpha_init()
 
-						vim.cmd("silent cd " .. project_path) -- 安全切换目录
-						vim.g.reset_workspace_dir_nop()
-						require("telescope.builtin").find_files(
-							{
-								cwd = project_path -- 直接传递路径
-							}
-						)
+	local function telescope_with_cd_action(picker)
+		local actions = require("telescope.actions")
+		local action_state = require("telescope.actions.state")
+
+		-- 确保 picker 名字有效
+		local picker_func = require("telescope.builtin")[picker]
+		if not picker_func then
+			return
+		end
+
+		picker_func({
+			attach_mappings = function(prompt_bufnr, map)
+				-- 重写回车键在插入模式下的行为
+				map("i", "<CR>", function()
+					local selection = action_state.get_selected_entry()
+					actions.close(prompt_bufnr)
+
+					if not selection then
+						return
 					end
-				},
-				mru = {
-					enable = true, -- 启用最近文件列表
-					limit = 10, -- 显示最近 5 个文件
-					icon = " ", -- 使用 Nerd Font 图标
-					label = "Recent Files", -- 显示标题
-					cwd_only = false -- 显示所有最近文件，不限于当前目录
-					-- action = function(selected_file)
-					-- local fp = selected_file:gsub("\\", "/") -- 标准化路径
-					-- 打开用户选择的文件
-					-- vim.cmd('edit ' .. fp)
-					-- vim.cmd('silent! cd %:h')
-					-- end,
-				}
-			}
+
+					-- selection[1] 就是文件的完整路径
+					local file_path = selection[1]
+					-- 使用 vim.fn.fnamemodify 获取文件所在的目录
+					local dir_path = vim.fn.fnamemodify(file_path, ":h")
+
+					-- 切换工作目录到文件所在的目录
+					-- 使用 fnameescape 来处理路径中可能存在的特殊字符
+					vim.cmd("cd " .. vim.fn.fnameescape(dir_path))
+
+					-- 最后，打开文件
+					vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+				end)
+				return true
+			end,
+		})
+	end
+
+	local alpha = require("alpha")
+
+	-- 我们不再需要 dashboard 主题的任何布局功能，但可以借用它的按钮样式
+	local dashboard = require("alpha.themes.dashboard")
+
+	-- 1. 定义所有组件 (这部分不变)
+	local header = {
+		type = "text",
+		val = {
+			"███╗   ██╗ ███████╗ ██╗   ██╗ ██╗ ██████╗ ███████╗",
+			"████╗  ██║ ██╔════╝ ██║   ██║ ██║██╔════╝ ██╔════╝",
+			"██╔██╗ ██║ █████╗   ██║   ██║ ██║██║  ███╗ █████╗  ",
+			"██║╚██╗██║ ██╔══╝   ╚██╗ ██╔╝ ██║██║   ██║ ██╔══╝  ",
+			"██║ ╚████║ ███████╗  ╚████╔╝  ██║╚██████╔╝ ███████╗",
+			"╚═╝  ╚═══╝ ╚══════╝   ╚═══╝   ╚═╝ ╚═════╝  ╚══════╝",
+		},
+		opts = { hl = "Title", position = "center" },
+	}
+
+	local buttons = {
+		type = "group",
+		val = {
+			dashboard.button("s", "  " .. "最近工作区", function()
+				vim.g.telescope_sessions()
+			end),
+			dashboard.button("n", "  " .. "新建文件", ":enew<CR>"),
+			dashboard.button("f", "  " .. "查找文件", ":Telescope find_files<CR>"),
+			dashboard.button("r", "  " .. "最近文件", function()
+				telescope_with_cd_action("oldfiles")
+			end),
+			-- dashboard.button("g", "  " .. "查找文本", ":Telescope live_grep<CR>"),
+			dashboard.button("u", "  " .. "更新插件", ":Lazy sync<CR>"),
+			dashboard.button("q", "  " .. "退出",     ":qa<CR>"),
+		},
+		opts = { spacing = 1 },
+	}
+
+	local function get_random_quote()
+		-- 基础引言库
+		local quotes = {
+			"代码不止，奋斗不息。",
+			"Talk is cheap. Show me the code. -- Linus Torvalds",
+			"Stay hungry, stay foolish. -- Steve Jobs",
+			"The only way to do great work is to love what you do.",
+			"键盘敲烂，月薪过万。",
+			"Simplicity is the ultimate sophistication. -- Leonardo da Vinci",
+			"Measuring programming progress by lines of code is like measuring aircraft building progress by weight. -- Bill Gates",
+			"代码是写给人看的，附带在机器上运行。",
+			"面向 Stack Overflow 编程。",
+			"It's not a bug, it's an undocumented feature.",
+			"Weeks of programming can save you hours of planning.",
+			"Premature optimization is the root of all evil. -- Donald Knuth",
+			"Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live. -- John Woods",
+			"Debugging is like being the detective in a crime movie where you are also the murderer.",
+			"有些命令，一生只能执行一次。",
+			"九个女人不能在一个月内生下一个孩子。 -- The Mythical Man-Month",
+			"手册是你的良师益友 (RTFM)。",
+			"Commit early, commit often.",
 		}
-	)
+
+		-- 根据当前时间添加特定问候
+		-- (当前时间: 2025年8月14日 星期四 22:27)
+		local h = tonumber(os.date("%H"))
+
+		if h >= 6 and h < 10 then
+			-- 早晨 (6 AM - 10 AM)
+			table.insert(quotes, "一日之计在于晨，一杯咖啡，一行代码。")
+			table.insert(quotes, "Good morning! May your coffee be strong and your bugs be few.")
+		elseif h >= 14 and h < 17 then
+			-- 下午 (2 PM - 5 PM)
+			table.insert(quotes, "下午了，要不... 来个 `git push` 提提神？")
+			table.insert(quotes, "Keep calm and code on.")
+		elseif h >= 22 or h < 5 then
+			-- 深夜 (10 PM - 5 AM)
+			table.insert(quotes, "夜深了，注意休息。commit then sleep!")
+			table.insert(quotes, "Another late night commit? You got this!")
+			table.insert(quotes, "正是灵感迸发的时候！")
+		end
+
+		-- 返回随机一条
+		return quotes[math.random(#quotes)]
+	end
+
+	local footer = {
+		type = "text",
+		val = get_random_quote(),
+		opts = { hl = "Comment", position = "center" },
+	}
+
+	-- 2. 【核心改动】手动计算居中边距
+	-- 计算内容的总行数 (header 6 + padding 2 + buttons 6 + padding 2 + footer 1 = 17)
+	local content_height = 17
+	local function calculate_padding()
+		local window_height = vim.fn.winheight(0)
+		local top_padding = math.floor((window_height - content_height) / 2)
+		return top_padding > 0 and top_padding or 0
+	end
+
+	local top_padding_widget = {
+		type = "padding",
+		-- `val` 可以是一个函数，实现动态计算
+		val = calculate_padding,
+	}
+
+	-- 3. 【核心改动】使用最简单的扁平化布局
+	local config = {
+		layout = {
+			top_padding_widget,
+			header,
+			{ type = "padding", val = 2 },
+			buttons,
+			{ type = "padding", val = 2 },
+			footer,
+		},
+		opts = {
+			noautocmd = true,
+		},
+	}
+
+	-- 启动 Alpha
+	alpha.setup(config)
 end
 
 ------------------------------------------

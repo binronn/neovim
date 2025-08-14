@@ -165,11 +165,22 @@ return {
 	-- 	-- use opts = {} for passing setup options
 	-- 	-- this is equivalent to setup({}) function
 	-- },
+	-- {
+	-- 	"nvimdev/dashboard-nvim", -- 启动面板
+	-- 	event = "VimEnter",
+	-- 	config = pcfg.dashboard_init,
+	-- 	dependencies = {"nvim-tree/nvim-web-devicons"}
+	-- },
 	{
-		"nvimdev/dashboard-nvim", -- 启动面板
-		event = "VimEnter",
-		config = pcfg.dashboard_init,
-		dependencies = {"nvim-tree/nvim-web-devicons"}
+		"folke/persistence.nvim",
+		event = "VimEnter", -- 在读取文件前触发，确保会话能被加载
+		module = "persistence",
+		config = pcfg.persistence
+	},
+	{
+		"goolord/alpha-nvim",
+		dependencies = { 'nvim-tree/nvim-web-devicons' },
+		config = pcfg.alpha_init
 	},
 	{
 		"nvim-lualine/lualine.nvim", -- 状态栏
@@ -400,7 +411,7 @@ return {
 	-- 安装 Telescope 插件
 	{
 		"nvim-telescope/telescope.nvim",
-		event = {"VimEnter"},
+		-- event = {"VimEnter"},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-telescope/telescope-file-browser.nvim", -- 文件浏览器
