@@ -1372,10 +1372,10 @@ function M.cmake_tools_init(m, cc, cxx)
 				' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path:gsub(' ', '\\ ') ..
 				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path:gsub(' ', '\\ ') ..
 				' -DCMAKE_BUILD_TYPE=Debug'
-				print(c)
+				-- print(c)
 				vim.cmd(c)
 			else
-			vim.cmd('CMakeGenerate')
+				vim.cmd('CMakeGenerate')
 			end
 		end,
 		{bang = true}
@@ -1388,10 +1388,10 @@ function M.cmake_tools_init(m, cc, cxx)
 				' -G ' .. [[MinGW\ Makefiles]] ..
 				' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path:gsub(' ', '\\ ') ..
 				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path:gsub(' ', '\\ ')
-				print(c)
+				-- print(c)
 				vim.cmd(c)
 			else
-			vim.cmd('CMakeGenerate')
+				vim.cmd('CMakeGenerate')
 			end
 		end,
 		{bang = true}

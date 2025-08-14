@@ -11,6 +11,7 @@ local clangd_param_base = {
 			-- "--header-insertion=never"      -- 禁用自动头文件插入
 		}
 
+
 -- Initialize paths only if they haven't been set before
 if not M.cc_path then
     M.cc_path = 'clang' .. (vim.g.is_win32 == 1 and '.exe' or '')
@@ -63,7 +64,8 @@ local function set_compiler_paths(clangd_path)
     local gcc_cc = clangd_path .. '\\bin\\gcc.exe'
     local clang_cxx = clangd_path .. '\\bin\\clang++.exe'
     local gcc_cxx = clangd_path .. '\\bin\\g++.exe'
-    local clangd = clangd_path .. '\\bin\\clangd.exe'
+    -- local clangd = 'clangd.exe'
+    -- local clangd = clangd_path .. '\\bin\\clangd.exe'
 
 
     -- Set C compiler path
@@ -100,20 +102,23 @@ local function update_clang_llvm_version(clangd_path)
     end
     
     M.clangd_param = vim.deepcopy(clangd_param_base)
-    M.clangd_param[1] = clangd_path .. '\\bin\\clangd.exe'
+    -- M.clangd_param[1] = clangd_path .. '\\bin\\clangd.exe'
+	-- M.clangd_path = clangd_path .. '\\bin\\clangd.exe'
+    M.clangd_param[1] = 'clangd.exe'
+	M.clangd_path = 'clangd.exe'
     table.insert(M.clangd_param, '--query-driver=' .. query_driver)
 
-    -- Update LSP configuration
+    -- Update LSP configuration  切换clangd索引位置 !!!!!
     local success, result = pcall(require, "config.lsp_cfg")
     if success then
-        require('config.lsp_cfg').reset_clangdex()
+        require('config.lsp_cfg').switch_clangd(M.clangd_path, query_driver)
     end
 
-    -- Update CMake tools if available
-    success, result = pcall(require, "cmake-tools")
-    if success then
-        require('config.plugins_cfg').cmake_tools_init()
-    end
+    -- Update CMake tools if available 切换clangd索引位置 !!!!!
+    -- success, result = pcall(require, "cmake-tools")
+    -- if success then
+    --     require('config.plugins_cfg').cmake_tools_init()
+    -- end
 end
 
 -- 注册 comps 命令

@@ -74,6 +74,7 @@ function build_project(compile_command)
 
     -- Check build systems
     local cmake_path = wsdir .. "/CMakeLists.txt"
+    local clangd_cache_path = wsdir .. "/.cache"
     local makefile_path = wsdir .. "/Makefile"
 	local build_dir = vim.g.is_cmake_debug and (wsdir .. "/build") or (wsdir .. "/build_release")
     local build_makefile = build_dir .. "/Makefile"
@@ -83,9 +84,9 @@ function build_project(compile_command)
 		require('FTerm').run(cmd)
     end
 
-    -- if compile_command and vim.fn.isdirectory(build_dir) == 1 then
-    --     vim.fn.delete(build_dir, "rf")
-    -- end
+    if compile_command == false and vim.fn.isdirectory(clangd_cache_path) == 1 then -- 删除 clangd 索引缓存
+        vim.fn.delete(clangd_cache_path, "rf")
+    end
 
     if vim.fn.isdirectory(build_dir) == 1 and vim.fn.filereadable(build_makefile) == 1 and compile_command then
         run_command(get_build_command(build_dir, "make"))
