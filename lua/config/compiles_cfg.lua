@@ -104,8 +104,8 @@ local function update_clang_llvm_version(clangd_path)
     M.clangd_param = vim.deepcopy(clangd_param_base)
     -- M.clangd_param[1] = clangd_path .. '\\bin\\clangd.exe'
 	-- M.clangd_path = clangd_path .. '\\bin\\clangd.exe'
-    M.clangd_param[1] = 'clangd.exe'
-	M.clangd_path = 'clangd.exe'
+    M.clangd_param[1] = 'clangd'
+	M.clangd_path = 'clangd'
     table.insert(M.clangd_param, '--query-driver=' .. query_driver)
 
     -- Update LSP configuration  切换clangd索引位置 !!!!!

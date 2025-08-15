@@ -102,84 +102,43 @@ function M:setup_codecomp()
 				language = "中文",
 			},
 			adapters = {
-				dskfeer1 = function()
+				-- dskfeer1 = function()
+				-- 	return require("codecompanion.adapters").extend(
+				-- 		"openai_compatible",
+				-- 		{
+				-- 			name = "dskfeer1",
+				-- 			env = {
+				-- 				url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43410", -- 使用提取出的IP地址
+				-- 				api_key = vim.fn.getenv("DSK_FEE_TKN"), 
+				-- 				chat_url = "/v1/chat/completions",
+				-- 			},
+				-- 			schema = {
+				-- 				model = {
+				-- 					default = "deepseek-think",
+				-- 				}
+				-- 			}
+				-- 		}
+				-- 	)
+				-- end,
+				open_dsk = function()
 					return require("codecompanion.adapters").extend(
 						"openai_compatible",
 						{
-							name = "dskfeer1",
+							name = "open_dsk",
 							env = {
-								url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43410", -- 使用提取出的IP地址
-								api_key = vim.fn.getenv("DSK_FEE_TKN"), 
+								url = "https://api.deepseek.com",
 								chat_url = "/v1/chat/completions",
-							},
-							schema = {
-								model = {
-									default = "deepseek-think",
-								}
-							}
-						}
-					)
-				end,
-				dskfee = function()
-					return require("codecompanion.adapters").extend(
-						"openai_compatible",
-						{
-							name = "dskfee",
-							env = {
-								url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43410", -- 使用提取出的IP地址
-								api_key = vim.fn.getenv("DSK_FEE_TKN"), 
-								chat_url = "/v1/chat/completions",
+								api_key = vim.fn.getenv("DSK"),
 							},
 							schema = {
 								model = {
 									default = "deepseek-chat",
+									choices = {
+										'deepseek-chat',
+										["deepseek-reasoner"] = { opts = { can_reason = true } },
+									}
 								}
 							}
-						}
-					)
-				end,
-				qwen = function()
-					return require("codecompanion.adapters").extend(
-						"openai_compatible",
-						{
-							name = "qwen",
-							opts = {
-								allow_insecure = true,
-							},
-							env = {
-								-- url = "http://115.120.244.116:43408",
-								url = "http://" .. M:get_url_ip("rm.basicbit.cn") .. ":43408", -- 使用提取出的IP地址
-								api_key = vim.fn.getenv("QWEN_FEE"), 
-								chat_url = "/v1/chat/completions",
-							},
-							schema = {
-								model = {
-									default = "qwen",
-									choices = {}
-								},
-							},
-						}
-					)
-				end,
-				qwen_deep = function()
-					return require("codecompanion.adapters").extend(
-						"openai_compatible",
-						{
-							name = "qwen_deep",
-							opts = {
-								allow_insecure = true,
-							},
-							env = {
-								url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43409", -- 使用提取出的IP地址
-								api_key = vim.fn.getenv("QWEN_FEE"), 
-								chat_url = "/v1/chat/completions",
-							},
-							schema = {
-								model = {
-									default = "qwen-deepresearch",
-									choices = {}
-								},
-							},
 						}
 					)
 				end,
@@ -199,56 +158,57 @@ function M:setup_codecomp()
 									default = "Qwen/Qwen3-30B-A3B",
 									choices = {
 										'deepseek-ai/DeepSeek-V3',
-										["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = false } },
-										["Qwen/Qwen3-32B"] = { opts = { can_reason = false } },
-										["Qwen/Qwen3-30B-A3B"] = { opts = { can_reason = false } },
+										["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = true } },
+										["Qwen/Qwen3-32B"] = { opts = { can_reason = true } },
+										["Qwen/Qwen3-30B-A3B"] = { opts = { can_reason = true } },
+										["Qwen/Qwen3-Coder-480B-A35B-Instruct"] = { opts = { can_reason = true } },
 									}
 								}
 							}
 						}
 					)
 				end,
-				deepseek = function()
+				-- deepseek = function() -- This is not support tools_call, used openai_compatible instead 
+				-- 	return require("codecompanion.adapters").extend(
+				-- 		"deepseek",
+				-- 		{
+				-- 			name = "deepseek",
+				-- 			env = {
+				-- 				url = "https://api.deepseek.com",
+				-- 				chat_url = "/v1/chat/completions",
+				-- 				api_key = vim.fn.getenv("DSK"),
+				-- 			},
+				-- 			schema = {
+				-- 				model = {
+				-- 					default = "deepseek-chat",
+				-- 				},
+				-- 				-- choices = {
+				-- 					-- 	'deepseek-chat',
+				-- 					-- 	["deepseek-reasoner"] = { opts = { can_reason = true } },
+				-- 					-- }
+				-- 				}
+				-- 			}
+				-- 		)
+				-- 	end,
+				gemini = function()
 					return require("codecompanion.adapters").extend(
-						"deepseek",
+						"gemini",
 						{
-							name = "deepseek",
+							name = "gemini",
+							opts = {
+								proxy = 'socks5://127.0.0.1:10807'
+							},
 							env = {
-								url = "https://api.deepseek.com",
-								chat_url = "/v1/chat/completions",
-								api_key = vim.fn.getenv("DSK"),
+								api_key = vim.fn.getenv("GEMINI_API_KEY"),
 							},
 							schema = {
 								model = {
-									default = "deepseek-chat",
-								},
-								-- choices = {
-									-- 	'deepseek-chat',
-									-- 	["deepseek-reasoner"] = { opts = { can_reason = true } },
-									-- }
+									-- default = "gemini-2.0-flash",
 								}
 							}
-						)
-					end,
-					gemini = function()
-						return require("codecompanion.adapters").extend(
-							"gemini",
-							{
-								name = "gemini",
-								opts = {
-									proxy = 'socks5://127.0.0.1:10807'
-								},
-								env = {
-									api_key = vim.fn.getenv("GEMINI_API_KEY"),
-								},
-								schema = {
-									model = {
-										-- default = "gemini-2.0-flash",
-									}
-								}
-							}
-						)
-					end,
+						}
+					)
+				end,
 				},
 				strategies = {
 					chat = {
@@ -270,7 +230,7 @@ function M:setup_codecomp()
 						show_settings = true, -- Show LLM settings at the top of the chat buffer?
 						show_token_count = true, -- Show the token count for each response?
 						start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-						adapter = "dskfee",
+						adapter = "open_dsk",
 						keymaps = {
 							send = {
 								modes = {n = "<Enter>", i = "<C-s>"}
@@ -292,10 +252,10 @@ function M:setup_codecomp()
 								description = "Choose our"
 							}
 						},
-						adapter = "dskfeer1"
+						adapter = "open_dsk"
 					},
 					cmd = {
-						adapter = 'dskfee'
+						adapter = 'open_dsk'
 					}
 				},
 				display = {

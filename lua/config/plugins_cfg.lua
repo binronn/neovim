@@ -25,7 +25,7 @@ function M.persistence()
 
 	require("persistence").setup({
 		dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/"), -- 会话保存目录
-		options = { "buffers", "curdir", "tabpages", "winsize", "help", "globals" } -- 保存的选项
+		options = { "curdir" } -- 保存的选项
 	})
 
 	local persistence = require("persistence")
@@ -89,7 +89,7 @@ function M.persistence()
 	end
 
 	-- 绑定快捷键
-	-- vim.keymap.set("n", "<leader>ps", telescope_sessions, { desc = "List & restore project sessions" })
+	-- vim.keymap.set("n", "<leader>ps", vim.g.telescope_sessions, { desc = "List & restore project sessions" })
 	-- vim.g.telescope_sessions = telescope_sessions
 end
 
@@ -500,6 +500,7 @@ function M.alpha_init()
 		})
 	end
 
+	_G.telescope_with_cd_action = telescope_with_cd_action
 	local alpha = require("alpha")
 
 	-- 我们不再需要 dashboard 主题的任何布局功能，但可以借用它的按钮样式
@@ -522,15 +523,11 @@ function M.alpha_init()
 	local buttons = {
 		type = "group",
 		val = {
-			dashboard.button("s", "  " .. "最近工作区", function()
-				vim.g.telescope_sessions()
-			end),
+			dashboard.button("s", "  " .. "最近工作区", ":lua vim.g.telescope_sessions()<CR>"),
 			dashboard.button("n", "  " .. "新建文件", ":enew<CR>"),
+			dashboard.button("r", "  " .. "最近文件", ":lua telescope_with_cd_action(\"oldfiles\")<CR>"),
 			dashboard.button("f", "  " .. "查找文件", ":Telescope find_files<CR>"),
-			dashboard.button("r", "  " .. "最近文件", function()
-				telescope_with_cd_action("oldfiles")
-			end),
-			-- dashboard.button("g", "  " .. "查找文本", ":Telescope live_grep<CR>"),
+			dashboard.button("g", "  " .. "查找文本", ":Telescope live_grep<CR>"),
 			dashboard.button("u", "  " .. "更新插件", ":Lazy sync<CR>"),
 			dashboard.button("q", "  " .. "退出",     ":qa<CR>"),
 		},
@@ -558,6 +555,28 @@ function M.alpha_init()
 			"九个女人不能在一个月内生下一个孩子。 -- The Mythical Man-Month",
 			"手册是你的良师益友 (RTFM)。",
 			"Commit early, commit often.",
+			"First, solve the problem. Then, write the code. -- John Johnson",
+			"Any fool can write code that a computer can understand. Good programmers write code that humans can understand. -- Martin Fowler",
+			"The best error message is the one that never shows up. -- Thomas Fuchs",
+			"Clean code always looks like it was written by someone who cares. -- Robert C. Martin",
+			"Programming isn't about what you know; it's about what you can figure out. -- Chris Pine",
+			"The most disastrous thing that you can ever learn is your first programming language. -- Alan Kay",
+			"There are two ways to write error-free programs; only the third one works. -- Alan Perlis",
+			"Sometimes it pays to stay in bed on Monday, rather than spending the rest of the week debugging Monday's code. -- Dan Salomon",
+			"If debugging is the process of removing bugs, then programming must be the process of putting them in. -- Edsger Dijkstra",
+			"The most important property of a program is whether it accomplishes the intention of its user. -- C.A.R. Hoare",
+			"程序员最讨厌两件事：写文档和没有文档。",
+			"最好的代码是没有代码。",
+			"不要重复造轮子，但要学会造轮子。",
+			"编程的本质是控制复杂度。 -- Edsger Dijkstra",
+			"代码重构就像打扫房间，不打扫会越来越乱。",
+			"设计模式是解决特定问题的套路。",
+			"没有银弹。 -- Fred Brooks",
+			"过早抽象是万恶之源。",
+			"测试是证明bug存在，而非不存在。 -- Edsger Dijkstra",
+			"优秀的程序员写出人类能理解的代码，伟大的程序员写出计算机能理解的代码。",
+			"编程是一种艺术，而不是科学。 -- Donald Knuth",
+			"代码越少，bug越少。",
 		}
 
 		-- 根据当前时间添加特定问候
