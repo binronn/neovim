@@ -225,9 +225,19 @@ local wrappers = {
 }
 
 function wrap_selection(a, b)
+	local save_reg = vim.fn.getreg('"')
+	local save_type = vim.fn.getregtype('"')
 
-	local cmd = string.format("'<,'>s/\\%%V\\(.*\\)\\%%V/%s\\1%s/", a, b)
-	vim.cmd(cmd)
+	-- 复制选区内容
+	vim.cmd('normal! gv"xy')
+
+	-- 用寄存器修改并替换
+	local text = vim.fn.getreg('x')
+	vim.fn.setreg('x', a .. text .. b)
+	vim.cmd('normal! gv"xp')
+
+	-- 恢复寄存器
+	vim.fn.setreg('"', save_reg, save_type)
 end
 vim.g.wrap_selection = wrap_selection
 
