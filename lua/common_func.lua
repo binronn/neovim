@@ -39,27 +39,60 @@ local function get_visual_selection()
 end
 vim.g.get_visual_selection = {get = get_visual_selection}
 
+
+local function find_project_root()
+    -- 获取当前buffer的文件路径
+    local buf_path = vim.api.nvim_buf_get_name(0)
+    local start_dir = vim.fn.getcwd()
+    
+    -- 如果有打开的buffer且是文件路径
+    if buf_path and buf_path ~= "" then
+        start_dir = vim.fn.fnamemodify(buf_path, ":h")
+    end
+    
+    -- 检查常见项目根目录标记
+    local markers = { ".git", ".root", "CMakeLists.txt", "package.json" }
+    local function has_marker(dir)
+        for _, marker in ipairs(markers) do
+            if vim.fn.filereadable(dir .. "/" .. marker) == 1 or 
+               vim.fn.isdirectory(dir .. "/" .. marker) == 1 then
+                return true
+            end
+        end
+        return false
+    end
+    
+    -- 向上查找项目根目录
+    local root = start_dir
+    while true do
+        if has_marker(root) then
+            return root
+        end
+        local parent = vim.fn.fnamemodify(root, ":h")
+        if parent == root then
+            break
+        end
+        root = parent
+    end
+    
+    -- 回退到LSP工作区目录
+    local workspace_folders = vim.lsp.buf.list_workspace_folders()
+    if workspace_folders and #workspace_folders > 0 then
+        return workspace_folders[1]
+    end
+    
+    -- 最后回退到当前目录
+    return start_dir
+end
+
 local function workspace_dir2()
-	local workspace_folders = vim.lsp.buf.list_workspace_folders()
-	if workspace_folders and #workspace_folders <= 0 then
-		return vim.fn.getcwd()
-	end
-	for index, folder in ipairs(workspace_folders) do
-		return folder
-	end
+	return find_project_root()
 end
 
 local function workspace_dir()
 	local path = ''
 	if vim.fn.empty(vim.g.workspace_dir_content) == 1 then
-		local workspace_folders = vim.lsp.buf.list_workspace_folders()
-		if workspace_folders and #workspace_folders <= 0 then
-			vim.g.workspace_dir_content = vim.fn.getcwd()
-		end
-		for index, folder in ipairs(workspace_folders) do
-			vim.g.workspace_dir_content = folder
-			break
-		end
+		vim.g.workspace_dir_content = find_project_root()
 	end
 	return vim.g.workspace_dir_content
 end

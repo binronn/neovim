@@ -171,12 +171,12 @@ return {
 	-- 	config = pcfg.dashboard_init,
 	-- 	dependencies = {"nvim-tree/nvim-web-devicons"}
 	-- },
-	{
-		"folke/persistence.nvim",
-		event = "VimEnter", -- 在读取文件前触发，确保会话能被加载
-		module = "persistence",
-		config = pcfg.persistence
-	},
+	-- {
+	-- 	"folke/persistence.nvim",
+	-- 	event = "VimEnter", -- 在读取文件前触发，确保会话能被加载
+	-- 	module = "persistence",
+	-- 	config = pcfg.persistence
+	-- },
 	{
 		"goolord/alpha-nvim",
 		dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -469,6 +469,7 @@ return {
 	},
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
+		commit = '95bc2eced6c3700942d54668d37c35f9bdb6a0cb',
 		lazy = true,
 		config = function()
 			require("render-markdown").setup()

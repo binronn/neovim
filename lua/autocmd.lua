@@ -72,6 +72,8 @@ function build_project(compile_command)
     local wsdir = vim.g.workspace_dir2()
     local is_win32 = vim.g.is_win32 == 1
 
+	vim.cmd('wa')
+
     -- Check build systems
     local cmake_path = wsdir .. "/CMakeLists.txt"
     local clangd_cache_path = wsdir .. "/.cache"
@@ -395,6 +397,74 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
+----------------------------------------------------------------
+-- 项目路径保存与恢复
+----------------------------------------------------------------
+function append_directory_on_exit()
+    local dir = vim.g.workspace_dir.get()
+    local file_path = vim.fn.stdpath("state") .. "/work_dirs"
+    local lines = {}
+    if vim.fn.filereadable(file_path) == 1 then
+        lines = vim.fn.readfile(file_path)
+    end
+    
+    -- 移除已存在的目录（如果有）
+    for i = #lines, 1, -1 do
+        if lines[i] == dir then
+            table.remove(lines, i)
+        end
+    end
+    
+    -- 添加新目录到开头
+    table.insert(lines, 1, dir)
+    
+    -- 保留最多20个最新目录
+    if #lines > 20 then
+        lines = {unpack(lines, 1, 20)}
+    end
+    
+    vim.fn.writefile(lines, file_path)
+end
+
+-- 读取文件中的目录并通过 Telescope 选择
+function select_entry_workdir()
+    local file_path = vim.fn.stdpath("state") .. "/work_dirs"
+    if vim.fn.filereadable(file_path) ~= 1 then
+        vim.notify("No directories saved yet", vim.log.levels.WARN)
+        return nil
+    end
+    local lines = vim.fn.readfile(file_path)
+    require("telescope.pickers").new({}, {
+        prompt_title = "Select Directory",
+        finder = require("telescope.finders").new_table({
+            results = lines,
+        }),
+        sorter = require("telescope.sorters").get_generic_fuzzy_sorter(),
+        attach_mappings = function(_, map)
+            map("i", "<CR>", function(prompt_bufnr)
+                local selection = require("telescope.actions.state").get_selected_entry()
+                require("telescope.actions").close(prompt_bufnr)
+
+				local dir_path = selection.value
+				vim.cmd("cd " .. vim.fn.fnameescape(dir_path))
+
+				vim.schedule(function()
+					require("telescope.builtin").find_files()
+				end)
+                return selection.value
+            end)
+            return true
+        end,
+    }):find()
+
+
+end
+
+vim.g.select_entry_workdir = select_entry_workdir
+-- 注册退出事件
+vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = append_directory_on_exit,
+})
 
 ----------------------------------------------------------------
 -- Session保存与恢复

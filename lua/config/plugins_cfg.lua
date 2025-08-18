@@ -21,7 +21,7 @@ vim.g.asyncrun_open = 12
 ------------------------------------------------------------------------------------------
 --
 
-function M.persistence()
+--[[ function M.persistence()
 
 	require("persistence").setup({
 		dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/"), -- 会话保存目录
@@ -91,7 +91,7 @@ function M.persistence()
 	-- 绑定快捷键
 	-- vim.keymap.set("n", "<leader>ps", vim.g.telescope_sessions, { desc = "List & restore project sessions" })
 	-- vim.g.telescope_sessions = telescope_sessions
-end
+end ]]
 
 function M.plenary_init()
 	-- 导入plenary.path模块
@@ -523,7 +523,7 @@ function M.alpha_init()
 	local buttons = {
 		type = "group",
 		val = {
-			dashboard.button("s", "  " .. "最近工作区", ":lua vim.g.telescope_sessions()<CR>"),
+			dashboard.button("s", "  " .. "最近工作区", ":lua vim.g.select_entry_workdir()<CR>"),
 			dashboard.button("n", "  " .. "新建文件", ":enew<CR>"),
 			dashboard.button("r", "  " .. "最近文件", ":lua telescope_with_cd_action(\"oldfiles\")<CR>"),
 			dashboard.button("f", "  " .. "查找文件", ":Telescope find_files<CR>"),
