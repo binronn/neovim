@@ -2,7 +2,7 @@ local M = {}
 -----------------------------------------------------------------------------------------
 -- LSP 配置
 ------------------------------------------------------------------------------------------
-local lspconfig = require("lspconfig")
+-- local lspconfig = require("lspconfig")
 
 -----------------------------------------------------------------------------------------
 -- 切换头文件函数
@@ -53,7 +53,7 @@ local function on_clangd_attach(client, bufnr)
     vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
 end
 
-lspconfig.clangd.setup({
+require('lspconfig').clangd.setup({
     cmd = {
         "clangd",
         "--background-index=true",
@@ -109,7 +109,7 @@ end
 -----------------------------------------------------------------------------------------
 -- Python 配置
 ------------------------------------------------------------------------------------------
-lspconfig.pyright.setup({
+require('lspconfig').pyright.setup({
     filetypes = { "py", "python" },
     on_attach = function(_, bufnr)
         local telescope = require("telescope.builtin")

@@ -599,7 +599,7 @@ function M.alpha_init()
 		end
 
 		-- 返回随机一条
-		return quotes[math.random(#quotes)]
+		return '✨ ' .. quotes[math.random(#quotes)]
 	end
 
 	local footer = {
