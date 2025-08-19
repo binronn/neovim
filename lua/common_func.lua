@@ -40,10 +40,12 @@ end
 vim.g.get_visual_selection = {get = get_visual_selection}
 
 
+vim.g.is_in_workspace = 0
 local function find_project_root()
     -- 获取当前buffer的文件路径
-    local buf_path = vim.api.nvim_buf_get_name(0)
-    local start_dir = vim.fn.getcwd()
+	vim.g.is_in_workspace = 1
+    local buf_path = vim.api.nvim_buf_get_name(0):gsub("\\", "/")
+    local start_dir = vim.fn.getcwd():gsub("\\", "/")
     
     -- 如果有打开的buffer且是文件路径
     if buf_path and buf_path ~= "" then
@@ -51,7 +53,7 @@ local function find_project_root()
     end
     
     -- 检查常见项目根目录标记
-    local markers = { ".git", ".root", "CMakeLists.txt", "package.json" }
+    local markers = { ".git", ".root", "CMakeLists.txt", "package.json", ".venv", ".venv_wsl", ".venv_win"}
     local function has_marker(dir)
         for _, marker in ipairs(markers) do
             if vim.fn.filereadable(dir .. "/" .. marker) == 1 or 
@@ -66,7 +68,7 @@ local function find_project_root()
     local root = start_dir
     while true do
         if has_marker(root) then
-            return root
+            return root:gsub("\\", "/")
         end
         local parent = vim.fn.fnamemodify(root, ":h")
         if parent == root then
@@ -75,10 +77,11 @@ local function find_project_root()
         root = parent
     end
     
+	vim.g.is_in_workspace = 0
     -- 回退到LSP工作区目录
     local workspace_folders = vim.lsp.buf.list_workspace_folders()
     if workspace_folders and #workspace_folders > 0 then
-        return workspace_folders[1]
+        return workspace_folders[1]:gsub("\\", "/")
     end
     
     -- 最后回退到当前目录

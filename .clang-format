@@ -1,21 +1,24 @@
+# =================================================================
+# 已根据您的需求为现代 clang-format 版本修正
+# =================================================================
 ---
-Language: Cpp
-BasedOnStyle: LLVM
+Language:        Cpp
+BasedOnStyle:    LLVM
 
 # 模板参数列表换行
-AlwaysBreakTemplateDeclarations: Yes
+AlwaysBreakTemplateDeclarations: true
 
 # 大括号与语句不在同一行
 BreakBeforeBraces: Allman
 
 # 使用 Tab 进行缩进，Tab 大小为 4
-UseTab: Always
+UseTab: Never
 TabWidth: 4
 IndentWidth: 4
 
-
 # 控制大括号换行
 BraceWrapping:
+  AfterCaseLabel: false
   AfterClass: true
   AfterControlStatement: true
   AfterEnum: true
@@ -23,9 +26,13 @@ BraceWrapping:
   AfterNamespace: true
   AfterStruct: true
   AfterUnion: true
+  AfterExternBlock: true
   BeforeCatch: true
   BeforeElse: true
   IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
 
 # 括号与语句中包含空格
 SpacesInParentheses: true
@@ -46,7 +53,6 @@ AllowShortLoopsOnASingleLine: false
 ColumnLimit: 130
 MaxEmptyLinesToKeep: 2
 KeepEmptyLinesAtTheStartOfBlocks: true
-# BeforeTrailingComments: true
 
 # 空格规则
 SpaceBeforeAssignmentOperators: true
@@ -59,7 +65,7 @@ AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: Right
-AlignOperands: true
+AlignOperands: AlignAfterOperator # [修正] 'AlignOperands: true' 已废弃
 AlignTrailingComments: true
 
 # 命名空间缩进
@@ -67,5 +73,13 @@ NamespaceIndentation: All
 
 # 其他
 PointerAlignment: Left
-SortIncludes: true
 SortUsingDeclarations: true
+
+# [修正] 'SortIncludes: true' 已废弃, 使用 IncludeCategories 进行更精细的控制
+IncludeCategories:
+  - Regex:           '^<.*'
+    Priority:        1
+  - Regex:           '^".*"'
+    Priority:        2
+SortIncludes:      CaseInsensitive
+...

@@ -388,7 +388,7 @@ vim.api.nvim_create_autocmd('FileType', {
                 callback = function()
                     local cursor_pos = vim.api.nvim_win_get_cursor(0)
                     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-                    local formatted = vim.fn.systemlist('clang-format -style=file:'..vim.fn.shellescape(effective_config), lines)
+                    local formatted = vim.fn.systemlist('clang-format -style=file:'..effective_config:gsub('/', '\\'), lines)
                     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
                     vim.api.nvim_win_set_cursor(0, cursor_pos)
                 end
@@ -401,6 +401,9 @@ vim.api.nvim_create_autocmd('FileType', {
 -- 项目路径保存与恢复
 ----------------------------------------------------------------
 function append_directory_on_exit()
+	if vim.g.is_in_workspace ~= 1 then
+		return
+	end
     local dir = vim.g.workspace_dir.get()
     local file_path = vim.fn.stdpath("state") .. "/work_dirs"
     local lines = {}
@@ -418,9 +421,9 @@ function append_directory_on_exit()
     -- 添加新目录到开头
     table.insert(lines, 1, dir)
     
-    -- 保留最多20个最新目录
-    if #lines > 20 then
-        lines = {unpack(lines, 1, 20)}
+    -- 保留最多100个最新目录
+    if #lines > 100 then
+        lines = {unpack(lines, 1, 100)}
     end
     
     vim.fn.writefile(lines, file_path)

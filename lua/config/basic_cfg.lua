@@ -40,10 +40,13 @@ vim.o.tabstop = 4
 vim.bo.tabstop = 4
 vim.o.softtabstop = 4
 
+vim.o.expandtab = true
+vim.bo.expandtab = true
+
 vim.cmd "set ts=4"
 vim.cmd "set softtabstop=4"
 vim.cmd "set shiftwidth=4"
-vim.cmd "set noexpandtab"
+vim.cmd "set expandtab"
 vim.cmd "set autoindent"
 
 -- 允许隐藏被修改过的buffer
