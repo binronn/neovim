@@ -484,7 +484,7 @@ return {
 		dependencies = {
 			'nvim-lualine/lualine.nvim',
 			"nvim-lua/plenary.nvim",
-			'echasnovski/mini.diff',
+			-- 'echasnovski/mini.diff',
 			"nvim-treesitter/nvim-treesitter",
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
@@ -502,20 +502,20 @@ return {
 			local comp = require("config.codecomp_cfg"):new()
 			comp:setup_codecomp()
 			comp:init()
-			require('mini.diff').setup({
-				view = {
-					-- Visualization style. Possible values are 'sign' and 'number'.
-					-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
-					style = vim.go.number and 'number' or 'sign',
+			-- require('mini.diff').setup({
+			-- 	view = {
+			-- 		-- Visualization style. Possible values are 'sign' and 'number'.
+			-- 		-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
+			-- 		style = vim.go.number and 'number' or 'sign',
 
-					-- Signs used for hunks with 'sign' view
-					signs = { add = '', change = '', delete = '' },
+			-- 		-- Signs used for hunks with 'sign' view
+			-- 		signs = { add = '', change = '', delete = '' },
 
-					-- Priority of used visualization extmarks
-					priority = 0,
-				},
-				-- 在这里添加 mini.diff 的默认配置
-			})
+			-- 		-- Priority of used visualization extmarks
+			-- 		priority = 0,
+			-- 	},
+			-- 	-- 在这里添加 mini.diff 的默认配置
+			-- })
 			nmap("<M-c>", ":CodeCompanionChat Toggle<CR>")
 			vmap("<M-c>", ":CodeCompanionChat<CR>")
 
