@@ -40,17 +40,45 @@ end
 
 
 function RunCmdHiddenWithPause(command)
-
-    -- Construct the full command to start a new, minimized cmd window that runs the command and then pauses.
-    local full_command = 'cmd.exe /c start /min cmd.exe /c "'..command..' & pause"'
-
-    vim.fn.jobstart(full_command, {
-        detach = true, -- Crucial for preventing resource leaks.
+    -- 清空并打开quickfix窗口
+    vim.fn.setqflist({}, 'r')
+    vim.cmd('copen')
+    
+    vim.fn.setqflist({}, 'a', {lines = {'Commnad: ' .. command}})
+    -- 使用jobstart实时捕获输出到quickfix
+    vim.fn.jobstart(command, {
+        on_stdout = function(_, data, _)
+            if data and #data > 0 then
+                -- 过滤掉\r\n字符并添加到quickfix
+                for _, line in ipairs(data) do
+                    local clean_line = line:gsub("[\r\n]", "")
+                    if clean_line ~= "" then
+                        vim.fn.setqflist({}, 'a', {lines = {clean_line}})
+                    end
+                end
+                -- 刷新quickfix窗口显示最新内容
+                vim.cmd('copen')
+            end
+        end,
+        on_stderr = function(_, data, _)
+            if data and #data > 0 then
+                for _, line in ipairs(data) do
+                    local clean_line = line:gsub("[\r\n]", "")
+                    if clean_line ~= "" then
+                        vim.fn.setqflist({}, 'a', {lines = {clean_line}})
+                    end
+                end
+                vim.cmd('copen')
+            end
+        end,
         on_exit = function(_, code)
             if code == 0 then
-                print("Build command completed successfully.")
+                -- print("Build command completed successfully.")
+                vim.notify("Build command completed successfully.", vim.log.levels.INFO, { title = 'Build help' })
+                vim.cmd('cclose')
             else
-                print("Build command failed with exit code: " .. code)
+                -- print("Build command failed with exit code: " .. code)
+                vim.notify("Build command failed with exit code: " .. code, vim.log.levels.INFO, { title = 'Build help' })
             end
         end
     })
@@ -83,8 +111,8 @@ function build_project(compile_command)
     local build_makefile = build_dir .. "/Makefile"
 
     local function run_command(cmd)
-		-- RunCmdHiddenWithPause(cmd)
-		require('FTerm').run(cmd)
+		RunCmdHiddenWithPause(cmd)
+		-- require('FTerm').run(cmd)
     end
 
     if compile_command == false and vim.fn.isdirectory(clangd_cache_path) == 1 then -- 删除 clangd 索引缓存
@@ -96,7 +124,7 @@ function build_project(compile_command)
     end
 
     if vim.fn.isdirectory(build_dir) == 1 and vim.fn.filereadable(build_makefile) == 1 and compile_command then
-        run_command(get_build_command(build_dir, "make"))
+        run_command(get_build_command(build_dir, "make -j4"))
     elseif vim.fn.filereadable(cmake_path) == 1 then
         if vim.fn.isdirectory(build_dir) == 0 then
             vim.fn.mkdir(build_dir, "p")
@@ -104,7 +132,7 @@ function build_project(compile_command)
         run_command(setup_cmake_build(build_dir, compile_command))
         vim.g.build_dir = build_dir
     elseif vim.fn.filereadable(makefile_path) == 1 then
-        local cmd = compile_command and 'compiledb --output compile_commands.json make' or 'make'
+        local cmd = compile_command and 'compiledb --output compile_commands.json make' or 'make -j4'
         run_command(get_build_command(wsdir, cmd))
         vim.g.build_dir = wsdir
     else
@@ -388,7 +416,7 @@ vim.api.nvim_create_autocmd('FileType', {
                 callback = function()
                     local cursor_pos = vim.api.nvim_win_get_cursor(0)
                     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-                    local formatted = vim.fn.systemlist('clang-format -style=file:'..effective_config:gsub('/', '\\'), lines)
+                    local formatted = vim.fn.systemlist('clang-format -style=file:"'.. effective_config:gsub('/', '\\') .. '"', lines)
                     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
                     vim.api.nvim_win_set_cursor(0, cursor_pos)
                 end
@@ -404,12 +432,15 @@ function append_directory_on_exit()
 	if vim.g.is_in_workspace ~= 1 then
 		return
 	end
-    local dir = vim.g.workspace_dir.get()
+    local dir = vim.g.workspace_dir.get():gsub('\\', '/')
     local file_path = vim.fn.stdpath("state") .. "/work_dirs"
     local lines = {}
-    if vim.fn.filereadable(file_path) == 1 then
-        lines = vim.fn.readfile(file_path)
-    end
+	if vim.fn.filereadable(file_path) == 1 then
+		lines = vim.fn.readfile(file_path)
+		for i, line in ipairs(lines) do
+			lines[i] = line:gsub("\\", "/")
+		end
+	end
     
     -- 移除已存在的目录（如果有）
     for i = #lines, 1, -1 do
@@ -437,10 +468,24 @@ function select_entry_workdir()
         return nil
     end
     local lines = vim.fn.readfile(file_path)
+    
+    -- 过滤掉不存在的目录
+    local valid_dirs = {}
+    for _, dir in ipairs(lines) do
+        if vim.fn.isdirectory(dir) == 1 then
+            table.insert(valid_dirs, dir)
+        end
+    end
+    
+    if #valid_dirs == 0 then
+        vim.notify("No valid directories found", vim.log.levels.WARN)
+        return nil
+    end
+
     require("telescope.pickers").new({}, {
-        prompt_title = "Select Directory",
+        prompt_title = "Select workspace",
         finder = require("telescope.finders").new_table({
-            results = lines,
+            results = valid_dirs,
         }),
         sorter = require("telescope.sorters").get_generic_fuzzy_sorter(),
         attach_mappings = function(_, map)
@@ -448,20 +493,20 @@ function select_entry_workdir()
                 local selection = require("telescope.actions.state").get_selected_entry()
                 require("telescope.actions").close(prompt_bufnr)
 
-				local dir_path = selection.value
-				vim.cmd("cd " .. vim.fn.fnameescape(dir_path))
+                local dir_path = selection.value
+                vim.cmd("cd " .. vim.fn.fnameescape(dir_path))
 
-				vim.schedule(function()
-					require("telescope.builtin").find_files()
-				end)
+                vim.schedule(function()
+                    require("telescope.builtin").find_files()
+                end)
                 return selection.value
             end)
             return true
         end,
     }):find()
-
-
 end
+
+vim.g.select_entry_workdir = select_entry_workdir
 
 vim.g.select_entry_workdir = select_entry_workdir
 -- 注册退出事件

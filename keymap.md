@@ -31,7 +31,7 @@
 | `<leader>wl`   | 跳转到右侧窗口               |
 | `<leader>wp`   | 切换上一个窗口               |
 | `<leader>w=`   | 均衡窗口大小                 |
-| `<leader>w|`   | 最大化窗口                   |
+| `<leader>wm`   | 最大化窗口                   |
 | `<leader>wo`   | 关闭其他窗口                 |
 | `<leader>ws`   | 垂直调整窗口大小             |
 | `<leader>wv`   | 水平调整窗口大小             |

@@ -49,6 +49,9 @@ AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 
+# 控制访问修饰符缩进
+# AccessModifierOffset: -2
+
 # 换行规则
 ColumnLimit: 130
 MaxEmptyLinesToKeep: 2

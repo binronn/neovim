@@ -125,25 +125,35 @@ end
 vim.api.nvim_create_user_command(
 "Comps",
 function()
-	require('telescope.pickers').new({}, {
-		prompt_title = 'Select a Compiler',
-		finder = require('telescope.finders').new_table {
-			results = get_compilers(),
-		},
-		sorter = require('telescope.sorters').get_generic_fuzzy_sorter(),
-		attach_mappings = function(prompt_bufnr, map)
-			map('i', '<CR>', function()
-				local selection = require("telescope.actions.state").get_selected_entry()
-				if selection then
-					local p = compils_path .. '\\' .. selection.value
-					update_clang_llvm_version(p)
-					vim.notify("Selected compiler: " .. p, vim.log.levels.INFO)
-				end
-				require("telescope.actions").close(prompt_bufnr)
-			end)
-			return true
-		end,
-	}):find()
+    -- 检查当前缓冲区文件类型
+    local filetype = vim.bo.filetype
+    local valid_filetypes = {"cpp", "cxx", "hpp", "h", "c"}
+    
+    -- 如果当前文件类型不在允许的列表中，显示提示并返回
+    if not vim.tbl_contains(valid_filetypes, filetype) then
+        vim.notify("Comps command is only available for cpp/cxx/hpp/h/c files", vim.log.levels.WARN)
+        return
+    end
+
+    require('telescope.pickers').new({}, {
+        prompt_title = 'Select a Compiler',
+        finder = require('telescope.finders').new_table {
+            results = get_compilers(),
+        },
+        sorter = require('telescope.sorters').get_generic_fuzzy_sorter(),
+        attach_mappings = function(prompt_bufnr, map)
+            map('i', '<CR>', function()
+                local selection = require("telescope.actions.state").get_selected_entry()
+                if selection then
+                    local p = compils_path .. '\\' .. selection.value
+                    update_clang_llvm_version(p)
+                    vim.notify("Selected compiler: " .. p, vim.log.levels.INFO)
+                end
+                require("telescope.actions").close(prompt_bufnr)
+            end)
+            return true
+        end,
+    }):find()
 end,
 {}
 )
