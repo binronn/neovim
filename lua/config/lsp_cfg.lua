@@ -260,7 +260,7 @@ cmp.setup({
 				vim_item.word = abbr
 			else
 				-- vim_item.word = vim_item.word:gsub("%W*$", "") -- 删除补全内容尾部的非字母或数字
-				vim_item.word = vim_item.word:gsub("[^%w{}%=]*$", "")
+				vim_item.word = vim_item.word:gsub("[^%w{}%=;->()]*$", "")
 			end
 
 			if vim_item.menu and #vim_item.menu > 60 then -- 提示信息中的参数长度限制
