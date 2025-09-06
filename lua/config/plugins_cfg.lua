@@ -1178,20 +1178,34 @@ function M.nvim_tree_init()
 			},
 			filters = {
 				dotfiles = true,
+                git_ignored = false,  -- 不使用 gitignore
                 -- 自定义过滤规则，核心优化点
-				custom = {
-                    -- 过滤掉常见的构建目录
-                    "^build$",
-                    "^build_release$",
+                custom = {
+                    -- 构建相关目录
+                    "^CMakeFiles$",
+                    -- "^build$",
+                    -- "^build_.*$",          -- 匹配所有 build_ 开头的目录
                     "^cmake-build-.*$",
-                    -- 过滤掉其他可能的构建产物目录
-                    "%.out$",
-                    "%.cache$",
+                    "^%.vscode$",          -- 可选：过滤 VS Code 配置目录
+                    "^%.idea$",            -- 可选：过滤 IDEA 配置目录
+
+                    -- 依赖和缓存
+                    "^node_modules$",
+                    "^%.cache$",
                     "^dist$",
-                    -- 过滤掉 Python 虚拟环境
-                    "%.venv",
-                    "%.venv_wsl",
-                    "%.venv_win",
+                    "^target$",            -- Rust 构建目录
+
+                    -- Python 虚拟环境
+                    "^%.venv.*$",          -- 匹配所有 .venv 开头的目录
+                    "^venv$",
+                    "^env$",
+
+                    -- 其他常见忽略项
+                    -- "%.out$",
+                    -- "%.exe$",
+                    -- "%.dll$",
+                    -- "%.so$",
+                    -- "%.dylib$",
                 }
 			},
 			-- 文件图标
@@ -1575,7 +1589,14 @@ function M.telescope_init()
 		{
 			defaults = {
 				path_display = {"truncate"}, -- 显示路径时自动处理分隔符
-				-- find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+                find_command = {
+                    "rg", 
+                    "--files", 
+                    "--hidden", 
+                    "--no-ignore-vcs",    -- 忽略所有版本控制忽略文件
+                    "--no-ignore",        -- 忽略所有忽略文件（包括 .ignore 和全局配置）
+                    "--glob", "!**/.git/*"  -- 但手动排除 .git 目录
+                },
 				-- vimgrep_arguments = {
 				--   "rg",  -- 使用 ripgrep
 				--   "--color=never",
@@ -1587,28 +1608,27 @@ function M.telescope_init()
 				-- },
 				layout_strategy = "horizontal", -- 使用垂直布局
 				sorting_strategy = "ascending",
-				file_ignore_patterns = {
-					"build.*/",
-					"build.*\\",
-					"dist/",
-					"dist\\",
-					"out/",
-					"out//",
-					"tags",
-					"node_modules\\",
-					"node_modules/",
-					"%.git",
-					"%.vs",
-					"%.cache",
-					"%.vscode",
-					"%.github",
-					"%.venv",
-					"%.venv_win",
-					"%.venv_bak",
-					"%.venv.*",
-					"%.exe",
-					"%.qt",
-				},
+                file_ignore_patterns = {
+                    -- 精确匹配特定目录（不包含其子目录）
+                    -- "^CMakeFiles[/\\].*$",          -- 过滤 CMakeFiles 及其所有内容
+                    "^build.*[/\\]CMakeFiles.*$",     -- 但允许 build 目录本身显示
+                    -- "^build.*[/\\].*autogen.*$",     -- 但允许 build 目录本身显示
+                    "^dist[/\\][^/\\]*$",
+                    "^out[/\\][^/\\]*$", 
+                    "^node_modules[/\\][^/\\]*$",
+
+                    -- 隐藏目录配置
+                    "^%.git[/\\].*$",               -- 完全隐藏 .git 目录内容
+                    "^%.vs[/\\].*$",
+                    "^%.cache[/\\].*$",
+                    "^%.vscode[/\\].*$",
+                    "^%.github[/\\].*$",
+                    "^%.venv.*[/\\].*$",
+
+                    -- 文件类型过滤
+                    -- "%.(exe|qt|o|a|so|dll|pyc|class)$",
+                    "^tags$"
+                },
 				layout_config = {
 					horizontal = {
 						prompt_position = "top", -- 搜索框在顶部
@@ -1674,10 +1694,19 @@ function M.telescope_init()
 		':lua require("telescope").extensions.live_grep_args.live_grep_args({ cwd = vim.g.workspace_dir.get(), search_dirs = { vim.fn.expand("%:p:h") } })<CR>'
 	)
 	nmap("<leader>sf", ':lua require("telescope.builtin").find_files({ cwd = vim.g.workspace_dir.get() })<CR>')
-	nmap(
-		"<leader>sF",
-		':lua require("telescope.builtin").find_files({ cwd = vim.g.workspace_dir.get() , defaults = {file_ignore_patterns = {}}})<CR>'
-	)
+    nmap("<leader>sF", function()
+        require("telescope.builtin").find_files({
+            cwd = vim.g.workspace_dir.get(),
+            find_command = {
+                "rg", 
+                "--files", 
+                "--hidden", 
+                "--no-ignore-vcs",
+                "--no-ignore",
+                "--glob", "!**/.git/*"
+            }
+        })
+    end)
 	nmap(
 		"<leader>sd",
 		':lua require("telescope-live-grep-args.shortcuts").grep_word_under_cursor({cwd = vim.g.workspace_dir.get()})<CR>'
