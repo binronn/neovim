@@ -7,12 +7,13 @@
 |----------------|------------------------------|
 | `<leader>fs`   | 保存当前buffer               |
 | `<leader>fS`   | 保存所有buffer               |
-| `<leader>fd`   | 关闭当前buffer(弃用)         |
+| `<leader>fd`   | 关闭当前buffer               |
+| `<leader>fD`   | 选择关闭buffer               |
 | `<leader>fo`   | 打开文件                     |
 | `<leader>wq`   | 保存并退出当前文件           |
 | `<leader>wQ`   | 保存并退出所有文件           |
-| `<leader>fq`   | 退出当前buffer/窗口          |
-| `qw`           | 退出当前非buffer窗口         |
+| `<leader>fq`   | 关闭Neovim                   |
+| `qw`           | 关闭当前窗口                 |
 | `<leader>fQ`    | 强制退出当前文件            |
 | `<leader>fn`   | 切换到下一个 buffer          |
 | `<leader>fp`   | 切换到上一个 buffer          |
