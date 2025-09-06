@@ -469,7 +469,7 @@ return {
 	},
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
-		commit = '95bc2eced6c3700942d54668d37c35f9bdb6a0cb',
+		-- commit = '95bc2eced6c3700942d54668d37c35f9bdb6a0cb',
 		lazy = true,
 		config = function()
 			require("render-markdown").setup()
