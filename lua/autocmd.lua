@@ -40,46 +40,75 @@ end
 
 
 function RunCmdHiddenWithPause(command)
-    -- 清空并打开quickfix窗口
+    local current_line = 'Build starting...'
+    local timer = vim.uv.new_timer()
+
+    local function update_notification(notif_id)
+        local title = "CMake building .."
+
+        notif_id = vim.notify(current_line, vim.log.levels.INFO, {
+            replace = notif_id,  -- 替换之前的通知
+            title = title,
+        })
+        -- end
+        return notif_id  -- 返回更新后的 ID 以供下次使用
+    end
+
+    local notif_id = vim.notify(current_line, vim.log.levels.INFO, { title = "CMake building .." })
+
+    timer:start(0, 150, vim.schedule_wrap(function()
+        notif_id = update_notification(notif_id)
+    end))
+
     vim.fn.setqflist({}, 'r')
-    vim.cmd('copen')
-    
-    vim.fn.setqflist({}, 'a', {lines = {'Commnad: ' .. command}})
-    -- 使用jobstart实时捕获输出到quickfix
+    vim.cmd('cclose')
+
+    vim.fn.setqflist({}, 'a', {lines = {'Command: ' .. command}})
+
+    -- 使用jobstart实时捕获输出到quickfix和通知
     vim.fn.jobstart(command, {
         on_stdout = function(_, data, _)
             if data and #data > 0 then
-                -- 过滤掉\r\n字符并添加到quickfix
+                local qf_lines = {}
                 for _, line in ipairs(data) do
                     local clean_line = line:gsub("[\r\n]", "")
                     if clean_line ~= "" then
-                        vim.fn.setqflist({}, 'a', {lines = {clean_line}})
+                        table.insert(qf_lines, clean_line)
+                        current_line = clean_line;
                     end
                 end
-                -- 刷新quickfix窗口显示最新内容
-                vim.cmd('copen')
+                if #qf_lines > 0 then
+                    vim.fn.setqflist({}, 'a', {lines = qf_lines})
+                end
             end
         end,
         on_stderr = function(_, data, _)
             if data and #data > 0 then
+                local qf_lines = {}
                 for _, line in ipairs(data) do
                     local clean_line = line:gsub("[\r\n]", "")
                     if clean_line ~= "" then
-                        vim.fn.setqflist({}, 'a', {lines = {clean_line}})
+                        table.insert(qf_lines, clean_line)
                     end
                 end
-                vim.cmd('copen')
+                if #qf_lines > 0 then
+                    vim.fn.setqflist({}, 'a', {lines = qf_lines})
+                end
             end
         end,
         on_exit = function(_, code)
+            local exit_message = ""
             if code == 0 then
-                -- print("Build command completed successfully.")
-                vim.notify("Build command completed successfully.", vim.log.levels.INFO, { title = 'Build help' })
-                vim.cmd('cclose')
+                exit_message = "Build command completed successfully."
+                vim.notify(exit_message, vim.log.levels.INFO, { title = 'Build help' })
             else
-                -- print("Build command failed with exit code: " .. code)
-                vim.notify("Build command failed with exit code: " .. code, vim.log.levels.INFO, { title = 'Build help' })
+                exit_message = "Build command failed with exit code: " .. code
+                vim.notify(exit_message, vim.log.levels.ERROR, { title = 'Build help' })
+                vim.cmd('copen')
             end
+
+            timer:stop()
+            timer:close()
         end
     })
 end
@@ -100,7 +129,7 @@ function build_project(compile_command)
     local wsdir = vim.g.workspace_dir2()
     local is_win32 = vim.g.is_win32 == 1
 
-	vim.cmd('wa')
+    vim.cmd('silent! wa')
 
     -- Check build systems
     local cmake_path = wsdir .. "/CMakeLists.txt"
