@@ -60,13 +60,20 @@ require('lspconfig').clangd.setup({
         "--clang-tidy",
         "--compile-commands-dir=build",
         "--pch-storage=disk",
-        "--completion-style=bundled",
+        -- "--completion-style=bundled",
+        "--all-scopes-completion",        -- 在所有作用域中提供补全
+        "--cross-file-rename",            -- 支持跨文件重命名
+        "--header-insertion=never",       -- 禁止自动插入头文件
+        "--completion-style=detailed",    -- 详细的补全信息
+        "--function-arg-placeholders",    -- 函数参数占位符
+        "--header-insertion-decorators",  -- 头文件插入装饰器
+        "--j=6",                         -- 使用6个线程
 		"--query-driver=" .. require("config.compiles_cfg").cxx_path,
     },
     filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
-    capabilities = g_capabilities,
+    -- capabilities = g_capabilities,
     diagnostics = {
-        update_in_insert = false,
+        update_in_insert = true,
         debounce = 300,
         severity_sort = true,
     },
@@ -240,28 +247,28 @@ cmp.setup({
 			-----------------------------------------------------------------------------------------------------------------------------------------------------------
 			-- 删除所有 select_next_item 即可展开的来自lsp的补全项(仅可以补全参数不可以跳转(BUG!!))，但仍可以使用cmp.confirm({select = true,})展开补全
 			-----------------------------------------------------------------------------------------------------------------------------------------------------------
-			local abbr = vim_item.abbr
-			if abbr:sub(-1) == "~" then 
-				abbr = abbr:sub(1, -2)
+			-- local abbr = vim_item.abbr
+			-- if abbr:sub(-1) == "~" then 
+			-- 	abbr = abbr:sub(1, -2)
 
-				while string.byte(abbr, 1) == 0x20 do -- 删除空格
-					abbr = abbr:sub(2)
-				end
+			-- 	while string.byte(abbr, 1) == 0x20 do -- 删除空格
+			-- 		abbr = abbr:sub(2)
+			-- 	end
 
-				if string.byte(abbr, 1) == 0xE2 then -- 删除<U+2022>(•), 0xE2,0x80,0xA2
-					abbr = abbr:sub(4)
-				end
+			-- 	if string.byte(abbr, 1) == 0xE2 then -- 删除<U+2022>(•), 0xE2,0x80,0xA2
+			-- 		abbr = abbr:sub(4)
+			-- 	end
 
-				local startPos = string.find(vim_item.word, "%a") -- 若原始补全内容包含 -> . 等非字母数字内容，则保留
-				if startPos ~= nil and startPos > 1 then
-					abbr = string.sub(vim_item.word, 1, startPos - 1) .. abbr
-				end
+			-- 	local startPos = string.find(vim_item.word, "%a") -- 若原始补全内容包含 -> . 等非字母数字内容，则保留
+			-- 	if startPos ~= nil and startPos > 1 then
+			-- 		abbr = string.sub(vim_item.word, 1, startPos - 1) .. abbr
+			-- 	end
 
-				vim_item.word = abbr
-			else
-				-- vim_item.word = vim_item.word:gsub("%W*$", "") -- 删除补全内容尾部的非字母或数字
-				vim_item.word = vim_item.word:gsub("[^%w{}%=;->()]*$", "")
-			end
+			-- 	vim_item.word = abbr
+			-- else
+			-- 	-- vim_item.word = vim_item.word:gsub("%W*$", "") -- 删除补全内容尾部的非字母或数字
+			-- 	vim_item.word = vim_item.word:gsub("[^%w{}%=;->()]*$", "")
+			-- end
 
 			if vim_item.menu and #vim_item.menu > 60 then -- 提示信息中的参数长度限制
 				vim_item.menu = vim_item.menu:sub(1, 60) .. '...'
@@ -309,9 +316,9 @@ cmp.setup({
 	sources = {
 		{ 
 			name = 'nvim_lsp', 
-			entry_filter = function(entry, ctx) -- 关闭 lsp 的snippet支持
-				return require('cmp.types').lsp.CompletionItemKind[entry:get_kind()] ~= 'Text'
-			end,
+			-- entry_filter = function(entry, ctx) -- 关闭 lsp 的snippet支持
+			-- 	return require('cmp.types').lsp.CompletionItemKind[entry:get_kind()] ~= 'Text'
+			-- end,
 		}, -- LSP 补全源
 		{ name = 'luasnip' }, -- LSP 补全源
 		{ name = 'buffer' },   -- 缓冲区补全源

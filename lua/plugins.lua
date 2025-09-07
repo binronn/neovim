@@ -270,6 +270,8 @@ return {
 				vim.api.nvim_set_hl(0, "TelescopePromptTitle", {bg = "NONE", fg = "#e29c45", bold = true})
 				vim.api.nvim_set_hl(0, "TelescopeResultsTitle", {bg = "NONE", fg = "#a88462", bold = true})
 				vim.api.nvim_set_hl(0, "TelescopePreviewTitle", {bg = "NONE", fg = "#a88462", bold = true})
+
+                vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", {  bold = true, bg = "#777777", underline = true }) -- Lsp 查看函数参数时当前编辑的参数的高亮
 			end
 
 			-- 初次加载时，应用自定义高亮设置
