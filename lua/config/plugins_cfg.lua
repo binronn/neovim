@@ -431,7 +431,25 @@ function M.lualine_init()
 		},
 		sections = {
 			lualine_a = {"mode"},
-			lualine_b = {"branch", "diff", "diagnostics"},
+            lualine_b = {
+                {
+                    'branch',
+                    icon = '',
+                    fmt = function(str)
+                        if str == '' or str == nil then
+                            local fugitive_head = vim.fn.exists('*FugitiveHead') == 1 and vim.fn.FugitiveHead() or ''
+                            if fugitive_head ~= '' then
+                                return fugitive_head
+                            else
+                                return nil
+                            end
+                        end
+                        return str
+                    end,
+                },
+                'diff',
+                'diagnostics',
+            },
 			lualine_c = {
 				{"aerial"},
 				{"filename", path = 1}, -- 显示文件名
