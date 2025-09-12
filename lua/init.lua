@@ -23,6 +23,7 @@ vim.g.maplocalleader = " " --- this line
 
 vim.g.is_win32 = vim.fn.has('win32')
 vim.g.is_unix = vim.fn.has('unix')
+vim.g.colorscheme = 'catppuccin-frappe'
 
 --------------------
 ---- 顺序不可变 ----
@@ -44,3 +45,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		require("config.basic_cfg")
 	end,
 })
+
+
+vim.cmd.colorscheme(vim.g.colorscheme)
