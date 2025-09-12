@@ -254,39 +254,39 @@ return {
 	{
 		"sainnhe/gruvbox-material",
 		config = function()
-			vim.cmd.colorscheme("gruvbox-material")
+            -- 定义一个函数，用于设置自定义高亮
+            local function set_custom_highlights()
+                vim.cmd("highlight NvimTreeEndOfBuffer guibg=#282828") -- nvimtree 背景色
+                vim.cmd("highlight NvimTreeNormal guibg=#282828") -- nvimtree 背景色
+                vim.cmd("highlight NvimTreeCursorLine guibg=#32302f") -- nvimtree 高亮当前行
 
-			-- 定义一个函数，用于设置自定义高亮
-			local function set_custom_highlights()
-				vim.cmd("highlight NvimTreeEndOfBuffer guibg=#282828") -- nvimtree 背景色
-				vim.cmd("highlight NvimTreeNormal guibg=#282828") -- nvimtree 背景色
-				vim.cmd("highlight NvimTreeCursorLine guibg=#32302f") -- nvimtree 高亮当前行
+                vim.api.nvim_set_hl(0, "FloatBorder", {bg = "NONE"}) -- 浮动窗口边框透明
+                vim.api.nvim_set_hl(0, "NormalFloat", {bg = "NONE"}) -- 浮动窗口背景透明
 
-				vim.api.nvim_set_hl(0, "FloatBorder", {bg = "NONE"}) -- 浮动窗口边框透明
-				vim.api.nvim_set_hl(0, "NormalFloat", {bg = "NONE"}) -- 浮动窗口背景透明
-
-				vim.api.nvim_set_hl(0, "TelescopePreviewBorder", {fg = "#777777", bg = "NONE"})
-				vim.api.nvim_set_hl(0, "TelescopeResultsBorder", {fg = "#777777", bg = "NONE"})
-				vim.api.nvim_set_hl(0, "TelescopePromptTitle", {bg = "NONE", fg = "#e29c45", bold = true})
-				vim.api.nvim_set_hl(0, "TelescopeResultsTitle", {bg = "NONE", fg = "#a88462", bold = true})
-				vim.api.nvim_set_hl(0, "TelescopePreviewTitle", {bg = "NONE", fg = "#a88462", bold = true})
+                vim.api.nvim_set_hl(0, "TelescopePreviewBorder", {fg = "#777777", bg = "NONE"})
+                vim.api.nvim_set_hl(0, "TelescopeResultsBorder", {fg = "#777777", bg = "NONE"})
+                vim.api.nvim_set_hl(0, "TelescopePromptTitle", {bg = "NONE", fg = "#e29c45", bold = true})
+                vim.api.nvim_set_hl(0, "TelescopeResultsTitle", {bg = "NONE", fg = "#a88462", bold = true})
+                vim.api.nvim_set_hl(0, "TelescopePreviewTitle", {bg = "NONE", fg = "#a88462", bold = true})
 
                 vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", {  bold = true, bg = "#777777", underline = true }) -- Lsp 查看函数参数时当前编辑的参数的高亮
-			end
+            end
 
-			-- 初次加载时，应用自定义高亮设置
-			set_custom_highlights()
+            -- 初次加载时，应用自定义高亮设置
+            if vim.g.colorscheme == 'gruvbox-material' then
+                set_custom_highlights()
+            end
 
-			-- 创建自动命令，在切换到 gruvbox-material 主题时重新应用高亮
-			vim.api.nvim_create_autocmd(
-				"ColorScheme",
-				{
-					pattern = "gruvbox-material",
-					callback = function()
-						set_custom_highlights()
-					end
-				}
-			)
+            -- 创建自动命令，在切换到 gruvbox-material 主题时重新应用高亮
+            vim.api.nvim_create_autocmd(
+                "ColorScheme",
+                {
+                    pattern = "gruvbox-material",
+                    callback = function()
+                        set_custom_highlights()
+                    end
+                }
+            )
 		end
 	},
 	{
@@ -303,6 +303,14 @@ return {
 			pcfg.nordic_init()
 		end
 	},
+    { 
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000,
+		config = function()
+            pcfg.catppuccin_init()
+		end
+    },
 	{
 		"lewis6991/gitsigns.nvim", -- 侧边栏显示 Git 状态
 		-- commit = '2149fc2009d1117d58e86e56836f70c969f60a82',
