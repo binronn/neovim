@@ -6,6 +6,31 @@ local M = {}
 local telescope_builtin = require("telescope.builtin")
 local root_pattern = require("lspconfig.util").root_pattern("compile_commands.json", ".git")
 
+
+function lsp_common_attach(client, bufnr)
+    -----------------------------------------------------------------------------------------
+    -- lsp 高亮同一个变量时的显示效果，仅给光标下符号加下划线，不加背景/前景色
+    -----------------------------------------------------------------------------------------
+    vim.api.nvim_set_hl(0, "LspReferenceText",  { underline = true, undercurl = false, fg = nil, bg = nil })
+    vim.api.nvim_set_hl(0, "LspReferenceRead",  { underline = true, undercurl = false, fg = nil, bg = nil })
+    vim.api.nvim_set_hl(0, "LspReferenceWrite", { underline = true, undercurl = false, fg = nil, bg = nil })
+
+    -- 高亮当前作用域变量
+    if client.server_capabilities.documentHighlightProvider then
+        local group = vim.api.nvim_create_augroup("LspDocumentHighlight" .. bufnr, { clear = true })
+        vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+            group = group,
+            buffer = bufnr,
+            callback = vim.lsp.buf.document_highlight,
+        })
+        vim.api.nvim_create_autocmd("CursorMoved", {
+            group = group,
+            buffer = bufnr,
+            callback = vim.lsp.buf.clear_references,
+        })
+    end
+end
+
 -----------------------------------------------------------------------------------------
 -- 切换头文件并搜索
 -----------------------------------------------------------------------------------------
@@ -38,6 +63,8 @@ local g_capabilities = require("cmp_nvim_lsp").default_capabilities()
 -- clangd 配置
 -----------------------------------------------------------------------------------------
 local function on_clangd_attach(client, bufnr)
+    lsp_common_attach(client, bufnr)
+
     local opts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, { buffer = bufnr, desc = "Find definitions" })
     vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, { buffer = bufnr, desc = "Find implementations" })
@@ -48,6 +75,7 @@ local function on_clangd_attach(client, bufnr)
     vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "<leader>hS", switch_file_and_search, opts)
+
     -- clangd 的 switchSourceHeader
     vim.keymap.set("n", "<leader>hs", function()
         local params = { uri = vim.uri_from_bufnr(0) }
@@ -64,6 +92,7 @@ local function on_clangd_attach(client, bufnr)
         end)
     end, opts)
     vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
+
 end
 
 -- 使用新的 vim.lsp.start API 配置 clangd
@@ -147,6 +176,8 @@ vim.api.nvim_create_autocmd('FileType', {
             cmd = { "pyright-langserver", "--stdio" },
             filetypes = { "python" },
             on_attach = function(_, bufnr)
+                lsp_common_attach(client, bufnr)
+
                 local opts = { noremap = true, silent = true, buffer = bufnr }
                 vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
                 vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, opts)
@@ -269,7 +300,77 @@ cmp.setup({
             end
         end, { 'i', 's' }),
     },
-    formatting = {
+	formatting = {
+		format = function(entry, vim_item)
+			-----------------------------------------------------------------------------------------------------------------------------------------------------------
+			-- 删除所有 select_next_item 即可展开的来自lsp的补全项(仅可以补全参数不可以跳转(BUG!!))，但仍可以使用cmp.confirm({select = true,})展开补全
+			-----------------------------------------------------------------------------------------------------------------------------------------------------------
+			-- local abbr = vim_item.abbr
+			-- if abbr:sub(-1) == "~" then 
+			-- 	abbr = abbr:sub(1, -2)
+
+			-- 	while string.byte(abbr, 1) == 0x20 do -- 删除空格
+			-- 		abbr = abbr:sub(2)
+			-- 	end
+
+			-- 	if string.byte(abbr, 1) == 0xE2 then -- 删除<U+2022>(•), 0xE2,0x80,0xA2
+			-- 		abbr = abbr:sub(4)
+			-- 	end
+
+			-- 	local startPos = string.find(vim_item.word, "%a") -- 若原始补全内容包含 -> . 等非字母数字内容，则保留
+			-- 	if startPos ~= nil and startPos > 1 then
+			-- 		abbr = string.sub(vim_item.word, 1, startPos - 1) .. abbr
+			-- 	end
+
+			-- 	vim_item.word = abbr
+			-- else
+			-- 	-- vim_item.word = vim_item.word:gsub("%W*$", "") -- 删除补全内容尾部的非字母或数字
+			-- 	vim_item.word = vim_item.word:gsub("[^%w{}%=;->()]*$", "")
+			-- end
+
+			if vim_item.menu and #vim_item.menu > 60 then -- 提示信息中的参数长度限制
+				vim_item.menu = vim_item.menu:sub(1, 60) .. '...'
+			end
+			if vim_item.abbr and #vim_item.abbr > 60 then -- 提示信息中的提示词显示的长度限制
+				vim_item.abbr = vim_item.abbr:sub(1, 60) .. '...'
+			end
+
+
+			local kind_icons = {
+				Text = "",          -- 文本
+				Method = "",        -- 方法
+				Function = "",      -- 函数
+				Constructor = "",   -- 构造函数
+				Field = "識",         -- 字段
+				Variable = "",      -- 变量
+				Class = "ﴯ",         -- 类
+				Interface = "",     -- 接口
+				Module = "",        -- 模块
+				Property = "",      -- 属性
+				Unit = "",          -- 单位
+				Value = "",         -- 值
+				Enum = "",          -- 枚举
+				Keyword = "",       -- 关键字
+				Snippet = "",       -- 代码片段
+				Color = "",         -- 颜色
+				File = "",          -- 文件
+				Reference = "",     -- 引用
+				Folder = "ﱮ",        -- 文件夹
+				EnumMember = "",    -- 枚举成员
+				Constant = "",      -- 常量
+				Struct = "",        -- 结构
+				Event = "",         -- 事件
+				Operator = "",      -- 操作符
+				TypeParameter = ""  -- 类型参数
+			}
+
+			-- 设置补全项的图标
+			vim_item.kind = kind_icons[vim_item.kind] or ""
+
+			return vim_item
+		end
+	},
+    --[[ formatting = {
         format = function(entry, vim_item)
             if vim_item.menu and #vim_item.menu > 60 then
                 vim_item.menu = vim_item.menu:sub(1, 60) .. '...'
@@ -289,7 +390,7 @@ cmp.setup({
             vim_item.kind = kind_icons[vim_item.kind] or ""
             return vim_item
         end
-    },
+    }, ]]
     sources = {
         { name = 'luasnip' },
         { name = 'nvim_lsp' },
@@ -306,5 +407,6 @@ cmp.setup({
         completeopt = "menuone,noselect,insert,preview",
     },
 })
+
 
 return M
