@@ -49,35 +49,54 @@ local function on_clangd_attach(client, bufnr)
     vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "<leader>hS", switch_file_and_search, opts)
-    vim.keymap.set("n", "<leader>hs", ":ClangdSwitchSourceHeader<CR>", opts)
+    vim.keymap.set("n", "<leader>hs", function()
+        local params = { uri = vim.uri_from_bufnr(0) }
+        vim.lsp.buf_request(0, "textDocument/switchSourceHeader", params, function(err, result)
+            if err then
+                vim.notify("SwitchSourceHeader error: " .. err.message, vim.log.levels.ERROR)
+                return
+            end
+            if not result then
+                vim.notify("No corresponding header/source found", vim.log.levels.INFO)
+                return
+            end
+            vim.cmd("edit " .. vim.uri_to_fname(result))
+        end)
+    end, { noremap = true, silent = true, desc = "Switch between source/header" })
     vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
 end
 
-require('lspconfig').clangd.setup({
-    cmd = {
-        "clangd",
-        "--background-index=true",
-        "--clang-tidy",
-        "--compile-commands-dir=build",
-        "--pch-storage=disk",
-        -- "--completion-style=bundled",
-        "--all-scopes-completion",        -- 在所有作用域中提供补全
-        "--cross-file-rename",            -- 支持跨文件重命名
-        "--header-insertion=never",       -- 禁止自动插入头文件
-        "--completion-style=detailed",    -- 详细的补全信息
-        "--function-arg-placeholders",    -- 函数参数占位符
-        "--header-insertion-decorators",  -- 头文件插入装饰器
-        "--j=6",                         -- 使用6个线程
-		"--query-driver=" .. require("config.compiles_cfg").cxx_path,
-    },
-    filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
-    -- capabilities = g_capabilities,
-    diagnostics = {
-        update_in_insert = true,
-        debounce = 300,
-        severity_sort = true,
-    },
-    on_attach = on_clangd_attach,
+-- 使用新的 vim.lsp.start API 配置 clangd
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
+    callback = function(args)
+        local bufnr = args.buf
+        if vim.lsp.get_clients({ bufnr = bufnr, name = "clangd" })[1] then
+            return -- 已经附加了 clangd
+        end
+        
+        vim.lsp.start({
+            name = "clangd",
+            cmd = {
+                "clangd",
+                "--background-index=true",
+                "--clang-tidy",
+                "--compile-commands-dir=build",
+                "--pch-storage=disk",
+                "--all-scopes-completion",
+                "--cross-file-rename",
+                "--header-insertion=never",
+                "--completion-style=detailed",
+                "--function-arg-placeholders",
+                "--header-insertion-decorators",
+                "--j=6",
+                "--query-driver=" .. require("config.compiles_cfg").cxx_path,
+            },
+            capabilities = g_capabilities,
+            on_attach = on_clangd_attach,
+            root_dir = require("lspconfig.util").root_pattern("compile_commands.json", ".git"),
+        })
+    end,
 })
 
 -----------------------------------------------------------------------------------------
@@ -95,60 +114,70 @@ function M.switch_clangd(clangd_path, compiler_path)
             "--completion-style=bundled",
             "--query-driver=" .. compiler_path,
         },
-        filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
         root_dir = require("lspconfig.util").root_pattern("compile_commands.json", ".git"),
         on_attach = on_clangd_attach,
         capabilities = g_capabilities,
     }
 
-	-- local clangd_clients = vim.lsp.get_clients({ name = "clangd" })
-	-- for _, client in ipairs(clangd_clients) do
-	-- 	vim.lsp.stop_client(client.id)
-	-- end
+    -- 停止所有 clangd 客户端（更安全的写法）
+    for _, client in ipairs(vim.lsp.get_clients({ name = "clangd" })) do
+        vim.lsp.stop_client(client)
+    end
 
-	vim.lsp.stop_client(vim.lsp.get_clients())
-
-	vim.defer_fn(function()
-		vim.lsp.start(new_config)
-	end, 100)
+    -- 启动新实例
+    vim.defer_fn(function()
+        vim.lsp.start(new_config)
+    end, 100)
 end
 
 -----------------------------------------------------------------------------------------
 -- Python 配置
 ------------------------------------------------------------------------------------------
-require('lspconfig').pyright.setup({
-    filetypes = { "py", "python" },
-    on_attach = function(_, bufnr)
-        local telescope = require("telescope.builtin")
-        local opts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-        vim.keymap.set("n", "gi", telescope.lsp_implementations, opts)
-        vim.keymap.set("n", "gr", telescope.lsp_references, opts)
-        vim.keymap.set("n", "gl", telescope.lsp_document_symbols, opts)
-        vim.keymap.set("n", "ga", telescope.lsp_dynamic_workspace_symbols, opts)
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-        vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, opts)
-        vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
-        vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
-    end,
-    settings = {
-        python = {
-            analysis = {
-                typeCheckingMode = "basic",
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-                diagnosticMode = "workspace",
-                autoImportCompletions = true,
-                diagnosticSeverityOverrides = {
-                    reportUnusedImport = "warning",
-                    reportUnusedVariable = "warning",
-                    reportMissingImports = "error",
-                    reportUnusedFunction = "warning",
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = { "py", "python" },
+    callback = function(args)
+        local bufnr = args.buf
+        if vim.lsp.get_clients({ bufnr = bufnr, name = "pyright" })[1] then
+            return -- 已经附加了 pyright
+        end
+        
+        vim.lsp.start({
+            name = "pyright",
+            cmd = { "pyright-langserver", "--stdio" },
+            filetypes = { "py", "python" },
+            on_attach = function(_, bufnr)
+                local telescope = require("telescope.builtin")
+                local opts = { noremap = true, silent = true, buffer = bufnr }
+                vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+                vim.keymap.set("n", "gi", telescope.lsp_implementations, opts)
+                vim.keymap.set("n", "gr", telescope.lsp_references, opts)
+                vim.keymap.set("n", "gl", telescope.lsp_document_symbols, opts)
+                vim.keymap.set("n", "ga", telescope.lsp_dynamic_workspace_symbols, opts)
+                vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+                vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+                vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, opts)
+                vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
+                vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
+            end,
+            settings = {
+                python = {
+                    analysis = {
+                        typeCheckingMode = "basic",
+                        autoSearchPaths = true,
+                        useLibraryCodeForTypes = true,
+                        diagnosticMode = "workspace",
+                        autoImportCompletions = true,
+                        diagnosticSeverityOverrides = {
+                            reportUnusedImport = "warning",
+                            reportUnusedVariable = "warning",
+                            reportMissingImports = "error",
+                            reportUnusedFunction = "warning",
+                        },
+                    },
                 },
             },
-        },
-    },
+        })
+    end,
 })
 
 -----------------------------------------------------------------------------------------
@@ -314,13 +343,13 @@ cmp.setup({
 	},
 
 	sources = {
+		{ name = 'luasnip' }, -- LSP 补全源
 		{ 
 			name = 'nvim_lsp', 
 			-- entry_filter = function(entry, ctx) -- 关闭 lsp 的snippet支持
 			-- 	return require('cmp.types').lsp.CompletionItemKind[entry:get_kind()] ~= 'Text'
 			-- end,
 		}, -- LSP 补全源
-		{ name = 'luasnip' }, -- LSP 补全源
 		{ name = 'buffer' },   -- 缓冲区补全源
 		{ name = 'path' },     -- 路径补全源
 	},
