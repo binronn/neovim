@@ -76,6 +76,29 @@ local function on_clangd_attach(client, bufnr)
     vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "<leader>hS", switch_file_and_search, opts)
 
+    local config_path = vim.fn.stdpath("config") .. "/.clang-format"
+    local cwd_config = vim.g.workspace_dir2()..'/.clang-format'
+
+    if vim.fn.executable('clang-format') == 0 then
+        vim.notify('clang-format not found! Please install clang-format', vim.log.levels.ERROR)
+        return
+    else
+        local effective_config = vim.fn.filereadable(cwd_config) == 1 and cwd_config or
+        vim.fn.filereadable(config_path) == 1 and config_path or nil
+        vim.keymap.set('n', '<leader>ff', '', {
+            noremap = true,
+            silent = true,
+            callback = function()
+                local cursor_pos = vim.api.nvim_win_get_cursor(0)
+                local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+                local formatted = vim.fn.systemlist('clang-format -style=file:"'.. effective_config:gsub('/', '\\') .. '"', lines)
+                vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
+                vim.api.nvim_win_set_cursor(0, cursor_pos)
+            end
+        })
+    end
+
+
     -- clangd 的 switchSourceHeader
     vim.keymap.set("n", "<leader>hs", function()
         local params = { uri = vim.uri_from_bufnr(0) }

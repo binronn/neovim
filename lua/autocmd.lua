@@ -420,7 +420,7 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
-vim.api.nvim_create_autocmd('FileType', {
+--[[ vim.api.nvim_create_autocmd('FileType', {
     pattern = {'c', 'cpp', 'h', 'hpp', 'json'},
     callback = function(args)
         local bufnr = args.buf
@@ -452,7 +452,7 @@ vim.api.nvim_create_autocmd('FileType', {
             })
         end
     end,
-})
+}) ]]
 
 ----------------------------------------------------------------
 -- 项目路径保存与恢复
