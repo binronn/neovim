@@ -354,7 +354,7 @@ dap.configurations.c = dap.configurations.cpp
 -----------------------------------------------------------------
 -- 配置 Python 调试
 -----------------------------------------------------------------
-if vim.g.is_unix == 1 then
+--[[ if vim.g.is_unix == 1 then
 	require("dap-python").setup("python3")
 else
 	require("dap-python").setup("python")
@@ -372,9 +372,9 @@ dap.configurations.python = {
 		end,
 		-- In linux maybe not externalTerminal!!
 		console = "externalTerminal", -- 关键参数：externalTerminal/integratedTerminal/internalConsole
-		justMyCode = true
+		justMyCode = true,
 	}
-}
+} ]]
 
 -----------------------------------------------
 -- 调试函数定义
@@ -551,49 +551,76 @@ function start_debug_session_new()
 	start_debug_session()
 end
 
+function CloseUnnamedScratchBuffer()
+    -- 1. 获取当前标签页中所有窗口的句柄 (ID) 列表
+    local all_wins = vim.api.nvim_list_wins()
+
+    -- 2. 遍历这个列表中的每一个窗口
+    for _, winid in ipairs(all_wins) do
+        -- 安全检查：确保窗口仍然有效
+        if vim.api.nvim_win_is_valid(winid) then
+            -- 3. 获取当前遍历到的窗口所显示的 buffer 编号
+            local bufnr = vim.api.nvim_win_get_buf(winid)
+
+            -- 2. 获取 buffer 的名称 (文件路径)
+            local bufname = vim.api.nvim_buf_get_name(bufnr)
+
+            -- 3. 获取 buffer 的类型，这是区分普通 buffer 和插件窗口的关键
+            local buftype = vim.api.nvim_buf_get_option(bufnr, 'buftype')
+
+            -- 4. 获取 buffer 是否被修改
+            local is_modified = vim.api.nvim_buf_get_option(bufnr, 'modified')
+
+            if bufname == "" and buftype == "nofile" then
+                vim.cmd('bdelete ' .. bufnr)
+            end
+        end
+    end
+end
+
 function close_debug_session()
+    local ok_dap, dap = pcall(require, "dap")
+    if not ok_dap then return end
+    local ok_dapui, dapui = pcall(require, "dapui")
 
-	if not dap.session() then
-		return
-	end
+    local session = dap.session()  -- 缓存，避免状态变化
+    if not session then return end
 
-	if g_debug_tab_num ~= nil and dap.session() then
-		dapui.close() -- 关闭调试器
-		g_dapui_closed = true
+    if g_debug_tab_num ~= nil then
+        CloseUnnamedScratchBuffer()
+        if ok_dapui then
+            pcall(dapui.close)
+        end
+        g_dapui_closed = true
 
-		local status, err = pcall(function()
-			vim.cmd('tabnext ' .. g_origin_tab_num)
-		end)
-		if not status then
-			vim.notify('Failed to switch editor tab', vim.log.levels.INFO, { title = 'Lsp debug' })
-		else
-			pcall(function()
-				vim.cmd('tabclose ' .. g_debug_tab_num)
-			end)
-		end
+        -- 延迟切换 tab，避免 UI 状态未同步
+        vim.schedule(function()
+            local status = pcall(vim.cmd, 'tabnext ' .. tostring(g_origin_tab_num))
+            if not status then
+                vim.notify('Failed to switch editor tab', vim.log.levels.INFO, { title = 'Lsp debug' })
+            else
+                pcall(vim.cmd, 'tabclose ' .. tostring(g_debug_tab_num))
+            end
+            g_debug_tab_num = nil
+            g_origin_tab_num = nil
+        end)
+    end
 
-		g_debug_tab_num = nil
-		g_origin_tab_num = nil
-	end
+    if type(clear_debug_keymaps) == "function" then
+        pcall(clear_debug_keymaps)
+    end
 
-	clear_debug_keymaps()
-	-- 获取 dap 和 dapui 模块
-	local dap = require("dap")
+    -- 删除自动命令组
+    if pcall(vim.api.nvim_get_autocmds, { group = 'DapBufRepair' }) then
+        pcall(vim.api.nvim_del_augroup_by_name, 'DapBufRepair')
+    end
 
-	if pcall(vim.api.nvim_get_autocmds, { group = 'DapBufRepair' }) then
-		vim.api.nvim_del_augroup_by_name('DapBufRepair')
-	end
-
-	-- 关闭当前 DAP 会话
-	if dap.session() then
-		dap.terminate() -- 终止调试会话
-	end
-
-	-- 关闭 dap-ui 的界面
-	-- if g_dapui_closed == false then
-	-- 	dapui.close()
-	-- 	
-	-- end
+    -- 终止调试会话（安全）
+    vim.schedule(function()
+        if dap.session() then
+            pcall(dap.terminate)
+        end
+    end)
 end
 
 -----------------------------------------------
