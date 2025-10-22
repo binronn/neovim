@@ -471,8 +471,8 @@ function M.lualine_init()
 			-- component_separators = {left = "·", right = "·"},
 			-- component_separators = { left = '', right = '' },
 			-- component_separators = { left = "❰", right = "❱" },
-            component_separators = { left = "•", right = "•" },
-            -- component_separators = { left = "", right = "" },
+            -- component_separators = { left = "•", right = "•" },
+            component_separators = { left = "", right = "" },
 			section_separators = {left = "", right = ""},
 			disabled_filetypes = {
 				statusline = {},
@@ -525,10 +525,29 @@ function M.lualine_init()
 			lualine_y = {},
 			lualine_z = {}
 		},
-		tabline = {},
 		winbar = {},
 		inactive_winbar = {},
-		extensions = {}
+        extensions = {'nvim-tree'},
+        tabline = {
+            lualine_a = {
+                -- 关键点：将 'buffers' 组件和它的所有选项用一对 {} 包裹起来
+                { -- <--- 添加了这个左大括号
+                    'buffers',
+                    path = 1,
+                    mode = 2,
+                    symbols = {
+                        alternate_file = '⇋ ', -- 示例：一个左右切换的箭头图标 (需要 Nerd Font)
+                        -- alternate_file = '', -- 另一个示例
+                        -- alternate_file = '[A] ', -- 或者简单的文本
+
+                        -- 您也可以在这里一并修改其他符号
+                        modified = ' ●',       -- 修改了但未保存的符号
+                        readonly = ' ',     -- 只读符号
+                    }
+                } -- <--- 添加了这个右大括号
+            },
+            lualine_z = {'tabs'},
+        },
 	}
 end
 
@@ -1317,7 +1336,13 @@ function M.nvim_tree_init()
 			-- 视图设置
 			view = {
 				width = 40,
-				side = "left"
+				side = "left",
+
+				float = {
+					enable = false,  -- 确保不使用浮动窗口
+				},
+				-- 添加以下配置防止自动调整
+				preserve_window_proportions = false,
 				--   mappings = {
 				--     custom_only = false,  -- 是否只使用自定义映射
 				--     list = {
