@@ -81,7 +81,7 @@ return {
 		config = pcfg.plenary_init
 	},
 	{
-		"itchyny/vim-cursorword" -- 高亮光标下内容
+		-- "itchyny/vim-cursorword" -- 高亮光标下内容
 	},
 	-- {
 	-- 	"yamatsum/nvim-cursorline", -- 高亮光标下内容和行
@@ -178,7 +178,7 @@ return {
 	-- 	config = pcfg.persistence
 	-- },
 	{
-		"goolord/alpha-nvim",
+		"goolord/alpha-nvim", -- 启动窗口
 		dependencies = { 'nvim-tree/nvim-web-devicons' },
 		config = pcfg.alpha_init
 	},
@@ -260,6 +260,10 @@ return {
                 vim.cmd("highlight NvimTreeNormal guibg=#282828") -- nvimtree 背景色
                 vim.cmd("highlight NvimTreeCursorLine guibg=#32302f") -- nvimtree 高亮当前行
 
+                vim.cmd("highlight NeoTreeEndOfBuffer guibg=#282828") -- nvimtree 背景色
+                vim.cmd("highlight NeoTreeNormal guibg=#282828") -- nvimtree 背景色
+                vim.cmd("highlight NeoTreeCursorLine guibg=#32302f") -- nvimtree 高亮当前行
+
                 vim.api.nvim_set_hl(0, "FloatBorder", {bg = "NONE"}) -- 浮动窗口边框透明
                 vim.api.nvim_set_hl(0, "NormalFloat", {bg = "NONE"}) -- 浮动窗口背景透明
 
@@ -270,6 +274,9 @@ return {
                 vim.api.nvim_set_hl(0, "TelescopePreviewTitle", {bg = "NONE", fg = "#a88462", bold = true})
 
                 vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", {  bold = true, bg = "#777777", underline = true }) -- Lsp 查看函数参数时当前编辑的参数的高亮
+
+                vim.api.nvim_set_hl(0, "@lsp.type.parameter.cpp", { italic = true }) -- cpp 参数为斜体
+                vim.api.nvim_set_hl(0, "@lsp.type.parameter.c", { italic = true })
             end
 
             -- 初次加载时，应用自定义高亮设置
@@ -317,11 +324,11 @@ return {
 		event = {"VimEnter"},
 		config = pcfg.gitsigns_init
 	},
-	{
-		"akinsho/bufferline.nvim", -- 缓冲区标签栏
-		event = { "VimEnter" },
-		config = pcfg.bufferline_init
-	},
+	-- {
+	-- 	"akinsho/bufferline.nvim", -- 缓冲区标签栏
+	-- 	event = { "VimEnter" },
+	-- 	config = pcfg.bufferline_init
+	-- },
 	{
 		"nvim-treesitter/nvim-treesitter", -- 语法高亮
 		event = { "VimEnter" },
@@ -386,12 +393,22 @@ return {
 			vim.api.nvim_set_hl(0, "IblIndent", {fg = "white"})
 		end
 	},
-	{
-		"nvim-tree/nvim-tree.lua", -- 文件浏览器
-		-- cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeOpen" },
-		event = {'BufReadPost'},
-		config = pcfg.nvim_tree_init
-	},
+	-- {
+	-- 	"nvim-tree/nvim-tree.lua", -- 文件浏览器
+	-- 	-- cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeOpen" },
+	-- 	event = {'BufReadPost'},
+	-- 	config = pcfg.nvim_tree_init
+	-- },
+    {
+        "nvim-neo-tree/neo-tree.nvim",
+        -- branch = "v3.x",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-web-devicons", -- 确保图标插件存在
+            "MunifTanjim/nui.nvim",
+        },
+        config = pcfg.neo_tree_init -- 在这里调用你的函数
+    },
 	-- LSP 和补全
 	{
 		"neovim/nvim-lspconfig", -- LSP 配置
@@ -438,6 +455,18 @@ return {
 		},
 		config = pcfg.telescope_init
 	},
+    -- 这是 nvim-dap-python 插件的定义
+    --[[ {
+        "mfussenegger/nvim-dap-python",
+        ft = "python", -- 仅在打开 python 文件时加载
+        opts = {
+            -- `rocks` 是 lazy.nvim 的一个特殊键，用于控制 luarocks 的行为
+            rocks = {
+                enable = false,
+                hererocks = false,
+            }
+        },
+    }, ]]
 	-- 调试插件
 	{
 		"mfussenegger/nvim-dap",
@@ -446,7 +475,7 @@ return {
 			"nvim-neotest/nvim-nio",
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text",
-			"mfussenegger/nvim-dap-python",
+			-- "mfussenegger/nvim-dap-python",
 			"nvim-telescope/telescope-dap.nvim"
 		},
 		config = function()

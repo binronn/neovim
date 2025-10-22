@@ -1255,6 +1255,125 @@ function M.Comment_init()
 	)
 end
 
+
+------------------------------------------------------------------------------------------
+-- neo-tree 配置
+------------------------------------------------------------------------------------------
+function M.neo_tree_init()
+	require("neo-tree").setup({
+		-- 核心行为
+		-- 对应 nvim-tree 的: actions.open_file.quit_on_open = false
+		close_window_on_accept = false,
+		-- 对应 nvim-tree 的: sort.sorter = "case_sensitive"
+		sort_case_insensitive = false,
+		-- 对应 nvim-tree 的: update_focused_file.enable = false
+		follow_current_file = false,
+		-- 推荐：在 Windows 上启用 libuv 文件观察器以获得更好的性能
+		use_libuv_file_watcher = true,
+
+		-- 窗口设置
+		window = {
+			-- 对应 nvim-tree 的: view.side = "left"
+			position = "left",
+			-- 对应 nvim-tree 的: view.width = 40
+			width = 40,
+			-- 对应 nvim-tree 的: view.float.enable = false
+			-- (neo-tree 默认就是侧边栏, 无需额外设置)
+
+			-- 对应 nvim-tree 的: preserve_window_proportions = false
+			-- neo-tree 默认行为就是这样，如果需要自动调整，可以设置 auto_resize = true
+		},
+
+		-- 图标设置 (来自你的 renderer.icons.glyphs)
+		default_component_configs = {
+			icon = {
+				default = "",
+				symlink = "",
+			},
+			git_status = {
+				unstaged = "",
+				staged = "✓",
+				unmerged = "",
+				renamed = "➜",
+				untracked = "",
+				deleted = "",
+				ignored = "◌",
+			},
+		},
+
+		-- 文件系统特定配置
+		filesystem = {
+			-- 对应 nvim-tree 的: disable_netrw = true, hijack_netrw = true
+			hijack_netrw = {
+				enable = true,
+				-- 可选：如果你想在打开目录时自动打开 neo-tree
+				auto_open = true,
+			},
+
+			-- 对应 nvim-tree 的: git.enable = true
+			-- (neo-tree 默认启用 git 状态, 这里通过图标配置已隐式启用)
+
+			-- 过滤规则 (来自你的 filters)
+			filtered_items = {
+				-- 对应 nvim-tree 的: dotfiles = true
+				hide_dotfiles = false,
+				-- 对应 nvim-tree 的: git_ignored = false
+				hide_gitignored = false,
+				-- 对应 nvim-tree 的: custom = { ... }
+				-- neo-tree 使用 'hide_by_name'
+				hide_by_name = {
+					-- 构建相关目录
+					"^CMakeFiles$",
+					-- "^build$",
+					-- "^build_.*$",
+					"^cmake-build-.*$",
+					"^%.vscode$",
+					"^%.idea$",
+
+					-- 依赖和缓存
+					"^node_modules$",
+					"^%.cache$",
+					"^dist$",
+					"^target$",
+
+					-- Python 虚拟环境
+					"^%.venv.*$",
+					"^venv$",
+					"^env$",
+
+					-- 其他 (你注释掉的)
+					-- "%.out$",
+					-- "%.exe$",
+					-- "%.dll$",
+					-- "%.so$",
+					-- "%.dylib$",
+				},
+				-- 这是一个 neo-tree 的额外优化，对于大型项目可以隐藏所有 .git 目录下的内容
+				hide_hidden = true,
+				never_show = {
+					".DS_Store",
+					"thumbs.db",
+				},
+			},
+		},
+		-- 其他源（例如 buffers, git_status）的配置
+		-- 如果你不需要，可以保持默认
+		buffers = {
+			follow_current_file = true,
+		},
+		git_status = {
+			follow_current_file = true,
+		},
+	})
+
+	-- 你的 <F3> 键位映射
+	-- 注意：neo-tree 的命令是 :Neotree
+	-- 'nmap' 是一个 VimL 命令, 推荐使用 Lua 的 API
+	-- vim.keymap.set("n", "<F3>", ":Neotree toggle<CR>", { silent = true, desc = "Toggle Neo-tree" })
+	nmap("<F3>", ":lua vim.g.toggle_neotree()<CR>")
+end
+
+
 ------------------------------------------------------------------------------------------
 -- nvim-tree 配置
 ------------------------------------------------------------------------------------------

@@ -218,61 +218,85 @@ end
 vim.g.live_grep_args_with_quotes = {get = live_grep_args_with_quotes}
 
 -- 切换 NvimTree
-local function toggle_nvimtree()
-	local nvim_tree = require("nvim-tree.api").tree
-	local is_nvim_tree_open = nvim_tree.is_visible() -- 检测 NvimTree 是否打开
+-- local function toggle_nvimtree()
+---
+-- 辅助函数：检查 Neo-tree 是否可见
+-- (通过检查是否有窗口的 filetype 为 'neo-tree')
+---
+local function is_neotree_visible()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.api.nvim_buf_get_option(buf, "filetype") == "neo-tree" then
+			return true
+		end
+	end
+	return false
+end
 
-	-- 检测 TagBar 是否打开
-	local is_tagbar_open = false
+---
+-- 辅助函数：检查 Aerial (TagBar) 是否可见
+-- (来自你的原始代码)
+---
+local function is_aerial_visible()
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
 		local buf = vim.api.nvim_win_get_buf(win)
 		if vim.api.nvim_buf_get_option(buf, "filetype") == "aerial" then
-			is_tagbar_open = true
-			break
+			return true
+			-- break
 		end
 	end
+	return false
+end
 
-	-- 如果 NvimTree 打开，则关闭它
-	if is_nvim_tree_open then
-		nvim_tree.toggle()
+---
+-- 新的：切换 Neo-tree (替换 toggle_nvimtree)
+-- @logic: 如果 Neo-tree 打开，则关闭它。
+--         如果 Neo-tree 关闭，则先关闭 Aerial (如果它开了)，再打开 Neo-tree。
+---
+local function toggle_neotree()
+	local is_neo_tree_open = is_neotree_visible()
+	local is_tagbar_open = is_aerial_visible()
+
+	-- 如果 Neo-Tree 打开，则关闭它
+	if is_neo_tree_open then
+		-- 使用 'close' 动作确保是关闭，而不是切换
+		require("neo-tree.command").execute({ action = "close" })
 	else
 		-- 如果 TagBar 打开，则关闭它
 		if is_tagbar_open then
 			vim.cmd("AerialClose")
 		end
-		-- 打开 NvimTree
-		nvim_tree.toggle()
+		-- 打开 Neo-Tree (使用 'toggle' 会自动打开)
+		require("neo-tree.command").execute({ toggle = true })
 	end
 end
-vim.g.toggle_nvimtree = toggle_nvimtree
+-- 同样将它设置为全局变量 (如果你需要的话)
+vim.g.toggle_neotree = toggle_neotree
 
--- 切换 TagBar
+---
+-- 新的：切换 TagBar (逻辑不变，但调用了新的 neotree 辅助函数)
+-- @logic: 如果 TagBar 打开，则关闭它。
+--         如果 TagBar 关闭，则先关闭 Neo-tree (如果它开了)，再打开 TagBar。
+---
 local function toggle_tagbar()
-	local nvim_tree = require("nvim-tree.api").tree
-	local is_nvim_tree_open = nvim_tree.is_visible() -- 检测 NvimTree 是否打开
-
-	-- 检测 TagBar 是否打开
-	local is_tagbar_open = false
-	for _, win in ipairs(vim.api.nvim_list_wins()) do
-		local buf = vim.api.nvim_win_get_buf(win)
-		if vim.api.nvim_buf_get_option(buf, "filetype") == "aerial" then
-			is_tagbar_open = true
-			break
-		end
-	end
+	local is_neo_tree_open = is_neotree_visible()
+	local is_tagbar_open = is_aerial_visible()
 
 	-- 如果 TagBar 打开，则关闭它
 	if is_tagbar_open then
 		vim.cmd("AerialClose")
 	else
-		-- 如果 NvimTree 打开，则关闭它
-		if is_nvim_tree_open then
-			nvim_tree.toggle()
+		-- 如果 Neo-Tree 打开，则关闭它
+		if is_neo_tree_open then
+			require("neo-tree.command").execute({ action = "close" })
 		end
 		-- 打开 TagBar
 		vim.cmd("AerialOpen")
 	end
 end
+-- (你可能也需要把这个函数暴露出去或设置键位映射)
+-- vim.g.toggle_tagbar = toggle_tagbar
+-- vim.keymap.set("n", "<F4>", toggle_tagbar) -- 示例
 vim.g.toggle_tagbar = toggle_tagbar
 
 
