@@ -1299,7 +1299,7 @@ function M.neo_tree_init()
             filtered_items = {
                 visible = false, -- 隐藏被过滤的项
                 hide_dotfiles = true,
-                hide_gitignored = false, -- 不遵循 .gitignore
+                hide_gitignored = true, -- 遵循 .gitignore
                 hide_by_name = {
                     -- 过滤特定目录
                     "CMakeFiles",
@@ -1340,7 +1340,7 @@ function M.neo_tree_init()
 
             follow_current_file = {
                 enabled = true, -- 不自动跟随当前文件
-                leave_dirs_open = false,
+                leave_dirs_open = true,
             },
             group_empty_dirs = false,
             hijack_netrw_behavior = "open_default", -- 替代 netrw
@@ -1373,15 +1373,15 @@ function M.neo_tree_init()
             },
         },
 
-        event_handlers = {
+        --[[ event_handlers = {
             {
-                -- event = "file_opened",
-                -- handler = function()
+                event = "file_opened",
+                handler = function()
                     -- 打开文件后不关闭 Neo-tree
                     -- 如果希望关闭，可以改为 require("neo-tree.command").execute({ action = "close" })
-                -- end,
+                end,
             },
-        },
+        }, ]]
     })
 
     nmap("<F3>", ":lua vim.g.toggle_neotree()<CR>")
