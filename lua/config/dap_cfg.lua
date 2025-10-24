@@ -162,7 +162,7 @@ local function restore_window()
 
 	-- 检查 NvimTree 是否打开
 	if g_is_nvimtree_open == true then
-		vim.g.toggle_nvimtree()
+		vim.g.toggle_neotree()
 	end
 
 	-- 检查 Aerial 是否打开
@@ -634,30 +634,6 @@ nmap(
 	function()
 		dap.toggle_breakpoint(vim.fn.input("Condition: "))
 	end,
-	{noremap = true, silent = true}
-)
--- 只跳转到下一个错误
-nmap(
-	"]e",
-	"<cmd>lua vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })<CR>",
-	{noremap = true, silent = true}
-)
--- 只跳转到上一个错误
-nmap(
-	"[e",
-	"<cmd>lua vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })<CR>",
-	{noremap = true, silent = true}
-)
--- 只跳转到下一个警告
-nmap(
-	"]d",
-	"<cmd>lua vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })<CR>",
-	{noremap = true, silent = true}
-)
--- 只跳转到上一个警告
-nmap(
-	"[d",
-	"<cmd>lua vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })<CR>",
 	{noremap = true, silent = true}
 )
 -- 启动调试器
