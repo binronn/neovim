@@ -1260,233 +1260,247 @@ end
 -- neo-tree 配置
 ------------------------------------------------------------------------------------------
 function M.neo_tree_init()
-	require("neo-tree").setup({
-		-- 核心行为
-		-- 对应 nvim-tree 的: actions.open_file.quit_on_open = false
-		close_window_on_accept = false,
-		-- 对应 nvim-tree 的: sort.sorter = "case_sensitive"
-		sort_case_insensitive = false,
-		-- 对应 nvim-tree 的: update_focused_file.enable = false
-		follow_current_file = false,
-		-- 推荐：在 Windows 上启用 libuv 文件观察器以获得更好的性能
-		use_libuv_file_watcher = true,
+    -- 安装依赖前提：
+    -- 需要插件：nvim-neo-tree/neo-tree.nvim, nvim-lua/plenary.nvim, nvim-tree/nvim-web-devicons, MunifTanjim/nui.nvim
 
-		-- 窗口设置
-		window = {
-			-- 对应 nvim-tree 的: view.side = "left"
-			position = "left",
-			-- 对应 nvim-tree 的: view.width = 40
-			width = 40,
-			-- 对应 nvim-tree 的: view.float.enable = false
-			-- (neo-tree 默认就是侧边栏, 无需额外设置)
+    -- 推荐安全地禁用旧 netrw
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
 
-			-- 对应 nvim-tree 的: preserve_window_proportions = false
-			-- neo-tree 默认行为就是这样，如果需要自动调整，可以设置 auto_resize = true
-		},
+    require("neo-tree").setup({
+        close_if_last_window = false, -- 打开文件后不自动关闭文件树
+        enable_git_status = true,     -- 显示 Git 状态
+        enable_diagnostics = false,   -- 不显示诊断信息
+        sort_case_insensitive = true, -- 忽略大小写排序
+        default_component_configs = {
+            icon = {
+                folder_closed = "",
+                folder_open = "",
+                folder_empty = "",
+                default = "",
+                symlink = "",
+            },
+            git_status = {
+                symbols = {
+                    added     = "✓",
+                    modified  = "",
+                    deleted   = "",
+                    renamed   = "➜",
+                    untracked = "",
+                    ignored   = "◌",
+                    unstaged  = "",
+                    staged    = "✓",
+                    conflict  = "",
+                },
+            },
+        },
 
-		-- 图标设置 (来自你的 renderer.icons.glyphs)
-		default_component_configs = {
-			icon = {
-				default = "",
-				symlink = "",
-			},
-			git_status = {
-				unstaged = "",
-				staged = "✓",
-				unmerged = "",
-				renamed = "➜",
-				untracked = "",
-				deleted = "",
-				ignored = "◌",
-			},
-		},
+        filesystem = {
+            filtered_items = {
+                visible = false, -- 隐藏被过滤的项
+                hide_dotfiles = true,
+                hide_gitignored = false, -- 不遵循 .gitignore
+                hide_by_name = {
+                    -- 过滤特定目录
+                    "CMakeFiles",
+                    ".vscode",
+                    ".idea",
+                    "node_modules",
+                    ".cache",
+                    "dist",
+                    "target",
+                    "venv",
+                    "env",
 
-		-- 文件系统特定配置
-		filesystem = {
-			-- 对应 nvim-tree 的: disable_netrw = true, hijack_netrw = true
-			hijack_netrw = {
-				enable = true,
-				-- 可选：如果你想在打开目录时自动打开 neo-tree
-				auto_open = true,
-			},
+                },
+                hide_by_pattern = {
+                    "^%.venv.*$",      -- 匹配所有 .venv 开头的目录
+                    "^cmake%-build%-.*$", -- 匹配 cmake-build-*
 
-			-- 对应 nvim-tree 的: git.enable = true
-			-- (neo-tree 默认启用 git 状态, 这里通过图标配置已隐式启用)
+                    -- -- 构建相关目录
+                    -- "^CMakeFiles$",
+                    -- -- "^build$",
+                    -- -- "^build_.*$",          -- 匹配所有 build_ 开头的目录
+                    -- "^cmake-build-.*$",
+                    -- "^%.vscode$",          -- 可选：过滤 VS Code 配置目录
+                    -- "^%.idea$",            -- 可选：过滤 IDEA 配置目录
 
-			-- 过滤规则 (来自你的 filters)
-			filtered_items = {
-				-- 对应 nvim-tree 的: dotfiles = true
-				hide_dotfiles = false,
-				-- 对应 nvim-tree 的: git_ignored = false
-				hide_gitignored = false,
-				-- 对应 nvim-tree 的: custom = { ... }
-				-- neo-tree 使用 'hide_by_name'
-				hide_by_name = {
-					-- 构建相关目录
-					"^CMakeFiles$",
-					-- "^build$",
-					-- "^build_.*$",
-					"^cmake-build-.*$",
-					"^%.vscode$",
-					"^%.idea$",
+                    -- -- 依赖和缓存
+                    -- "^node_modules$",
+                    -- "^%.cache$",
+                    -- "^dist$",
+                    -- "^target$",            -- Rust 构建目录
 
-					-- 依赖和缓存
-					"^node_modules$",
-					"^%.cache$",
-					"^dist$",
-					"^target$",
+                    -- -- Python 虚拟环境
+                    -- "^%.venv.*$",          -- 匹配所有 .venv 开头的目录
+                    -- "^venv$",
+                    -- "^env$",
+                },
+            },
 
-					-- Python 虚拟环境
-					"^%.venv.*$",
-					"^venv$",
-					"^env$",
+            follow_current_file = {
+                enabled = true, -- 不自动跟随当前文件
+                leave_dirs_open = false,
+            },
+            group_empty_dirs = false,
+            hijack_netrw_behavior = "open_default", -- 替代 netrw
+            use_libuv_file_watcher = true,          -- 使用更高效的文件监听
+        },
 
-					-- 其他 (你注释掉的)
-					-- "%.out$",
-					-- "%.exe$",
-					-- "%.dll$",
-					-- "%.so$",
-					-- "%.dylib$",
-				},
-				-- 这是一个 neo-tree 的额外优化，对于大型项目可以隐藏所有 .git 目录下的内容
-				hide_hidden = true,
-				never_show = {
-					".DS_Store",
-					"thumbs.db",
-				},
-			},
-		},
-		-- 其他源（例如 buffers, git_status）的配置
-		-- 如果你不需要，可以保持默认
-		buffers = {
-			follow_current_file = true,
-		},
-		git_status = {
-			follow_current_file = true,
-		},
-	})
+        window = {
+            position = "left",
+            width = 40,
+            mapping_options = {
+                noremap = true,
+                nowait = true,
+            },
+            mappings = {
+                ["<cr>"] = "open",
+                ["oo"] = "open",
+                -- ["a"] = "add",
+                -- ["d"] = "delete",
+                -- ["r"] = "rename",
+                -- ["x"] = "cut_to_clipboard",
+                -- ["c"] = "copy_to_clipboard",
+                -- ["p"] = "paste_from_clipboard",
+                -- ["y"] = "copy_name",
+                -- ["Y"] = "copy_path",
+                -- ["gy"] = "copy_relative_path",
+                -- ["I"] = "toggle_hidden",
+                -- ["H"] = "toggle_hidden",
+                -- ["R"] = "refresh",
+                -- ["q"] = "close_window",
+            },
+        },
 
-	-- 你的 <F3> 键位映射
-	-- 注意：neo-tree 的命令是 :Neotree
-	-- 'nmap' 是一个 VimL 命令, 推荐使用 Lua 的 API
-	-- vim.keymap.set("n", "<F3>", ":Neotree toggle<CR>", { silent = true, desc = "Toggle Neo-tree" })
-	nmap("<F3>", ":lua vim.g.toggle_neotree()<CR>")
+        event_handlers = {
+            {
+                -- event = "file_opened",
+                -- handler = function()
+                    -- 打开文件后不关闭 Neo-tree
+                    -- 如果希望关闭，可以改为 require("neo-tree.command").execute({ action = "close" })
+                -- end,
+            },
+        },
+    })
+
+    nmap("<F3>", ":lua vim.g.toggle_neotree()<CR>")
 end
 
 
 ------------------------------------------------------------------------------------------
 -- nvim-tree 配置
 ------------------------------------------------------------------------------------------
-function M.nvim_tree_init()
-	require("nvim-tree").setup(
-		{
-			update_focused_file = {
-				enable = false, -- 打开文件时不要聚焦到 nvim-tree
-				debounce_delay = 150 -- 延迟 150ms 更新，防止抖动
-			},
-			-- 禁用 netrw（Neovim 的默认文件浏览器）
-			disable_netrw = true,
-			hijack_netrw = true,
-			sort = {
-				sorter = "case_sensitive"
-			},
-			filters = {
-				dotfiles = true,
-                git_ignored = false,  -- 不使用 gitignore
-                -- 自定义过滤规则，核心优化点
-                custom = {
-                    -- 构建相关目录
-                    "^CMakeFiles$",
-                    -- "^build$",
-                    -- "^build_.*$",          -- 匹配所有 build_ 开头的目录
-                    "^cmake-build-.*$",
-                    "^%.vscode$",          -- 可选：过滤 VS Code 配置目录
-                    "^%.idea$",            -- 可选：过滤 IDEA 配置目录
+-- function M.nvim_tree_init()
+-- 	require("nvim-tree").setup(
+-- 		{
+-- 			update_focused_file = {
+-- 				enable = false, -- 打开文件时不要聚焦到 nvim-tree
+-- 				debounce_delay = 150 -- 延迟 150ms 更新，防止抖动
+-- 			},
+-- 			-- 禁用 netrw（Neovim 的默认文件浏览器）
+-- 			disable_netrw = true,
+-- 			hijack_netrw = true,
+-- 			sort = {
+-- 				sorter = "case_sensitive"
+-- 			},
+-- 			filters = {
+-- 				dotfiles = true,
+--                 git_ignored = false,  -- 不使用 gitignore
+--                 -- 自定义过滤规则，核心优化点
+--                 custom = {
+--                     -- 构建相关目录
+--                     "^CMakeFiles$",
+--                     -- "^build$",
+--                     -- "^build_.*$",          -- 匹配所有 build_ 开头的目录
+--                     "^cmake-build-.*$",
+--                     "^%.vscode$",          -- 可选：过滤 VS Code 配置目录
+--                     "^%.idea$",            -- 可选：过滤 IDEA 配置目录
 
-                    -- 依赖和缓存
-                    "^node_modules$",
-                    "^%.cache$",
-                    "^dist$",
-                    "^target$",            -- Rust 构建目录
+--                     -- 依赖和缓存
+--                     "^node_modules$",
+--                     "^%.cache$",
+--                     "^dist$",
+--                     "^target$",            -- Rust 构建目录
 
-                    -- Python 虚拟环境
-                    "^%.venv.*$",          -- 匹配所有 .venv 开头的目录
-                    "^venv$",
-                    "^env$",
+--                     -- Python 虚拟环境
+--                     "^%.venv.*$",          -- 匹配所有 .venv 开头的目录
+--                     "^venv$",
+--                     "^env$",
 
-                    -- 其他常见忽略项
-                    -- "%.out$",
-                    -- "%.exe$",
-                    -- "%.dll$",
-                    -- "%.so$",
-                    -- "%.dylib$",
-                }
-			},
-			-- 文件图标
-			renderer = {
-				icons = {
-					glyphs = {
-						default = "", -- 默认文件图标
-						symlink = "", -- 符号链接图标
-						git = {
-							unstaged = "", -- 未暂存的更改
-							staged = "✓", -- 已暂存的更改
-							unmerged = "", -- 未合并的更改
-							renamed = "➜", -- 重命名的文件
-							untracked = "", -- 未跟踪的文件
-							deleted = "", -- 已删除的文件
-							ignored = "◌" -- 忽略的文件
-						}
-					}
-				}
-			},
-			-- 文件操作
-			actions = {
-				open_file = {
-					quit_on_open = false -- 打开文件后不退出文件树
-				}
-			},
-			-- Git 状态
-			git = {
-				enable = true,
-				ignore = true, -- 将这里改为 true
-				timeout = 400
-			},
-			-- 视图设置
-			view = {
-				width = 40,
-				side = "left",
+--                     -- 其他常见忽略项
+--                     -- "%.out$",
+--                     -- "%.exe$",
+--                     -- "%.dll$",
+--                     -- "%.so$",
+--                     -- "%.dylib$",
+--                 }
+-- 			},
+-- 			-- 文件图标
+-- 			renderer = {
+-- 				icons = {
+-- 					glyphs = {
+-- 						default = "", -- 默认文件图标
+-- 						symlink = "", -- 符号链接图标
+-- 						git = {
+-- 							unstaged = "", -- 未暂存的更改
+-- 							staged = "✓", -- 已暂存的更改
+-- 							unmerged = "", -- 未合并的更改
+-- 							renamed = "➜", -- 重命名的文件
+-- 							untracked = "", -- 未跟踪的文件
+-- 							deleted = "", -- 已删除的文件
+-- 							ignored = "◌" -- 忽略的文件
+-- 						}
+-- 					}
+-- 				}
+-- 			},
+-- 			-- 文件操作
+-- 			actions = {
+-- 				open_file = {
+-- 					quit_on_open = false -- 打开文件后不退出文件树
+-- 				}
+-- 			},
+-- 			-- Git 状态
+-- 			git = {
+-- 				enable = true,
+-- 				ignore = true, -- 将这里改为 true
+-- 				timeout = 400
+-- 			},
+-- 			-- 视图设置
+-- 			view = {
+-- 				width = 40,
+-- 				side = "left",
 
-				float = {
-					enable = false,  -- 确保不使用浮动窗口
-				},
-				-- 添加以下配置防止自动调整
-				preserve_window_proportions = false,
-				--   mappings = {
-				--     custom_only = false,  -- 是否只使用自定义映射
-				--     list = {
-				--       -- 自定义键位映射
-				--       { key = '<CR>', action = 'edit' },
-				--       { key = 'o', action = 'edit' },
-				--       { key = 'a', action = 'create' },
-				--       { key = 'd', action = 'remove' },
-				--       { key = 'r', action = 'rename' },
-				--       { key = 'x', action = 'cut' },
-				--       { key = 'c', action = 'copy' },
-				--       { key = 'p', action = 'paste' },
-				--       { key = 'y', action = 'copy_name' },
-				--       { key = 'gy', action = 'copy_path' },
-				--       { key = 'I', action = 'toggle_ignored' },
-				--       { key = 'H', action = 'toggle_dotfiles' },
-				--       { key = 'R', action = 'refresh' },
-				--       { key = 'q', action = 'close' },
-				--     },
-				--   },
-			}
-		}
-	)
-	nmap("<F3>", ":lua vim.g.toggle_nvimtree()<CR>")
-end
+-- 				float = {
+-- 					enable = false,  -- 确保不使用浮动窗口
+-- 				},
+-- 				-- 添加以下配置防止自动调整
+-- 				preserve_window_proportions = false,
+-- 				--   mappings = {
+-- 				--     custom_only = false,  -- 是否只使用自定义映射
+-- 				--     list = {
+-- 				--       -- 自定义键位映射
+-- 				--       { key = '<CR>', action = 'edit' },
+-- 				--       { key = 'o', action = 'edit' },
+-- 				--       { key = 'a', action = 'create' },
+-- 				--       { key = 'd', action = 'remove' },
+-- 				--       { key = 'r', action = 'rename' },
+-- 				--       { key = 'x', action = 'cut' },
+-- 				--       { key = 'c', action = 'copy' },
+-- 				--       { key = 'p', action = 'paste' },
+-- 				--       { key = 'y', action = 'copy_name' },
+-- 				--       { key = 'gy', action = 'copy_path' },
+-- 				--       { key = 'I', action = 'toggle_ignored' },
+-- 				--       { key = 'H', action = 'toggle_dotfiles' },
+-- 				--       { key = 'R', action = 'refresh' },
+-- 				--       { key = 'q', action = 'close' },
+-- 				--     },
+-- 				--   },
+-- 			}
+-- 		}
+-- 	)
+-- 	nmap("<F3>", ":lua vim.g.toggle_nvimtree()<CR>")
+-- end
 
 ------------------------------------------------------------------------------------------
 -- gitsigns 配置
