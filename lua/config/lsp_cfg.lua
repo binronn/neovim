@@ -147,41 +147,27 @@ local function on_clangd_attach(client, bufnr)
 
 end
 
--- 使用新的 vim.lsp.start API 配置 clangd
-vim.api.nvim_create_autocmd('FileType', {
-    pattern = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
-    -- once = true,
-    callback = function(args)
-        local bufnr = args.buf
-        -- 如果当前缓冲区已经有 clangd 附加则跳过
-        for _, c in ipairs(vim.lsp.get_clients({ name = "clangd" })) do
-            if c.attached_buffers[bufnr] then return end
-        end
-
-        vim.lsp.start({
-            name = "clangd",
-            cmd = {
-                "clangd",
-                "--background-index=true",
-                "--clang-tidy",
-                "--compile-commands-dir=build",
-                "--pch-storage=disk",
-                "--all-scopes-completion",
-                "--cross-file-rename",
-                "--header-insertion=never",
-                "--completion-style=detailed",
-                "--function-arg-placeholders",
-                "--header-insertion-decorators",
-                "--j=6",
-                "--query-driver=" .. require("config.compiles_cfg").cxx_path,
-            },
-            capabilities = g_capabilities,
-            on_attach = on_clangd_attach,
-            root_dir = root_pattern,
-        })
-    end,
-})
-
+vim.lsp.config.clangd = {
+    filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
+    cmd = {
+        "clangd",
+        "--background-index=true",
+        "--clang-tidy",
+        "--compile-commands-dir=build",
+        "--pch-storage=disk",
+        "--all-scopes-completion",
+        "--cross-file-rename",
+        "--header-insertion=never",
+        "--completion-style=detailed",
+        "--function-arg-placeholders",
+        "--header-insertion-decorators",
+        "-j=6",
+        "--query-driver=" .. require("config.compiles_cfg").cxx_path,
+    },
+    root_markers = { ".git", "compile_commands.json", "CMakeLists.txt" },
+    capabilities = g_capabilities,
+    on_attach = on_clangd_attach,
+}
 -----------------------------------------------------------------------------------------
 -- 动态切换 clangd
 -----------------------------------------------------------------------------------------
@@ -216,104 +202,123 @@ end
 -----------------------------------------------------------------------------------------
 -- Python 配置（只用 "python" filetype）
 -----------------------------------------------------------------------------------------
-vim.api.nvim_create_autocmd('FileType', {
-    pattern = { "python" },
-    -- once = true,
-    callback = function(args)
-        local bufnr = args.buf
-        for _, c in ipairs(vim.lsp.get_clients({ name = "pyright" })) do
-            if c.attached_buffers[bufnr] then return end
+function pyvenv_init(config)
+    local root_markers = { ".git", "pyproject.toml", "setup.py", ".venv", ".venv_win", ".venv_wsl" }
+    local marker_path = vim.fs.find(root_markers, { path = buf_dir, upward = true, stop = vim.fn.globpath('~', '~/') })[1]
+    local root_dir = vim.g.workspace_dir2()
+
+    -- 3. 动态确定 Python 解释器的路径
+    local python_path = nil
+
+    -- 要搜索的虚拟环境列表，按优先级排序
+    local venv_options = {
+        { name = ".venv_win", executable = "Scripts/python.exe" }, -- 典型的 Windows 路径
+        { name = ".venv_wsl", executable = "bin/python" },        -- 典型的 Linux/WSL 路径
+        { name = ".venv",      executable = vim.g.is_win32 == 1 and "Scripts/python.exe" or "bin/python" } -- 标准路径 (检测操作系统)
+    }
+
+    for _, venv in ipairs(venv_options) do
+        local potential_venv_root = root_dir .. "/" .. venv.name
+        local potential_python_path = potential_venv_root .. "/" .. venv.executable
+
+        -- 检查可执行文件是否存在
+        if vim.fn.filereadable(potential_python_path) == 1 then 
+            python_path = potential_python_path
+            venv_root = potential_venv_root  -- <-- 新增：存储 venv 根目录
+            break
         end
+    end
 
-        if vim.g.lsp_settings == nil then
-            -- 2. 查找项目根目录
-            local root_markers = { ".git", "pyproject.toml", "setup.py", ".venv", ".venv_win", ".venv_wsl" }
-            local buf_path = vim.api.nvim_buf_get_name(bufnr)
-            local buf_dir = vim.fn.fnamemodify(buf_path, ":h")
+    -- 5. 如果找到了 Python 路径，就将其添加到配置中
+    if python_path ~= nil then
+      -- 更新客户端配置
+      config.settings = config.settings or {}
+      config.settings.python = config.settings.python or {}
+      config.settings.python.pythonPath = python_path
+      
+      if venv_root ~= nil then
+        config.settings.python.venvPath = venv_root
+        vim.notify("找到 Venv: " .. venv_root)
+      end
+      
+    end
+end
 
-            -- vim.fs.find 会向上查找第一个标记
-            local marker_path = vim.fs.find(root_markers, { path = buf_dir, upward = true, stop = vim.fn.globpath('~', '~/') })[1]
+vim.lsp.config.pyright = {
+    -- 语言类型
+    filetypes = { 'python' },
 
-            local root_dir = vim.g.workspace_dir2()
+    -- 启动命令
+    cmd = { 'pyright-langserver', '--stdio' },
 
-            -- 3. 动态确定 Python 解释器的路径
-            local python_path = nil
+    -- 定义项目根目录判断规则
+    root_markers = { ".git", "pyproject.toml", "setup.py", ".venv", ".venv_win", ".venv_wsl", "requirements.txt" },
 
-            -- 要搜索的虚拟环境列表，按优先级排序
-            local venv_options = {
-                { name = ".venv_win", executable = "Scripts/python.exe" }, -- 典型的 Windows 路径
-                { name = ".venv_wsl", executable = "bin/python" },        -- 典型的 Linux/WSL 路径
-                { name = ".venv",      executable = vim.g.is_win32 == 1 and "Scripts/python.exe" or "bin/python" } -- 标准路径 (检测操作系统)
-            }
+    -- 功能能力
+    capabilities = g_capabilities,
 
-            for _, venv in ipairs(venv_options) do
-                local potential_venv_root = root_dir .. "/" .. venv.name
-                local potential_python_path = potential_venv_root .. "/" .. venv.executable
-                
-                -- 检查可执行文件是否存在
-                if vim.fn.filereadable(potential_python_path) == 1 then 
-                    python_path = potential_python_path
-                    venv_root = potential_venv_root  -- <-- 新增：存储 venv 根目录
-                    break
-                end
-            end
-
-            lsp_settings = {
-                python = {
-                    analysis = {
-                        typeCheckingMode = "basic",
-                        autoSearchPaths = true, -- <-- 重要：保持为 true
-                        useLibraryCodeForTypes = true,
-                        diagnosticMode = "workspace",
-                        autoImportCompletions = true,
-                        diagnosticSeverityOverrides = {
-                            reportUnusedImport = "warning",
-                            reportUnusedVariable = "warning",
-                            reportMissingImports = "error",
-                            reportUnusedFunction = "warning",
-                        },
-                        extraPaths = {},
-                    },
+    -- LSP 参数
+    settings = {
+        python = {
+            analysis = {
+                typeCheckingMode = "off",
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = "workspace",
+                autoImportCompletions = true,
+                diagnosticSeverityOverrides = {
+                    reportUnusedImport = "warning",
+                    reportUnusedVariable = "warning",
+                    reportMissingImports = "error",
+                    reportUnusedFunction = "warning",
                 },
-            }
+            },
+        },
+    },
 
-            -- 5. 如果找到了 Python 路径，就将其添加到配置中
-            if python_path ~= nil then
-                lsp_settings.python.pythonPath = python_path
-                
-                if venv_root ~= nil then
-                     lsp_settings.python.venvPath = venv_root
-                     print("找到 Venv: " .. lsp_settings.python.venvPath) -- 调试信息
-                     vim.notify("找到 Venv: " .. lsp_settings.python.venvPath)
-                end
-            else
-                -- print("未找到自定义 venv。让 Pyright 自动检测。") -- 调试信息
-            end
-            vim.g.lsp_settings = lsp_settings
+    before_init = function(params, config)
+        pyvenv_init(config)
+    end,
+
+    on_attach = function(client, bufnr)
+        if lsp_common_attach then
+            lsp_common_attach(client, bufnr)
         end
 
-        vim.lsp.start({
-            name = "pyright",
-            cmd = { "pyright-langserver", "--stdio" },
-            filetypes = { "python" },
-            settings = vim.g.lsp_settings,
-            root_dir = root_dir,
-            on_attach = function(client, bufnr)
-                lsp_common_attach(client, bufnr)
+        local opts = { noremap = true, silent = true, buffer = bufnr }
 
-                local opts = { noremap = true, silent = true, buffer = bufnr }
-                vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-                vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, opts)
-                vim.keymap.set("n", "gr", telescope_builtin.lsp_references, opts)
-                vim.keymap.set("n", "gl", telescope_builtin.lsp_document_symbols, opts)
-                vim.keymap.set("n", "ga", telescope_builtin.lsp_dynamic_workspace_symbols, opts)
-                vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-                vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-                vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, opts)
-                vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
-                vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
-            end,
-        })
+        -- 常用快捷键映射
+        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+        vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, opts)
+        vim.keymap.set("n", "gr", telescope_builtin.lsp_references, opts)
+        vim.keymap.set("n", "gl", telescope_builtin.lsp_document_symbols, opts)
+        vim.keymap.set("n", "ga", telescope_builtin.lsp_dynamic_workspace_symbols, opts)
+        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+        vim.keymap.set("n", "<leader>ff", function()
+            vim.lsp.buf.format({ async = true })
+        end, opts)
+        vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
+        vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
+    end,
+}
+
+--------------------------------------------------------------------------------
+-- LSP 自启动
+--------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "python",
+    callback = function(args)
+        if vim.bo[args.buf].buftype ~= "" then return end -- 跳过特殊 buffer
+        vim.lsp.start(vim.lsp.config.pyright, { bufnr = args.buf })
+    end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
+    callback = function(args)
+        if vim.bo[args.buf].buftype ~= "" then return end -- 跳过特殊 buffer
+        vim.lsp.start(vim.lsp.config.clangd, { bufnr = args.buf })
     end,
 })
 
