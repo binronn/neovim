@@ -15,8 +15,10 @@
 | `<leader>fq`   | 关闭Neovim                   |
 | `qw`           | 关闭当前窗口                 |
 | `<leader>fQ`    | 强制退出当前文件            |
-| `<leader>fn`   | 切换到下一个 buffer          |
-| `<leader>fp`   | 切换到上一个 buffer          |
+| `]b`   | 切换到下一个 buffer          |
+| `[b`   | 切换到上一个 buffer          |
+| `=b`   | 切换到上一个打开的 buffer          |
+| `-b`   | 删除当前 buffer          |
 | `<leader>ls`   | 上一个文件横向分屏           |
 | `<leader>lv`   | 上一个文件垂直分屏           |
 | `<leader>lo`   | 打开上一个文件               |
@@ -140,13 +142,6 @@
 | `<leader>ca`   | Actions                      |
 | `<leader>cs`   | 切换模型                     |
 
-
-## BufferLine 快捷键
-
-| 快捷键         | 功能描述                     |
-|----------------|------------------------------|
-| `<leader>fd`   | 选择并关闭buffer(bufferline) |
-| `<leader>fc`   | 选择并打开buffer(bufferline) |
 
 ## CMake 快捷键
 

@@ -104,11 +104,13 @@ vim.g.workspace_dir2 = workspace_dir
 
 local function reset_workspace_dir()
 	vim.g.workspace_dir_content = nil
+    vim.g.is_neo_tree_initlized = nil
 	print(vim.g.workspace_dir.get())
 end
 
 local function reset_workspace_dir_nop()
 	vim.g.workspace_dir_content = nil
+    vim.g.is_neo_tree_initlized = nil
 	vim.g.workspace_dir.get()
 end
 
@@ -266,8 +268,17 @@ local function toggle_neotree()
 		if is_tagbar_open then
 			vim.cmd("AerialClose")
 		end
-		-- 打开 Neo-Tree (使用 'toggle' 会自动打开)
-		require("neo-tree.command").execute({ toggle = true })
+        if vim.g.is_neo_tree_initlized == nil then
+            require("neo-tree.command").execute({ 
+                toggle = true ,
+                dir = vim.g.workspace_dir2(),
+            })
+            vim.g.is_neo_tree_initlized = true
+        else
+            require("neo-tree.command").execute({ 
+                toggle = true
+            })
+        end
 	end
 end
 -- 同样将它设置为全局变量 (如果你需要的话)

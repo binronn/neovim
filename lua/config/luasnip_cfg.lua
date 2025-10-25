@@ -991,7 +991,7 @@ local lua_snippets = {
 ls.add_snippets("c", c_cpp_snippets)
 
 -- 对于C++：通用 + C++专用（使用 "force" 以确保合并覆盖，如果有冲突）
-ls.add_snippets("cpp", vim.tbl_extend("force", c_cpp_snippets, cpp_snippets))
+ls.add_snippets("cpp", vim.tbl_extend("keep", c_cpp_snippets, cpp_snippets))
 
 -- Python
 ls.add_snippets("python", python_snippets)

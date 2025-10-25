@@ -45,7 +45,7 @@ nmap("<leader>fs", ":w<CR>")
 nmap("<leader>fS", ":wa<CR>")
 
 -- 关闭当前文件
-nmap("<leader>fd", ": bp | bd! #<CR>")
+nmap("-b", ": bp | bd! #<CR>")
 --nmap('<leader>fo',':e ') -- 异常
 vim.cmd "nmap <leader>fo :e "
 
@@ -138,8 +138,9 @@ nmap("<leader>fq", ":qa!<CR>")
 nmap("<leader>fQ", ":qa!<CR>")
 
 -- 上/下一个 buffer
-nmap("<leader>fn", ":bn<CR>")
-nmap("<leader>fp", ":bp<CR>")
+nmap("]b", ":bn<CR>")
+nmap("[b", ":bp<CR>")
+nmap("=b", ":e #<CR>")
 
 -- 开启与关闭高亮
 nmap("<leader>hl", ":set hlsearch<CR>")

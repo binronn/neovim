@@ -185,7 +185,7 @@ function M:setup_codecomp()
                 show_settings = true, -- Show LLM settings at the top of the chat buffer?
                 show_token_count = true, -- Show the token count for each response?
                 start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-                adapter = "dskfee",
+                adapter = "a0pen_dsk",
                 keymaps = {
                     send = {
                         modes = {n = "<Enter>", i = "<C-s>"}
@@ -206,10 +206,10 @@ function M:setup_codecomp()
                         description = "Choose our"
                     }
                 },
-                adapter = "dskfee"
+                adapter = "a0pen_dsk"
             },
             cmd = {
-                adapter = 'dskfee'
+                adapter = 'a0pen_dsk'
             }
         },
         display = {

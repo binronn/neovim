@@ -23,7 +23,7 @@ vim.g.maplocalleader = " " --- this line
 
 vim.g.is_win32 = vim.fn.has('win32')
 vim.g.is_unix = vim.fn.has('unix')
-vim.g.colorscheme = 'catppuccin-frappe'
+vim.g.colorscheme = 'gruvbox-material'
 
 --------------------
 ---- 顺序不可变 ----

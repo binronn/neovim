@@ -1302,6 +1302,7 @@ function M.neo_tree_init()
                 hide_gitignored = true, -- 遵循 .gitignore
                 hide_by_name = {
                     -- 过滤特定目录
+                    "__pycache__",
                     "CMakeFiles",
                     ".vscode",
                     ".idea",
@@ -1858,6 +1859,7 @@ function M.telescope_init()
                     "^%.vscode[/\\].*$",
                     "^%.github[/\\].*$",
                     "^%.venv.*[/\\].*$",
+                    "__pycache__",
 
                     -- 文件类型过滤
                     -- "%.(exe|qt|o|a|so|dll|pyc|class)$",
