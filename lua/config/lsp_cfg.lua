@@ -8,6 +8,45 @@ local root_pattern = require("lspconfig.util").root_pattern("compile_commands.js
 
 
 function lsp_common_attach(client, bufnr)
+
+    for _, mode in ipairs({ "n", "v", "i" }) do
+        -- grn → vim.lsp.buf.rename()
+        pcall(vim.keymap.del, mode, "grn")
+
+        -- gra → vim.lsp.buf.code_action()
+        pcall(vim.keymap.del, mode, "gra")
+
+        -- grr → vim.lsp.buf.references()
+        pcall(vim.keymap.del, mode, "grr")
+
+        -- gri → vim.lsp.buf.implementation()
+        pcall(vim.keymap.del, mode, "gri")
+
+        -- grt → vim.lsp.buf.type_definition()
+        pcall(vim.keymap.del, mode, "grt")
+
+        -- gO → vim.lsp.buf.document_symbol()
+        pcall(vim.keymap.del, mode, "gO")
+
+        -- <C-S> → vim.lsp.buf.signature_help()
+        pcall(vim.keymap.del, mode, "<C-S>")
+    end
+
+    local opts = { noremap = true, silent = true, buffer = bufnr }
+    vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, { buffer = bufnr, desc = "Find definitions" })
+    vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, { buffer = bufnr, desc = "Find implementations" })
+    vim.keymap.set("n", "gt", telescope_builtin.lsp_type_definitions, { buffer = bufnr, desc = "Find type_definition" })
+    vim.keymap.set("n", "gr", telescope_builtin.lsp_references, { buffer = bufnr, desc = "Find references" })
+    vim.keymap.set("n", "gl", telescope_builtin.lsp_document_symbols, { buffer = bufnr, desc = "Document symbols" })
+    vim.keymap.set("n", "ga", telescope_builtin.lsp_dynamic_workspace_symbols, { buffer = bufnr, desc = "Workspace symbols" })
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+    vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "<leader>ff", function()
+        vim.lsp.buf.format({ async = true })
+    end, opts)
+    vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
+
     -----------------------------------------------------------------------------------------
     -- lsp 高亮同一个变量时的显示效果，仅给光标下符号加下划线，不加背景/前景色
     -----------------------------------------------------------------------------------------
@@ -93,14 +132,6 @@ local function on_clangd_attach(client, bufnr)
     lsp_common_attach(client, bufnr)
 
     local opts = { noremap = true, silent = true, buffer = bufnr }
-    vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, { buffer = bufnr, desc = "Find definitions" })
-    vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, { buffer = bufnr, desc = "Find implementations" })
-    vim.keymap.set("n", "gr", telescope_builtin.lsp_references, { buffer = bufnr, desc = "Find references" })
-    vim.keymap.set("n", "gl", telescope_builtin.lsp_document_symbols, { buffer = bufnr, desc = "Document symbols" })
-    vim.keymap.set("n", "ga", telescope_builtin.lsp_dynamic_workspace_symbols, { buffer = bufnr, desc = "Workspace symbols" })
-    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-    vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "<leader>hS", switch_file_and_search, opts)
 
     -- clang-format init
@@ -143,7 +174,6 @@ local function on_clangd_attach(client, bufnr)
             vim.cmd("edit " .. vim.uri_to_fname(result))
         end)
     end, opts)
-    vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
 
 end
 
@@ -281,25 +311,9 @@ vim.lsp.config.pyright = {
     end,
 
     on_attach = function(client, bufnr)
-        if lsp_common_attach then
-            lsp_common_attach(client, bufnr)
-        end
+        lsp_common_attach(client, bufnr)
 
         local opts = { noremap = true, silent = true, buffer = bufnr }
-
-        -- 常用快捷键映射
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-        vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, opts)
-        vim.keymap.set("n", "gr", telescope_builtin.lsp_references, opts)
-        vim.keymap.set("n", "gl", telescope_builtin.lsp_document_symbols, opts)
-        vim.keymap.set("n", "ga", telescope_builtin.lsp_dynamic_workspace_symbols, opts)
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-        vim.keymap.set("n", "<leader>ff", function()
-            vim.lsp.buf.format({ async = true })
-        end, opts)
-        vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
-        vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
     end,
 }
 
