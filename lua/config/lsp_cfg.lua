@@ -42,9 +42,6 @@ function lsp_common_attach(client, bufnr)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
     vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set("n", "<leader>fx", vim.lsp.buf.code_action, opts)
-    vim.keymap.set("n", "<leader>ff", function()
-        vim.lsp.buf.format({ async = true })
-    end, opts)
     vim.keymap.set("i", "<M-k>", vim.lsp.buf.signature_help, opts)
 
     -----------------------------------------------------------------------------------------
@@ -144,6 +141,7 @@ local function on_clangd_attach(client, bufnr)
     else
         local effective_config = vim.fn.filereadable(cwd_config) == 1 and cwd_config or
         vim.fn.filereadable(config_path) == 1 and config_path or nil
+
         vim.keymap.set('n', '<leader>ff', '', {
             noremap = true,
             silent = true,
@@ -314,6 +312,9 @@ vim.lsp.config.pyright = {
         lsp_common_attach(client, bufnr)
 
         local opts = { noremap = true, silent = true, buffer = bufnr }
+        vim.keymap.set("n", "<leader>ff", function()
+            vim.lsp.buf.format({ async = true })
+        end, opts)
     end,
 }
 
