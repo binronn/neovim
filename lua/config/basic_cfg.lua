@@ -136,3 +136,13 @@ vim.opt.termguicolors = true
 -- views can only be fully collapsed with the global statusline
 vim.opt.laststatus = 3
 vim.opt.sessionoptions = {"blank", "buffers", "globals", "localoptions", "tabpages", "sesdir", "folds", "help", "options"}
+
+-- 对比文件配置
+vim.opt.diffopt = {
+  "vertical",      -- 垂直分屏显示 diff
+  "filler",        -- 显示填充行
+  "closeoff",      -- 在 diff 模式下关闭时退出 diff 模式
+  "hiddenoff",     -- 不使用隐藏缓冲区
+  "algorithm:histogram", -- 使用 histogram 算法（可选）
+  "indent-heuristic",    -- 使用缩进启发式（可选）
+}
