@@ -881,7 +881,7 @@ function M.FTerm_init()
 				if vim.g.is_unix == 1 then
 					return os.getenv("SHELL")
 				else
-					return "cmd.exe"
+					return "bash.exe"
 				end
 			end,
 			---Neovim's native window border. See `:h nvim_open_win` for more configuration options.

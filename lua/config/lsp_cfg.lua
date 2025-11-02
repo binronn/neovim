@@ -35,7 +35,7 @@ function lsp_common_attach(client, bufnr)
     local opts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, { buffer = bufnr, desc = "Find definitions" })
     vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, { buffer = bufnr, desc = "Find implementations" })
-    vim.keymap.set("n", "gt", telescope_builtin.lsp_type_definitions, { buffer = bufnr, desc = "Find type_definition" })
+    -- vim.keymap.set("n", "gt", telescope_builtin.lsp_type_definitions, { buffer = bufnr, desc = "Find type_definition" })
     vim.keymap.set("n", "gr", telescope_builtin.lsp_references, { buffer = bufnr, desc = "Find references" })
     vim.keymap.set("n", "gl", telescope_builtin.lsp_document_symbols, { buffer = bufnr, desc = "Document symbols" })
     vim.keymap.set("n", "ga", telescope_builtin.lsp_dynamic_workspace_symbols, { buffer = bufnr, desc = "Workspace symbols" })
