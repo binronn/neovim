@@ -50,6 +50,7 @@ local function find_project_root()
     -- 如果有打开的buffer且是文件路径
     if buf_path and buf_path ~= "" then
         start_dir = vim.fn.fnamemodify(buf_path, ":h")
+        start_dir = string.upper(string.sub(start_dir, 1, 1)) .. string.sub(start_dir, 2)
     end
     
     -- 检查常见项目根目录标记
