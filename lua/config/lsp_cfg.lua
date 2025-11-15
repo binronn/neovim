@@ -196,6 +196,18 @@ vim.lsp.config.clangd = {
     capabilities = g_capabilities,
     on_attach = on_clangd_attach,
 }
+
+--------------------------------------------------------------------------------
+-- CPP LSP 自启动
+--------------------------------------------------------------------------------
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
+    callback = function(args)
+        if vim.bo[args.buf].buftype ~= "" then return end -- 跳过特殊 buffer
+        vim.lsp.start(vim.lsp.config.clangd, { bufnr = args.buf })
+    end,
+})
 -----------------------------------------------------------------------------------------
 -- 动态切换 clangd
 -----------------------------------------------------------------------------------------
@@ -227,65 +239,14 @@ function M.switch_clangd(clangd_path, compiler_path)
     end, 100)
 end
 
------------------------------------------------------------------------------------------
--- Python 配置（只用 "python" filetype）
------------------------------------------------------------------------------------------
-function pyvenv_init(config)
-    local root_markers = { ".git", "pyproject.toml", "setup.py", ".venv", ".venv_win", ".venv_wsl" }
-    local marker_path = vim.fs.find(root_markers, { path = buf_dir, upward = true, stop = vim.fn.globpath('~', '~/') })[1]
-    local root_dir = vim.g.workspace_dir2()
 
-    -- 3. 动态确定 Python 解释器的路径
-    local python_path = nil
-
-    -- 要搜索的虚拟环境列表，按优先级排序
-    local venv_options = {
-        { name = ".venv_win", executable = "Scripts/python.exe" }, -- 典型的 Windows 路径
-        { name = ".venv_wsl", executable = "bin/python" },        -- 典型的 Linux/WSL 路径
-        { name = ".venv",      executable = vim.g.is_win32 == 1 and "Scripts/python.exe" or "bin/python" } -- 标准路径 (检测操作系统)
-    }
-
-    for _, venv in ipairs(venv_options) do
-        local potential_venv_root = root_dir .. "/" .. venv.name
-        local potential_python_path = potential_venv_root .. "/" .. venv.executable
-
-        -- 检查可执行文件是否存在
-        if vim.fn.filereadable(potential_python_path) == 1 then 
-            python_path = potential_python_path
-            venv_root = potential_venv_root  -- <-- 新增：存储 venv 根目录
-            break
-        end
-    end
-
-    -- 5. 如果找到了 Python 路径，就将其添加到配置中
-    if python_path ~= nil then
-      -- 更新客户端配置
-      config.settings = config.settings or {}
-      config.settings.python = config.settings.python or {}
-      config.settings.python.pythonPath = python_path
-      
-      if venv_root ~= nil then
-        config.settings.python.venvPath = venv_root
-        vim.notify("找到 Venv: " .. venv_root)
-      end
-      
-    end
-end
-
-vim.lsp.config.pyright = {
-    -- 语言类型
+--------------------------------------------------------------------------------
+-- 1. Python 基础配置模板 (只定义静态内容，不要放 before_init)
+--------------------------------------------------------------------------------
+local py_base_config = {
     filetypes = { 'python' },
-
-    -- 启动命令
     cmd = { 'pyright-langserver', '--stdio' },
-
-    -- 定义项目根目录判断规则
-    root_markers = { ".git", "pyproject.toml", "setup.py", ".venv", ".venv_win", ".venv_wsl", "requirements.txt" },
-
-    -- 功能能力
-    capabilities = g_capabilities,
-
-    -- LSP 参数
+    capabilities = g_capabilities, -- 假设 g_capabilities 上文已定义
     settings = {
         python = {
             analysis = {
@@ -298,19 +259,12 @@ vim.lsp.config.pyright = {
                     reportUnusedImport = "warning",
                     reportUnusedVariable = "warning",
                     reportMissingImports = "error",
-                    reportUnusedFunction = "warning",
                 },
             },
         },
     },
-
-    before_init = function(params, config)
-        pyvenv_init(config)
-    end,
-
     on_attach = function(client, bufnr)
-        lsp_common_attach(client, bufnr)
-
+        lsp_common_attach(client, bufnr) -- 假设你上文有这个函数
         local opts = { noremap = true, silent = true, buffer = bufnr }
         vim.keymap.set("n", "<leader>ff", function()
             vim.lsp.buf.format({ async = true })
@@ -319,21 +273,80 @@ vim.lsp.config.pyright = {
 }
 
 --------------------------------------------------------------------------------
--- LSP 自启动
+-- 2. python 缓存容器与工具函数
+--------------------------------------------------------------------------------
+local root_cache = {}   -- 缓存: 文件夹路径 -> 项目根目录 (字符串)
+local config_cache = {} -- 缓存: 项目根目录 -> 实例化的 Config Table
+
+local py_root_match = require("lspconfig.util").root_pattern(
+    ".git", "pyproject.toml", "setup.py", "requirements.txt", 
+    ".venv", ".venv_win", ".venv_wsl"
+)
+
+-- [工具] 查找并注入 Python 路径到配置中 (只在生成 Config 时运行一次)
+local function inject_python_path(config, root_dir)
+    local venv_options = {
+        { name = ".venv_win", exe = "Scripts/python.exe" },
+        { name = ".venv_wsl", exe = "bin/python" },
+        { name = ".venv",     exe = (vim.g.is_win32 == 1) and "Scripts/python.exe" or "bin/python" }
+    }
+
+    for _, venv in ipairs(venv_options) do
+        local venv_path = root_dir .. "/" .. venv.name
+        local py_path = venv_path .. "/" .. venv.exe
+        if vim.fn.filereadable(py_path) == 1 then
+            config.settings.python.pythonPath = py_path
+            config.settings.python.venvPath = venv_path
+            vim.notify("Found venv: " .. venv_path)
+            return
+        end
+    end
+end
+
+--------------------------------------------------------------------------------
+-- 3. python 核心: 获取或创建 Config (懒加载模式)
+--------------------------------------------------------------------------------
+local function get_py_config(buf_path)
+    local file_dir = vim.fs.dirname(buf_path)
+
+    local root_dir = root_cache[file_dir]
+    if not root_dir then
+        root_dir = py_root_match(buf_path) or file_dir
+        root_cache[file_dir] = root_dir
+    end
+
+    if config_cache[root_dir] then
+        return config_cache[root_dir]
+    end
+
+    local new_config = vim.deepcopy(py_base_config)
+    
+    new_config.root_dir = root_dir
+    new_config.workspace_folders = {
+        { name = vim.fs.basename(root_dir), uri = vim.uri_from_fname(root_dir) }
+    }
+
+    inject_python_path(new_config, root_dir)
+
+    config_cache[root_dir] = new_config
+    return new_config
+end
+
+--------------------------------------------------------------------------------
+-- 4. python Autocmd (极简入口)
 --------------------------------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "python",
     callback = function(args)
-        if vim.bo[args.buf].buftype ~= "" then return end -- 跳过特殊 buffer
-        vim.lsp.start(vim.lsp.config.pyright, { bufnr = args.buf })
-    end,
-})
+        if vim.bo[args.buf].buftype ~= "" then return end
+        local file_path = vim.api.nvim_buf_get_name(args.buf)
+        if file_path == "" then return end
 
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
-    callback = function(args)
-        if vim.bo[args.buf].buftype ~= "" then return end -- 跳过特殊 buffer
-        vim.lsp.start(vim.lsp.config.clangd, { bufnr = args.buf })
+        -- 极速获取配置对象 (O(1) 复杂度)
+        local config = get_py_config(file_path)
+
+        -- 启动 (vim.lsp.start 内部会处理 Client 复用，不会重复启动进程)
+        vim.lsp.start(config, { bufnr = args.buf })
     end,
 })
 
