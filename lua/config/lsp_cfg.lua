@@ -351,11 +351,95 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 --------------------------------------------------------------------------------
--- 智能 LSP 进度通知 (支持 Begin / Report / End 更新机制)
+-- 极致优化的 LSP 进度通知 (数据与渲染分离模式)
 --------------------------------------------------------------------------------
-local progress_notifs = {} -- 用于存储正在进行的通知记录: Key -> Notification Record
-local spinner_frames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+local progress_state = {}
+local render_timer = nil
 
+local spinner_frames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+local spinner_idx = 1
+
+local function render_progress()
+    -- 如果没有任务了，停止定时器，节省资源
+    if vim.tbl_isempty(progress_state) then
+        if render_timer then
+            render_timer:stop()
+            render_timer:close()
+            render_timer = nil
+        end
+        return
+    end
+
+    -- 更新全局 Spinner 帧
+    spinner_idx = (spinner_idx % #spinner_frames) + 1
+    local current_time = vim.loop.now()
+
+    -- 遍历所有活跃任务进行渲染
+    -- 使用 vim.schedule 确保在主线程操作 UI
+    vim.schedule(function()
+        for key, task in pairs(progress_state) do
+            
+            -- A. 构造显示内容
+            local icon = spinner_frames[spinner_idx]
+            if task.kind == "end" then icon = "✔" end
+
+            local msg_parts = {
+                string.format("%s %s: %s", icon, task.client_name, task.title)
+            }
+
+            if task.percentage then
+                table.insert(msg_parts, string.format("(%d%%)", task.percentage))
+            end
+
+            if task.message and task.message ~= "" then
+                table.insert(msg_parts, string.format("- %s", task.message))
+            end
+            
+            local notif_body = table.concat(msg_parts, " ")
+            
+            -- B. 构造 notify 选项
+            local opts = {
+                title = "LSP Progress",
+                icon = "",
+                timeout = false, -- 默认不消失，由我们控制
+                hide_from_history = true,
+                replace = task.notify_id, -- 【核心】尝试复用窗口 ID
+            }
+
+            if task.kind == "end" then
+                opts.timeout = 2000 -- 结束时，2秒后自动消失
+            end
+
+            -- C. 调用 vim.notify (使用 pcall 防止窗口已关闭导致的报错)
+            local status, new_id = pcall(vim.notify, notif_body, vim.log.levels.INFO, opts)
+
+            -- D. 状态维护
+            if status then
+                -- 更新 ID，以便下次循环复用
+                task.notify_id = new_id 
+            else
+                -- 如果更新失败 (用户手动关闭了弹窗)，清除 ID，让它下次重新创建(或者根据需求不再弹窗)
+                task.notify_id = nil 
+            end
+
+            -- E. 清理逻辑：如果是 end 状态，渲染完这一帧后，从状态表中移除
+            -- 这样确保了用户能看到最后一帧的 "✔ Finished"
+            if task.kind == "end" then
+                -- 这里做一个简单的延迟移除，或者直接移除（因为设置了 timeout=2000，notify 插件会接管消失逻辑）
+                progress_state[key] = nil
+            end
+        end
+    end)
+end
+
+local function ensure_timer()
+    if not render_timer then
+        render_timer = vim.loop.new_timer()
+        render_timer:start(0, 500, vim.schedule_wrap(render_progress))
+    end
+end
+
+-- 4. 【事件层】监听 LSP 消息
 vim.api.nvim_create_autocmd("LspProgress", {
     callback = function(ev)
         local client_id = ev.data.client_id
@@ -364,81 +448,34 @@ vim.api.nvim_create_autocmd("LspProgress", {
 
         if not token then return end
 
-        -- 生成唯一 Key
-        local notif_key = string.format("%s-%s", client_id, token)
+        local key = string.format("%s-%s", client_id, token)
         
-        -- 获取客户端名称
+        -- 如果是任务结束，但状态表里没有记录（可能开始太快结束太快），则忽略
+        if val.kind == "end" and not progress_state[key] then
+            return
+        end
+
+        -- 获取 Client 名字
         local client = vim.lsp.get_client_by_id(client_id)
         local client_name = client and client.name or "LSP"
 
-        -- 格式化消息
-        local title = val.title or "Task"
-        local message = val.message or ""
-        local percentage = val.percentage
+        -- 更新或初始化状态数据
+        if not progress_state[key] then
+            progress_state[key] = {
+                client_name = client_name,
+                notify_id = nil -- 初始没有 ID
+            }
+        end
+
+        -- 更新具体的字段
+        local task = progress_state[key]
+        task.kind = val.kind
+        if val.title then task.title = val.title end
+        if val.message then task.message = val.message end
+        if val.percentage then task.percentage = val.percentage end
         
-        -- 构造文本
-        local content_parts = {}
-        if val.kind ~= "end" then
-            local frame_idx = math.floor(vim.loop.hrtime() / 120000000) % #spinner_frames + 1
-            table.insert(content_parts, spinner_frames[frame_idx])
-        else
-            table.insert(content_parts, "✔")
-        end
-
-        table.insert(content_parts, string.format(" %s: %s", client_name, title))
-
-        if percentage then
-            table.insert(content_parts, string.format("(%d%%)", percentage))
-        end
-
-        if message ~= "" then
-            table.insert(content_parts, string.format("- %s", message))
-        end
-        
-        local notif_msg = table.concat(content_parts, " ")
-        local notif_level = vim.log.levels.INFO
-        local notif_opts = {
-            title = "LSP Progress",
-            icon = "",
-            timeout = false, 
-            hide_from_history = true,
-        }
-
-        vim.schedule(function()
-            local current_id = progress_notifs[notif_key]
-
-            if val.kind == "begin" then
-                -- 【开始】新建弹窗
-                local status, notify_id = pcall(vim.notify, notif_msg, notif_level, notif_opts)
-                if status then
-                    progress_notifs[notif_key] = notify_id
-                end
-
-            elseif val.kind == "report" and current_id then
-                -- 【进行中】尝试更新
-                notif_opts.replace = current_id
-                
-                -- 使用 pcall 保护：如果弹窗已被关闭，这里会报错，我们捕获它
-                local status, new_id = pcall(vim.notify, notif_msg, notif_level, notif_opts)
-                
-                if not status then
-                    -- 更新失败（弹窗可能已关闭），清理记录，不再尝试更新此任务
-                    progress_notifs[notif_key] = nil
-                else
-                    progress_notifs[notif_key] = new_id
-                end
-
-            elseif val.kind == "end" and current_id then
-                -- 【结束】更新并设置超时
-                notif_opts.replace = current_id
-                notif_opts.timeout = 2000
-                
-                pcall(vim.notify, notif_msg, notif_level, notif_opts)
-                
-                -- 任务结束，清理 Key
-                progress_notifs[notif_key] = nil
-            end
-        end)
+        -- 只要有数据更新，就确保定时器在跑
+        ensure_timer()
     end,
 })
 
