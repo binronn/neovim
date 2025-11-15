@@ -350,6 +350,98 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
+--------------------------------------------------------------------------------
+-- 智能 LSP 进度通知 (支持 Begin / Report / End 更新机制)
+--------------------------------------------------------------------------------
+local progress_notifs = {} -- 用于存储正在进行的通知记录: Key -> Notification Record
+local spinner_frames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+
+vim.api.nvim_create_autocmd("LspProgress", {
+    callback = function(ev)
+        local client_id = ev.data.client_id
+        local val = ev.data.params.value
+        local token = ev.data.params.token
+
+        if not token then return end
+
+        -- 生成唯一 Key
+        local notif_key = string.format("%s-%s", client_id, token)
+        
+        -- 获取客户端名称
+        local client = vim.lsp.get_client_by_id(client_id)
+        local client_name = client and client.name or "LSP"
+
+        -- 格式化消息
+        local title = val.title or "Task"
+        local message = val.message or ""
+        local percentage = val.percentage
+        
+        -- 构造文本
+        local content_parts = {}
+        if val.kind ~= "end" then
+            local frame_idx = math.floor(vim.loop.hrtime() / 120000000) % #spinner_frames + 1
+            table.insert(content_parts, spinner_frames[frame_idx])
+        else
+            table.insert(content_parts, "✔")
+        end
+
+        table.insert(content_parts, string.format(" %s: %s", client_name, title))
+
+        if percentage then
+            table.insert(content_parts, string.format("(%d%%)", percentage))
+        end
+
+        if message ~= "" then
+            table.insert(content_parts, string.format("- %s", message))
+        end
+        
+        local notif_msg = table.concat(content_parts, " ")
+        local notif_level = vim.log.levels.INFO
+        local notif_opts = {
+            title = "LSP Progress",
+            icon = "",
+            timeout = false, 
+            hide_from_history = true,
+        }
+
+        vim.schedule(function()
+            local current_id = progress_notifs[notif_key]
+
+            if val.kind == "begin" then
+                -- 【开始】新建弹窗
+                local status, notify_id = pcall(vim.notify, notif_msg, notif_level, notif_opts)
+                if status then
+                    progress_notifs[notif_key] = notify_id
+                end
+
+            elseif val.kind == "report" and current_id then
+                -- 【进行中】尝试更新
+                notif_opts.replace = current_id
+                
+                -- 使用 pcall 保护：如果弹窗已被关闭，这里会报错，我们捕获它
+                local status, new_id = pcall(vim.notify, notif_msg, notif_level, notif_opts)
+                
+                if not status then
+                    -- 更新失败（弹窗可能已关闭），清理记录，不再尝试更新此任务
+                    progress_notifs[notif_key] = nil
+                else
+                    progress_notifs[notif_key] = new_id
+                end
+
+            elseif val.kind == "end" and current_id then
+                -- 【结束】更新并设置超时
+                notif_opts.replace = current_id
+                notif_opts.timeout = 2000
+                
+                pcall(vim.notify, notif_msg, notif_level, notif_opts)
+                
+                -- 任务结束，清理 Key
+                progress_notifs[notif_key] = nil
+            end
+        end)
+    end,
+})
+
 -----------------------------------------------------------------------------------------
 -- 诊断符号
 -----------------------------------------------------------------------------------------
