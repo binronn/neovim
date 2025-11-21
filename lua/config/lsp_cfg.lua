@@ -244,6 +244,7 @@ end
 -- 1. Python 基础配置模板 (只定义静态内容，不要放 before_init)
 --------------------------------------------------------------------------------
 local py_base_config = {
+    name = 'pyright',
     filetypes = { 'python' },
     cmd = { 'pyright-langserver', '--stdio' },
     capabilities = g_capabilities, -- 假设 g_capabilities 上文已定义
@@ -251,10 +252,44 @@ local py_base_config = {
         python = {
             analysis = {
                 typeCheckingMode = "off",
+                diagnosticMode = "openFilesOnly",
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
-                diagnosticMode = "workspace",
                 autoImportCompletions = true,
+                exclude = {
+                    -- 1. 虚拟环境 (匹配各种常见命名)
+                    "**/.venv*",
+                    "**/venv*",
+                    "**/env",
+                    "**/virtualenv",
+
+                    -- 2. 缓存与临时文件
+                    "**/__pycache__",
+                    "**/.pytest_cache",   -- Pytest 缓存
+                    "**/.mypy_cache",     -- Mypy 缓存
+                    "**/.ruff_cache",     -- Ruff 缓存
+                    "**/.tox",            -- Tox 测试环境
+                    "**/.ipynb_checkpoints", -- Jupyter Notebook 存档
+                    "**/.cache",
+                    "**/.github",
+                    "**/.vs",
+                    "**/cache",
+
+                    -- 3. 构建与发布目录 (通常包含大量生成文件)
+                    "**/build",
+                    "**/dist",
+                    "**/*.egg-info",
+                    "**/wheels",
+
+                    -- 4. 版本控制 (虽默认排除，但显式加上更保险)
+                    "**/.git",
+                    "**/.svn",
+                    "**/.hg",
+
+                    -- 5. 其他语言/工具的大型目录
+                    "**/node_modules",    -- 必加，Python 项目偶尔也会混入前端
+                    "**/target",          -- Rust/Java 构建目录
+                },
                 diagnosticSeverityOverrides = {
                     reportUnusedImport = "warning",
                     reportUnusedVariable = "warning",
@@ -266,9 +301,9 @@ local py_base_config = {
     on_attach = function(client, bufnr)
         lsp_common_attach(client, bufnr) -- 假设你上文有这个函数
         local opts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set("n", "<leader>ff", function()
+        --[[ vim.keymap.set("n", "<leader>ff", function()
             vim.lsp.buf.format({ async = true })
-        end, opts)
+        end, opts) ]]
     end,
 }
 
@@ -449,6 +484,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
         if not token then return end
 
         local key = string.format("%s-%s", client_id, token)
+        -- local key = 'lsp_prograss_key'
         
         -- 如果是任务结束，但状态表里没有记录（可能开始太快结束太快），则忽略
         if val.kind == "end" and not progress_state[key] then
