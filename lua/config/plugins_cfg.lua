@@ -881,7 +881,7 @@ function M.FTerm_init()
 				if vim.g.is_unix == 1 then
 					return os.getenv("SHELL")
 				else
-					return "bash.exe"
+					return "chcp 65001 && bash.exe"
 				end
 			end,
 			---Neovim's native window border. See `:h nvim_open_win` for more configuration options.
@@ -927,9 +927,110 @@ function M.FTerm_init()
 			on_stderr = nil
 		}
 	)
-	vim.keymap.set("n", "<A-i>", '<CMD>lua require("FTerm").toggle()<CR>')
+	--[[ vim.keymap.set("n", "<A-i>", '<CMD>lua require("FTerm").toggle()<CR>')
 	vim.keymap.set("t", "<A-i>", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
-	vim.keymap.set("t", "<A-c>", '<C-\\><C-n><CMD>lua require("FTerm").exit()<CR>')
+	vim.keymap.set("t", "<A-x>", '<C-\\><C-n><CMD>lua require("FTerm").exit()<CR>')
+    -- ====================================================
+    -- 2. 高级配置：专属 Gemini Chat 实例 (Alt-g)
+    -- ====================================================
+    local fterm = require("FTerm")
+    local gemini = fterm:new({
+        ft = 'fterm_btop',
+        cmd = "echo Gemini cli launching  && gemini"
+    })
+
+    -- 绑定 Toggle 快捷键
+    vim.keymap.set("n", "<C-g>", function()
+        gemini:toggle()
+    end, { desc = "Toggle Gemini Chat" })
+    
+    -- 建议：在 Terminal 模式下也绑定一下，方便从聊天窗口内部快速关闭/切换
+    vim.keymap.set("t", "<C-g>", function()
+        gemini:toggle()
+    end, { desc = "Toggle Gemini Chat" }) ]]
+
+    -- ====================================================
+    -- 配置 1: 默认 FTerm 实例 (Alt-i)
+    -- ====================================================
+    local fterm_main = require("FTerm")
+    fterm_main.setup({
+        border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+        dimensions = { height = 0.6, width = 0.75 },
+        ft = "fterm_bash",
+        cmd = my_shell, -- 使用纯净的 shell 路径
+        auto_close = true,
+        blend = 10,
+        clear_env = false,
+    })
+
+    -- ====================================================
+    -- 配置 2: 专属 Gemini Chat 实例 (Alt-g)
+    -- ====================================================
+    local gemini = fterm_main:new({
+        ft = 'fterm_gemini',
+        cmd = "echo Gemini cli launching  && gemini"
+    })
+
+    -- ====================================================
+    -- 核心逻辑：互斥开关函数
+    -- ====================================================
+    
+    local function toggle_default()
+        pcall(function()
+            if gemini.close then
+                gemini:close()
+            elseif gemini.is_open and gemini:is_open() then
+                gemini:toggle()
+            end
+        end)
+
+        vim.schedule(function() fterm_main.toggle() end)
+    end
+
+    local function toggle_gemini()
+        pcall(function()
+            local wins = vim.api.nvim_list_wins()
+            for _, win in ipairs(wins) do
+                local buf = vim.api.nvim_win_get_buf(win)
+                if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "fterm_bash" then
+                    fterm_main.toggle()
+                end
+            end
+        end)
+
+        vim.schedule(function() gemini:toggle() end)
+    end
+
+    local function smart_exit()
+        local current_ft = vim.bo.filetype
+        
+        if current_ft == 'fterm_bash' then
+            fterm_main.exit() 
+        -- elseif current_ft == 'fterm_gemini' then
+        --     gemini:exit() 
+        end
+    end
+
+    vim.keymap.set("t", "<A-x>", function()
+        vim.api.nvim_feedkeys(
+            vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), 
+            "n", 
+            true
+        )
+        -- 2. 执行智能退出
+        smart_exit()
+    end, { desc = "Kill/Exit current terminal" })
+
+    -- ====================================================
+    -- 3. 绑定快捷键 (全部使用自定义函数)
+    -- ====================================================
+
+    -- Alt-i : 默认终端
+    vim.keymap.set({ "n", "t" }, "<A-i>", toggle_default, { desc = "Toggle Default Terminal" })
+
+    -- Alt-n : Gemini (你之前是 Ctrl-g，这里改为 Alt-g 以符合你的描述)
+    vim.keymap.set({ "n", "t" }, "<A-`>", toggle_gemini, { desc = "Toggle Gemini Chat" })
+    
 end
 
 ------------------------------------------------------------------------------------------
@@ -1358,6 +1459,7 @@ function M.neo_tree_init()
             mappings = {
                 ["<cr>"] = "open",
                 ["oo"] = "open",
+                ["e"] = '',
                 -- ["a"] = "add",
                 -- ["d"] = "delete",
                 -- ["r"] = "rename",
