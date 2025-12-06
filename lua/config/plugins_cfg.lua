@@ -861,176 +861,100 @@ end
 -----------------------------------
 ---- 弹出式终端，GIT对比窗口   ----
 -----------------------------------
---
 function M.FTerm_init()
-	require "FTerm".setup(
-		{
-			border = "double",
-			dimensions = {
-				height = 0.6,
-				width = 0.75
-			},
-			---Filetype of the terminal buffer
-			---@type string
-			ft = "FTerm",
-			glow = true,
-			---Command to run inside the terminal
-			---NOTE: if given string[], it will skip the shell and directly executes the command
-			---@type fun():(string|string[])|string|string[]
-			cmd = function()
-				if vim.g.is_unix == 1 then
-					return os.getenv("SHELL")
-				else
-					return "chcp 65001 && bash.exe"
-				end
-			end,
-			---Neovim's native window border. See `:h nvim_open_win` for more configuration options.
-			border = {"╭", "─", "╮", "│", "╯", "─", "╰", "│"},
-			---Close the terminal as soon as shell/command exits.
-			---Disabling this will mimic the native terminal behaviour.
-			---@type boolean
-			auto_close = true,
-			---Highlight group for the terminal. See `:h winhl`
-			---@type string
-			-- hl = "Normal",
-			---Transparency of the floating window. See `:h winblend`
-			---@type integer
-			blend = 10,
-			---Object containing the terminal window dimensions.
-			---The value for each field should be between `0` and `1`
-			---@type table<string,number>
-			dimensions = {
-				height = 0.61, -- Height of the terminal window
-				width = 0.75, -- Width of the terminal window
-				-- x = 0.5, -- X axis of the terminal window
-				-- y = 0.5 -- Y axis of the terminal window
-			},
-			---Replace instead of extend the current environment with `env`.
-			---See `:h jobstart-options`
-			---@type boolean
-			clear_env = false,
-			---Map of environment variables extending the current environment.
-			---See `:h jobstart-options`
-			---@type table<string,string>|nil
-			env = nil,
-			---Callback invoked when the terminal exits.
-			---See `:h jobstart-options`
-			---@type fun()|nil
-			on_exit = nil,
-			---Callback invoked when the terminal emits stdout data.
-			---See `:h jobstart-options`
-			---@type fun()|nil
-			on_stdout = nil,
-			---Callback invoked when the terminal emits stderr data.
-			---See `:h jobstart-options`
-			---@type fun()|nil
-			on_stderr = nil
-		}
-	)
-	--[[ vim.keymap.set("n", "<A-i>", '<CMD>lua require("FTerm").toggle()<CR>')
-	vim.keymap.set("t", "<A-i>", '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
-	vim.keymap.set("t", "<A-x>", '<C-\\><C-n><CMD>lua require("FTerm").exit()<CR>')
-    -- ====================================================
-    -- 2. 高级配置：专属 Gemini Chat 实例 (Alt-g)
-    -- ====================================================
     local fterm = require("FTerm")
-    local gemini = fterm:new({
-        ft = 'fterm_btop',
-        cmd = "echo Gemini cli launching  && gemini"
-    })
 
-    -- 绑定 Toggle 快捷键
-    vim.keymap.set("n", "<C-g>", function()
-        gemini:toggle()
-    end, { desc = "Toggle Gemini Chat" })
+    -- ====================================================
+    -- 1. 基础环境与通用配置
+    -- ====================================================
     
-    -- 建议：在 Terminal 模式下也绑定一下，方便从聊天窗口内部快速关闭/切换
-    vim.keymap.set("t", "<C-g>", function()
-        gemini:toggle()
-    end, { desc = "Toggle Gemini Chat" }) ]]
+    local os_shell
+    if vim.fn.has("win32") == 1 then
+        os_shell = "cmd.exe" -- 或者 "powershell.exe"
+    else
+        os_shell = os.getenv("SHELL") or "bash"
+    end
 
-    -- ====================================================
-    -- 配置 1: 默认 FTerm 实例 (Alt-i)
-    -- ====================================================
-    local fterm_main = require("FTerm")
-    fterm_main.setup({
-        border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-        dimensions = { height = 0.6, width = 0.75 },
-        ft = "fterm_bash",
-        cmd = my_shell, -- 使用纯净的 shell 路径
-        auto_close = true,
+    -- 通用边框样式
+    local border_style = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }
+
+    -- 全局 Setup (可选，主要用于设置默认值)
+    fterm.setup({
+        border = border_style,
         blend = 10,
-        clear_env = false,
+        auto_close = true,
     })
 
     -- ====================================================
-    -- 配置 2: 专属 Gemini Chat 实例 (Alt-g)
+    -- 2. 实例定义
     -- ====================================================
-    local gemini = fterm_main:new({
-        ft = 'fterm_gemini',
-        cmd = "echo Gemini cli launching  && gemini"
+
+    local term_main = fterm:new({
+        ft = "fterm_bash",
+        cmd = os_shell,
+        dimensions = { height = 0.6, width = 0.75 },
+        border = border_style,
+    })
+
+    local term_gemini = fterm:new({
+        ft = "fterm_gemini",
+        cmd = "gemini",
+        dimensions = { height = 0.8, width = 0.8 },
+        border = border_style,
+    })
+
+    local term_aider = fterm:new({
+        ft = "fterm_aider",
+        cmd = "aider",
+        dimensions = { height = 0.8, width = 0.8 },
+        border = border_style,
     })
 
     -- ====================================================
-    -- 核心逻辑：互斥开关函数
+    -- 3. 核心逻辑：互斥切换管理器
     -- ====================================================
-    
-    local function toggle_default()
-        pcall(function()
-            if gemini.close then
-                gemini:close()
-            elseif gemini.is_open and gemini:is_open() then
-                gemini:toggle()
-            end
-        end)
+    local managed_terminals = { term_main, term_gemini, term_aider }
 
-        vim.schedule(function() fterm_main.toggle() end)
+    local function toggle_exclusive(target_term)
+        for _, term in ipairs(managed_terminals) do
+            if term ~= target_term then
+                pcall(function() term:close() end)
+            end
+        end
+
+        vim.schedule(function()
+            target_term:toggle()
+        end)
     end
 
-    local function toggle_gemini()
-        pcall(function()
-            local wins = vim.api.nvim_list_wins()
-            for _, win in ipairs(wins) do
-                local buf = vim.api.nvim_win_get_buf(win)
-                if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "fterm_bash" then
-                    fterm_main.toggle()
-                end
-            end
-        end)
-
-        vim.schedule(function() gemini:toggle() end)
-    end
-
+    -- 智能退出 (Kill) 当前焦点的浮动终端
     local function smart_exit()
         local current_ft = vim.bo.filetype
-        
-        if current_ft == 'fterm_bash' then
-            fterm_main.exit() 
-        -- elseif current_ft == 'fterm_gemini' then
-        --     gemini:exit() 
+        -- 遍历查找当前 filetype 对应的终端并退出
+        if current_ft == "fterm_bash" then term_main:exit()
+        elseif current_ft == "fterm_gemini" then term_gemini:exit()
+        elseif current_ft == "fterm_aider" then term_aider:exit()
+        else
+            -- 如果无法识别，发送通用的退出信号
+            vim.api.nvim_feedkeys(
+                vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), 
+                "n", true
+            )
         end
     end
 
-    vim.keymap.set("t", "<A-x>", function()
-        vim.api.nvim_feedkeys(
-            vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), 
-            "n", 
-            true
-        )
-        -- 2. 执行智能退出
-        smart_exit()
-    end, { desc = "Kill/Exit current terminal" })
-
     -- ====================================================
-    -- 3. 绑定快捷键 (全部使用自定义函数)
+    -- 4. 按键绑定
     -- ====================================================
 
-    -- Alt-i : 默认终端
-    vim.keymap.set({ "n", "t" }, "<A-i>", toggle_default, { desc = "Toggle Default Terminal" })
+    local map = vim.keymap.set
+    local opts = { silent = true }
 
-    -- Alt-n : Gemini (你之前是 Ctrl-g，这里改为 Alt-g 以符合你的描述)
-    vim.keymap.set({ "n", "t" }, "<A-`>", toggle_gemini, { desc = "Toggle Gemini Chat" })
-    
+    map({ "n", "t" }, "<A-`>", function() toggle_exclusive(term_main) end, { desc = "Toggle Terminal" })
+    map({ "n", "t" }, "<A-1>", function() toggle_exclusive(term_gemini) end, { desc = "Toggle Gemini" })
+    map({ "n", "t" }, "<A-2>", function() toggle_exclusive(term_aider) end, { desc = "Toggle Aider" })
+
+    map("t", "<A-x>", smart_exit, { desc = "Kill Current FTerm" })
 end
 
 ------------------------------------------------------------------------------------------
