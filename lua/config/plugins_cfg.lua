@@ -927,19 +927,49 @@ function M.FTerm_init()
         end)
     end
 
-    -- 智能退出 (Kill) 当前焦点的浮动终端
+    -- ====================================================
+    -- 辅助函数：彻底杀死终端进程（Reset）
+    -- ====================================================
+    local function kill_terminal(term)
+        if not term then return end
+
+        -- 1. 先尝试关闭浮动窗口 UI
+        pcall(function() term:close() end)
+
+        -- 2. 获取底层 Buffer ID
+        local buf = term.buf
+
+        -- 3. 如果 Buffer 存在且有效，强行删除
+        -- force=true 会无视未保存警告，直接杀死内部进程
+        if buf and vim.api.nvim_buf_is_valid(buf) then
+            vim.api.nvim_buf_delete(buf, { force = true })
+            print("Terminal Killed.")
+        end
+
+        -- 4. 关键：将 FTerm 实例的 buf 引用置空
+        -- 这样下次 toggle 时，FTerm 才会创建一个全新的终端进程
+        term.buf = nil
+    end
+
     local function smart_exit()
+        -- 这里的 filetype 必须和你上面 new 时定义的 ft 一致
         local current_ft = vim.bo.filetype
-        -- 遍历查找当前 filetype 对应的终端并退出
-        if current_ft == "fterm_bash" then term_main:exit()
-        elseif current_ft == "fterm_gemini" then term_gemini:exit()
-        elseif current_ft == "fterm_aider" then term_aider:exit()
+        
+        local term_map = {
+            ["fterm_bash"]   = term_main,
+            ["fterm_gemini"] = term_gemini,
+            ["fterm_aider"]  = term_aider
+        }
+
+        local target_term = term_map[current_ft]
+
+        if target_term then
+            kill_terminal(target_term)
         else
-            -- 如果无法识别，发送通用的退出信号
-            vim.api.nvim_feedkeys(
-                vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), 
-                "n", true
-            )
+            -- 如果不是插件管理的终端，回退到普通输入模式或发送退出键
+            -- 这里模拟按下 <C-\><C-n> 退出 Terminal 模式
+            local key = api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true)
+            api.nvim_feedkeys(key, "n", false)
         end
     end
 
