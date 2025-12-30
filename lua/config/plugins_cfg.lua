@@ -916,13 +916,12 @@ function M.FTerm_init()
     local managed_terminals = { term_main, term_gemini, term_aider }
 
     local function toggle_exclusive(target_term)
-        for _, term in ipairs(managed_terminals) do
-            if term ~= target_term then
-                pcall(function() term:close() end)
-            end
-        end
-
         vim.schedule(function()
+            for _, term in ipairs(managed_terminals) do
+                if term ~= target_term then
+                    pcall(function() term:close() end)
+                end
+            end
             target_term:toggle()
         end)
     end

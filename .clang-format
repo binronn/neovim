@@ -36,7 +36,7 @@ BraceWrapping:
 
 # 括号与语句中包含空格
 SpacesInParentheses: true
-SpacesInSquareBrackets: true
+SpacesInSquareBrackets: false
 SpacesInAngles: true
 SpaceAfterCStyleCast: true
 SpaceBeforeParens: ControlStatements

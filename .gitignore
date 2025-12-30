@@ -2,3 +2,4 @@ tags
 lua/tags
 **/.vim-bookmarks
 lazy-lock.json
+.aider*

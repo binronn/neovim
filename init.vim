@@ -1,4 +1,9 @@
 
 let g:maplocalleader = ' '
 let g:mapleader = ' '
-lua require('init')
+if exists('g:vscode')
+    lua require('vscode_init')
+else
+    lua require('init')
+endif
+

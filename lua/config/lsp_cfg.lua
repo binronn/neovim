@@ -179,7 +179,7 @@ vim.lsp.config.clangd = {
     filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "hpp", "cxx", "h" },
     cmd = {
         "clangd",
-        "--malloc-trim",
+        -- "--malloc-trim",
         "--limit-results=20",
         "--background-index=true",
         "--clang-tidy",

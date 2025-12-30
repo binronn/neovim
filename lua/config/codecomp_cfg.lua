@@ -215,13 +215,14 @@ function M:setup_codecomp()
         display = {
             chat = {
                 -- Change the default icons
-                icons = {
-                    pinned_buffer = "",
-                    watched_buffer = "👀"
-                },
+                  icons = {
+                      sync_all = "",
+                      sync_diff = "👀"
+                  },
                 -- Alter the sizing of the debug window
                 debug_window = {},
                 -- Options to customize the UI of the chat buffer
+                -- floating_window = {
                 window = {
                     title = 'CodeCompanion',
                     layout = "vertical", -- float|vertical|horizontal|buffer
