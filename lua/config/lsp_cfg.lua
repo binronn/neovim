@@ -187,7 +187,7 @@ vim.lsp.config.clangd = {
         "--pch-storage=memory",
         -- "--pch-storage=disk",
         -- "--all-scopes-completion",
-        "--cross-file-rename",
+        -- "--cross-file-rename",
         "--header-insertion=never",
         "--completion-style=detailed",
         "--function-arg-placeholders",

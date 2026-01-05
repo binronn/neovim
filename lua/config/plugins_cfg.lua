@@ -595,6 +595,9 @@ function M.alpha_init()
 		})
 	end
 
+    local function projects_template()
+    end
+
 	_G.telescope_with_cd_action = telescope_with_cd_action
 	local alpha = require("alpha")
 
@@ -622,6 +625,9 @@ function M.alpha_init()
 			dashboard.button("n", "  " .. "新建文件", ":enew<CR>"),
 			dashboard.button("r", "  " .. "最近文件", ":lua telescope_with_cd_action(\"oldfiles\")<CR>"),
 			dashboard.button("f", "  " .. "查找文件", ":Telescope find_files<CR>"),
+            dashboard.button("p", "  " .. "项目模板", function()
+                require('projects_template').create_project()
+            end),
 			dashboard.button("g", "  " .. "查找文本", ":Telescope live_grep<CR>"),
 			dashboard.button("u", "  " .. "更新插件", ":Lazy sync<CR>"),
 			dashboard.button("q", "  " .. "退出",     ":qa<CR>"),
