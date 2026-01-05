@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(CppTemplate)
+project(CTemplate C)
 
 # ==============================================================================
 # Configuration Variables
@@ -12,8 +12,6 @@ set(ENTRY_POINT "MAIN" CACHE STRING "Choose the entry point: MAIN, WINMAIN, DLL,
 set(LINK_TYPE "DYNAMIC" CACHE STRING "Choose linking type: STATIC or DYNAMIC")
 
 # Control Subsystem: "CONSOLE" or "WINDOWS"
-# "CONSOLE" = Standard console application (cmd.exe attached)
-# "WINDOWS" = GUI application (no console window)
 set(SUBSYSTEM "CONSOLE" CACHE STRING "Choose subsystem: CONSOLE or WINDOWS")
 
 # Control Architecture: "x64" or "x86"
@@ -26,11 +24,11 @@ set(TARGET_ARCH "x64" CACHE STRING "Choose target architecture: x64 or x86")
 set(SRC "")
 
 if(ENTRY_POINT STREQUAL "MAIN")
-    set(SRC "main.cpp")
+    list(APPEND SRC "main.c")
 elseif(ENTRY_POINT STREQUAL "WINMAIN")
-    set(SRC "winmain.cpp")
+    list(APPEND SRC "winmain.c")
 elseif(ENTRY_POINT STREQUAL "DLL" OR ENTRY_POINT STREQUAL "STATIC")
-    set(SRC "dllmain.cpp")
+    list(APPEND SRC "dllmain.c")
 else()
     message(FATAL_ERROR "Invalid ENTRY_POINT: ${ENTRY_POINT}. Must be MAIN, WINMAIN, DLL, or STATIC.")
 endif()
@@ -41,10 +39,12 @@ message(STATUS "Selected Source File: ${SRC}")
 # Compiler Options (Customizable)
 # ==============================================================================
 
+# Placeholder for custom compiler options
+# Example flags for Clang/GCC
 set(CUSTOM_COMPILE_OPTIONS
     -Wall
     -Wextra
-    -std=c++17
+    -std=c11
 )
 
 set(CUSTOM_LINK_OPTIONS "")
@@ -108,7 +108,6 @@ target_link_options(AppTarget PRIVATE ${CUSTOM_LINK_OPTIONS})
 # Set output file name to match Project Name
 set_target_properties(AppTarget PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
-# If on Windows, we might need to link standard Windows libraries
 if(WIN32)
     target_link_libraries(AppTarget PRIVATE user32 kernel32)
 endif()

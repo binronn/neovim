@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
-project(CTemplate C)
+project(CStaticLib C)
 
 # ==============================================================================
 # Configuration Variables
 # ==============================================================================
 
 # Control which entry point to use: "MAIN", "WINMAIN", "DLL", or "STATIC"
-set(ENTRY_POINT "MAIN" CACHE STRING "Choose the entry point: MAIN, WINMAIN, DLL, or STATIC_DLL")
+set(ENTRY_POINT "STATIC_DLL" CACHE STRING "Choose the entry point: MAIN, WINMAIN, DLL, or STATIC_DLL")
 
 # Control linking type: "STATIC" or "DYNAMIC"
-set(LINK_TYPE "DYNAMIC" CACHE STRING "Choose linking type: STATIC or DYNAMIC")
+set(LINK_TYPE "STATIC" CACHE STRING "Choose linking type: STATIC or DYNAMIC")
 
 # Control Subsystem: "CONSOLE" or "WINDOWS"
 set(SUBSYSTEM "CONSOLE" CACHE STRING "Choose subsystem: CONSOLE or WINDOWS")
@@ -24,11 +24,11 @@ set(TARGET_ARCH "x64" CACHE STRING "Choose target architecture: x64 or x86")
 set(SRC "")
 
 if(ENTRY_POINT STREQUAL "MAIN")
-    set(SRC "main.c")
+    list(APPEND SRC "main.c")
 elseif(ENTRY_POINT STREQUAL "WINMAIN")
-    set(SRC "winmain.c")
+    list(APPEND SRC "winmain.c")
 elseif(ENTRY_POINT STREQUAL "DLL" OR ENTRY_POINT STREQUAL "STATIC")
-    set(SRC "dllmain.c")
+    list(APPEND SRC "dllmain.c")
 else()
     message(FATAL_ERROR "Invalid ENTRY_POINT: ${ENTRY_POINT}. Must be MAIN, WINMAIN, DLL, or STATIC.")
 endif()

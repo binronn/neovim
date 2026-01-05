@@ -622,12 +622,10 @@ function M.alpha_init()
 		type = "group",
 		val = {
 			dashboard.button("s", "  " .. "最近工作区", ":lua vim.g.select_entry_workdir()<CR>"),
+            dashboard.button("p", "  " .. "新建项目", ":lua require('projects_template').create_project()<CR>"),
 			dashboard.button("n", "  " .. "新建文件", ":enew<CR>"),
 			dashboard.button("r", "  " .. "最近文件", ":lua telescope_with_cd_action(\"oldfiles\")<CR>"),
 			dashboard.button("f", "  " .. "查找文件", ":Telescope find_files<CR>"),
-            dashboard.button("p", "  " .. "项目模板", function()
-                require('projects_template').create_project()
-            end),
 			dashboard.button("g", "  " .. "查找文本", ":Telescope live_grep<CR>"),
 			dashboard.button("u", "  " .. "更新插件", ":Lazy sync<CR>"),
 			dashboard.button("q", "  " .. "退出",     ":qa<CR>"),
