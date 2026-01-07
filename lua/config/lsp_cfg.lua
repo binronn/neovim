@@ -215,31 +215,38 @@ vim.api.nvim_create_autocmd("FileType", {
 -- 动态切换 clangd
 -----------------------------------------------------------------------------------------
 function M.switch_clangd(clangd_path, compiler_path)
-    local new_config = {
-        name = "clangd",
-        cmd = {
-            clangd_path,
-            "--background-index=true",
-            "--clang-tidy",
-            "--compile-commands-dir=build",
-            "--pch-storage=disk",
-            "--completion-style=bundled",
-            "--query-driver=" .. compiler_path,
-        },
-        root_dir = root_pattern,
-        on_attach = on_clangd_attach,
-        capabilities = g_capabilities,
+    -- Update global config to persist changes and maintain consistency
+    vim.lsp.config.clangd.cmd = {
+        clangd_path,
+        "--limit-results=20",
+        "--background-index=true",
+        "--clang-tidy",
+        "--compile-commands-dir=build",
+        "--pch-storage=memory",
+        "--header-insertion=never",
+        "--completion-style=detailed",
+        "--function-arg-placeholders",
+        "--header-insertion-decorators",
+        "-j=6",
+        "--query-driver=" .. compiler_path,
     }
+    
+    -- Ensure name is set for the client
+    vim.lsp.config.clangd.name = "clangd"
 
-    -- 停止所有 clangd 客户端（直接传 client 更现代）
+    -- Stop all active clangd clients
     for _, client in ipairs(vim.lsp.get_clients({ name = "clangd" })) do
         vim.lsp.stop_client(client)
     end
 
-    -- 启动新实例
+    -- Restart client with new config
     vim.defer_fn(function()
-        vim.lsp.start(new_config)
-    end, 100)
+        -- Check if current buffer is one of the supported filetypes
+        if vim.tbl_contains(vim.lsp.config.clangd.filetypes, vim.bo.filetype) then
+            vim.lsp.start(vim.lsp.config.clangd)
+            vim.notify("Clangd switched to: " .. compiler_path, vim.log.levels.INFO)
+        end
+    end, 200) -- Increased delay slightly to ensure clean shutdown
 end
 
 
