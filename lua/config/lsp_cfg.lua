@@ -396,6 +396,30 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 --------------------------------------------------------------------------------
+-- Node.js 配置 (TypeScript / JavaScript)
+-- 需安装: npm install -g typescript typescript-language-server
+--------------------------------------------------------------------------------
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+    callback = function(args)
+        if vim.bo[args.buf].buftype ~= "" then return end
+        local file_path = vim.api.nvim_buf_get_name(args.buf)
+        if file_path == "" then return end
+
+        local matches = vim.fs.find({ "package.json", "tsconfig.json", "jsconfig.json", ".git" }, { path = file_path, upward = true, limit = 1 })
+        local root_dir = #matches > 0 and vim.fs.dirname(matches[1]) or vim.fs.dirname(file_path)
+
+        vim.lsp.start({
+            name = "ts_ls",
+            cmd = { "typescript-language-server", "--stdio" },
+            root_dir = root_dir,
+            capabilities = g_capabilities,
+            on_attach = lsp_common_attach,
+        }, { bufnr = args.buf })
+    end,
+})
+
+--------------------------------------------------------------------------------
 -- 极致优化的 LSP 进度通知 (数据与渲染分离模式)
 --------------------------------------------------------------------------------
 local progress_state = {}
