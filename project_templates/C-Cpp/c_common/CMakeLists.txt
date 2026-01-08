@@ -44,7 +44,7 @@ message(STATUS "Selected Source File: ${SRC}")
 set(CUSTOM_COMPILE_OPTIONS
     -Wall
     -Wextra
-    -std=c11
+    -std=c99
 )
 
 set(CUSTOM_LINK_OPTIONS "")
