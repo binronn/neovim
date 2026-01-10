@@ -750,4 +750,68 @@ cmp.setup({
 })
 
 
+--------------------------------------------------------------------------------
+-- C# Omnisharp
+--------------------------------------------------------------------------------
+local function get_omnisharp_path()
+    local config_dir = vim.fn.stdpath("config")
+    local parent_dir = vim.fn.fnamemodify(config_dir, ":h")
+    local path = parent_dir .. "/nvim-tools/omnisharp/OmniSharp.exe"
+    
+    if vim.fn.has("win32") == 1 then
+        path = path:gsub("/", "\\")
+    end
+    return path
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "cs",
+    callback = function(args)
+        if vim.bo[args.buf].buftype ~= "" then return end
+        
+        local omnisharp_bin = get_omnisharp_path()
+        
+        -- 更严格的路径检查
+        if vim.fn.executable(omnisharp_bin) == 0 then
+            vim.notify("OmniSharp not found or not executable at: " .. omnisharp_bin, vim.log.levels.ERROR)
+            return
+        end
+        
+        vim.notify("Lsp cs started")
+        local pid = vim.fn.getpid()
+        -- Optimization: 
+        -- 1. AnalyzeOpenDocumentsOnly=true: significantly reduces CPU usage by only checking open files.
+        -- 2. EnableDecompilationSupport=false: disables decompilation to save memory/time.
+        local cmd = { 
+            omnisharp_bin, 
+            "--languageserver", 
+            "--hostPID", tostring(pid),
+            "RoslynExtensionsOptions:EnableAnalyzersSupport=true",
+            "RoslynExtensionsOptions:AnalyzeOpenDocumentsOnly=true",
+            "RoslynExtensionsOptions:EnableImportCompletion=true",
+            "RoslynExtensionsOptions:EnableDecompilationSupport=false"
+        }
+        
+        vim.notify(vim.inspect(cmd))
+        -- 确保全局变量存在
+        local capabilities = g_capabilities or vim.lsp.protocol.make_client_capabilities()
+        local on_attach = lsp_common_attach or function() end
+        
+        vim.lsp.start({
+            name = "omnisharp",
+            cmd = cmd,
+            root_dir = vim.fs.dirname(vim.fs.find({'.root', '*.sln', '*.csproj', '.git'}, { 
+                path = args.file, 
+                upward = true 
+            })[1] or args.file),
+            capabilities = capabilities,
+            on_attach = on_attach,
+            flags = {
+                debounce_text_changes = 200,
+            },
+        }, { bufnr = args.buf })
+    end,
+})
+
+
 return M
