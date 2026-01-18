@@ -900,6 +900,14 @@ function M.FTerm_init()
         border = border_style,
     })
 
+    -- 新增 Claude 终端
+    local term_claude = fterm:new({
+        ft = "fterm_claude",
+        cmd = "claude", -- 请根据实际情况调整命令
+        dimensions = { height = 0.8, width = 0.8 },
+        border = border_style,
+    })
+
     local term_gemini = fterm:new({
         ft = "fterm_gemini",
         cmd = "gemini",
@@ -917,7 +925,7 @@ function M.FTerm_init()
     -- ====================================================
     -- 3. 核心逻辑：互斥切换管理器
     -- ====================================================
-    local managed_terminals = { term_main, term_gemini, term_aider }
+    local managed_terminals = { term_main, term_claude, term_gemini, term_aider }
 
     local function toggle_exclusive(target_term)
         vim.schedule(function()
@@ -960,6 +968,7 @@ function M.FTerm_init()
         
         local term_map = {
             ["fterm_bash"]   = term_main,
+            ["fterm_claude"] = term_claude,
             ["fterm_gemini"] = term_gemini,
             ["fterm_aider"]  = term_aider
         }
@@ -984,8 +993,9 @@ function M.FTerm_init()
     local opts = { silent = true }
 
     map({ "n", "t" }, "<A-`>", function() toggle_exclusive(term_main) end, { desc = "Toggle Terminal" })
-    map({ "n", "t" }, "<A-1>", function() toggle_exclusive(term_gemini) end, { desc = "Toggle Gemini" })
-    map({ "n", "t" }, "<A-2>", function() toggle_exclusive(term_aider) end, { desc = "Toggle Aider" })
+    map({ "n", "t" }, "<A-1>", function() toggle_exclusive(term_claude) end, { desc = "Toggle Claude" })
+    map({ "n", "t" }, "<A-2>", function() toggle_exclusive(term_gemini) end, { desc = "Toggle Gemini" })
+    map({ "n", "t" }, "<A-3>", function() toggle_exclusive(term_aider) end, { desc = "Toggle Aider" })
 
     map("t", "<A-x>", smart_exit, { desc = "Kill Current FTerm" })
 end
