@@ -470,7 +470,7 @@ return {
 	-- 调试插件
 	{
 		"mfussenegger/nvim-dap",
-		ft = {"h", "hpp", "cpp", "cxx"},
+		ft = {"h", "hpp", "cpp", "cxx", "c"},
 		dependencies = {
 			"nvim-neotest/nvim-nio",
 			"rcarriga/nvim-dap-ui",
