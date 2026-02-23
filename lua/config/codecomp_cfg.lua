@@ -164,15 +164,11 @@ function M:setup_codecomp()
                         schema = {
                             model = {
                                 default = "kimi-k2.5",
-                                choices = {
-                                    ["kimi-k2.5"] = { 
-                                        opts = { 
-                                            thinking = { type = "disabled" }  -- 使用正确的 thinking 参数格式
-                                        } 
-                                    },
-                                }
                             },
-                        }
+                        },
+                        body = {
+                            thinking = { type = "disabled" }
+                        },
                     })
                 end,
                 a2siliconflow = function()
@@ -209,7 +205,7 @@ function M:setup_codecomp()
                 end
             },
         },
-        strategies = {
+        interactions = {
             chat = {
                 roles = {
                     ---The header name for the LLM's messages
@@ -237,6 +233,10 @@ function M:setup_codecomp()
                     close = {
                         modes = {n = "<C-c>", i = "C-c"}
                     }
+                },
+                tools = {
+                    -- calculator = require('config.codecomp.tools.calculator'),
+                    cmd_runner = require('config.codecomp.tools.cmd_runner')
                 }
             },
             inline = {
