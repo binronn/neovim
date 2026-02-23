@@ -133,6 +133,48 @@ function M:setup_codecomp()
                         }
                     })
                 end,
+                a0pen_qwen_fast = function()
+                    return require("codecompanion.adapters").extend("openai_compatible", {
+                        name = "qwen3.5-plus-fast",
+                        env = {
+                            url = "https://dashscope.aliyuncs.com",
+                            chat_url = "/compatible-mode/v1/chat/completions",
+                            api_key = vim.fn.getenv("QWEN_API")
+                        },
+                        schema = {
+                            model = {
+                                default = "qwen3.5-plus-2026-02-15",
+                                choices = {
+                                    ["qwen3.5-plus"] = { opts = { can_reason = true } },
+                                    'qwen3.5-plus-2026-02-15',
+                                    'qwen3.5-397b-a17b'
+                                }
+                            }
+                        }
+                    })
+                end,
+                a0pen_kimi = function()
+                    return require("codecompanion.adapters").extend("openai_compatible", {
+                        name = "kimi",
+                        env = {
+                            url = "https://api.moonshot.ai",
+                            chat_url = "/v1/chat/completions",
+                            api_key = vim.fn.getenv("KIMI")
+                        },
+                        schema = {
+                            model = {
+                                default = "kimi-k2.5",
+                                choices = {
+                                    ["kimi-k2.5"] = { 
+                                        opts = { 
+                                            thinking = { type = "disabled" }  -- 使用正确的 thinking 参数格式
+                                        } 
+                                    },
+                                }
+                            },
+                        }
+                    })
+                end,
                 a2siliconflow = function()
                     return require("codecompanion.adapters").extend("openai_compatible", {
                         name = "siliconflow",
@@ -156,11 +198,13 @@ function M:setup_codecomp()
                     })
                 end,
                 a1gemini = function()
-                    return require("codecompanion.adapters").extend("gemini", {
+                    return require("codecompanion.adapters").extend("openai_compatible", {
                         name = "gemini",
-                        opts = { proxy = 'socks5://127.0.0.1:10807' },
-                        env = { api_key = vim.fn.getenv("GEMINI_API_KEY") },
-                        schema = { model = {} }
+                        env = {
+                            url = "http://localhost:8045",
+                            chat_url = "/v1/chat/completions",
+                            api_key = vim.fn.getenv("ANTHROPIC_AUTH_TOKEN")
+                        },
                     })
                 end
             },
