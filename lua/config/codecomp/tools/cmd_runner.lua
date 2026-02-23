@@ -124,7 +124,7 @@ return {
             ---@param tool CodeCompanion.Tools The tool object
             setup = function(self, tool)
                 -- 可以在这里进行初始化，但不需要修改 cmds
-                vim.notify("cmd_runner setup called", vim.log.levels.INFO)
+                -- vim.notify("cmd_runner setup called", vim.log.levels.INFO)
             end,
         },
 
