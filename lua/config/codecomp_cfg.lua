@@ -101,6 +101,9 @@ function M:setup_codecomp()
         opts = {
             language = "中文",
         },
+        prompt_library = {
+            -- ["Generate a Commit Message"] = require('config.codecomp.prompt_library.commit_message'),
+        },
         adapters = {
             http = {
                 dskfee = function()
