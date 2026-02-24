@@ -514,6 +514,48 @@ return {
 			require("render-markdown").setup()
 		end
 	},
+    {
+        "Davidyz/VectorCode", -- pip install VectorCode
+        version = "*", -- optional, depending on whether you're on nightly or release
+        dependencies = { "nvim-lua/plenary.nvim" },
+        config = function()
+            vim.env.PYTHONUTF8 = "1"
+            require('vectorcode').setup()
+        end,
+        build = function()
+            -- 检查uv是否可用
+            local uv = vim.loop
+            local handle = uv.spawn("uv", {
+                args = { "--version" },
+                stdio = { nil, nil, nil }
+            }, function(code)
+                if code ~= 0 then
+                    vim.notify("uv not found. Skipping VectorCode installation.", vim.log.levels.WARN)
+                    return
+                end
+
+                -- uv存在，执行安装命令
+                local install_handle = uv.spawn("uv", {
+                    args = { "pip", "install", "-U", "VectorCode" },
+                    stdio = { nil, nil, nil }
+                }, function(install_code)
+                    if install_code == 0 then
+                        vim.notify("VectorCode installed successfully.", vim.log.levels.INFO)
+                    else
+                        vim.notify("Failed to install VectorCode.", vim.log.levels.ERROR)
+                    end
+                end)
+
+                if install_handle then
+                    uv.close(install_handle)
+                end
+            end)
+
+            if handle then
+                uv.close(handle)
+            end
+        end
+    },
 	------------------------------------------
 	----     codecompanion AI             ----
 	------------------------------------------
@@ -525,6 +567,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			-- 'echasnovski/mini.diff',
 			"nvim-treesitter/nvim-treesitter",
+			"Davidyz/VectorCode",
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
 				config = function()
@@ -541,20 +584,6 @@ return {
 			local comp = require("config.codecomp_cfg"):new()
 			comp:setup_codecomp()
 			comp:init()
-			-- require('mini.diff').setup({
-			-- 	view = {
-			-- 		-- Visualization style. Possible values are 'sign' and 'number'.
-			-- 		-- Default: 'number' if line numbers are enabled, 'sign' otherwise.
-			-- 		style = vim.go.number and 'number' or 'sign',
-
-			-- 		-- Signs used for hunks with 'sign' view
-			-- 		signs = { add = '', change = '', delete = '' },
-
-			-- 		-- Priority of used visualization extmarks
-			-- 		priority = 0,
-			-- 	},
-			-- 	-- 在这里添加 mini.diff 的默认配置
-			-- })
 			nmap("<M-c>", ":CodeCompanionChat Toggle<CR>")
 			vmap("<M-c>", ":CodeCompanionChat<CR>")
 
@@ -564,7 +593,6 @@ return {
 			nmap2("<leader>cs", ":CodeCompanionChat ")
 			nmap("<leader>ca", ":CodeCompanionActions<CR>")
 
-			-- cmap("CC", "CodeCompanion", {noremap = true, silent = false})
 			vim.cmd([[cab cc CodeCompanion]]) -- press cc<spcace>
 		end
 	},
