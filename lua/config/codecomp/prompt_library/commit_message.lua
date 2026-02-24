@@ -1,12 +1,13 @@
 local M = {
-    strategy = "chat",
+    interaction = "chat",
     description = "000 Generate a commit message",
     opts = {
         index = 10,
         is_default = true,
         is_slash_cmd = true,
-        short_name = "commit",
+        alias = "commit",
         auto_submit = true,
+        is_workflow = true,
     },
     prompts = {
         {
