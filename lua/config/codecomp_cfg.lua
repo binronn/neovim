@@ -109,6 +109,11 @@ function M:setup_codecomp()
             -- ["Generate a Commit Message"] = require('config.codecomp.prompt_library.commit_message'),
         },
         rules = {
+            opts = {
+                chat = {
+                    -- autoload = {'bigfile'}
+                }
+            },
             python = {
                 description = 'Python rules',
                 files = {
@@ -160,7 +165,7 @@ function M:setup_codecomp()
                         }
                     })
                 end,
-                a0pen_qwen_fast = function()
+                a0pen_qwen = function()
                     return require("codecompanion.adapters").extend("openai_compatible", {
                         name = "qwen3.5-plus-fast",
                         env = {
