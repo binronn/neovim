@@ -243,7 +243,12 @@ function M:setup_codecomp()
                     ---The header name for the LLM's messages
                     ---@type string|fun(adapter: CodeCompanion.Adapter): string
                     llm = function(adapter)
-                        return adapter.name .. '/' .. adapter.schema.model.default
+
+                        local model_default = adapter.name
+                        if adapter.schema then
+                            return model_default .. ' / ' .. adapter.schema.model.default
+                        end
+                        return model_default
                     end,
 
                     ---The header name for your messages
@@ -267,20 +272,21 @@ function M:setup_codecomp()
                     }
                 },
                 tools = {
-                    -- calculator = require('config.codecomp.tools.calculator'),
-                    cmd_runner = require('config.codecomp.tools.cmd_runner')
+                    -- ["calculator"] = require('config.codecomp.tools.calculator'),
+                    ["cmd_runner"] = require('config.codecomp.tools.cmd_runner')
                 }
             },
             inline = {
                 keymaps = {
                     accept_change = {
                         modes = {n = "ct"},
-                        description = "Choose target"
                     },
                     reject_change = {
                         modes = {n = "co"},
-                        description = "Choose our"
-                    }
+                    },
+                    always_accept = {
+                        modes = { n = "cy" },
+                    },
                 },
                 adapter = "a0pen_dsk"
             },
