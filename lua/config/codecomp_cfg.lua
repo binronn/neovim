@@ -17,6 +17,10 @@ local spinner_symbols = {
 }
 local spinner_symbols_len = 10
 
+local function get_rule_base_path()
+    return vim.fn.stdpath("config") .. "/lua/config/codecomp/rules/"
+end
+
 -- Initializer
 function M:init(options)
 	M.super.init(self, options)
@@ -103,6 +107,20 @@ function M:setup_codecomp()
         },
         prompt_library = {
             -- ["Generate a Commit Message"] = require('config.codecomp.prompt_library.commit_message'),
+        },
+        rules = {
+            python = {
+                description = 'Python rules',
+                files = {
+                    get_rule_base_path() .. 'python/base.md'
+                }
+            },
+            bigfile = {
+                description = 'Big file read rules',
+                files = {
+                    get_rule_base_path() .. 'bigfile/base.md'
+                }
+            }
         },
         adapters = {
             http = {
