@@ -523,38 +523,23 @@ return {
             require('vectorcode').setup()
         end,
         build = function()
-            -- 检查uv是否可用
             local uv = vim.loop
-            local handle = uv.spawn("uv", {
-                args = { "--version" },
-                stdio = { nil, nil, nil }
-            }, function(code)
+            local function run_uv(args, on_exit)
+                local handle = uv.spawn("uv", { args = args, stdio = { nil, nil, nil } }, on_exit)
+                if handle then uv.close(handle) end
+            end
+
+            run_uv({ "--version" }, function(code)
                 if code ~= 0 then
-                    vim.notify("uv not found. Skipping VectorCode installation.", vim.log.levels.WARN)
+                    vim.notify("uv not found. Skipping VectorCode.", vim.log.levels.WARN)
                     return
                 end
-
-                -- uv存在，执行安装命令
-                local install_handle = uv.spawn("uv", {
-                    args = { "pip", "install", "-U", "VectorCode" },
-                    stdio = { nil, nil, nil }
-                }, function(install_code)
-                    if install_code == 0 then
-                        vim.notify("VectorCode installed successfully.", vim.log.levels.INFO)
-                    else
-                        vim.notify("Failed to install VectorCode.", vim.log.levels.ERROR)
-                    end
+                run_uv({ "tool", "install", "--upgrade", "vectorcode" }, function(c)
+                    vim.notify(c == 0 and "VectorCode updated." or "VectorCode install failed.", 
+                    c == 0 and vim.log.levels.INFO or vim.log.levels.ERROR)
                 end)
-
-                if install_handle then
-                    uv.close(install_handle)
-                end
             end)
-
-            if handle then
-                uv.close(handle)
-            end
-        end
+        end,
     },
 	------------------------------------------
 	----     codecompanion AI             ----
