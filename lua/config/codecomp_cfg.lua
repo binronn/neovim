@@ -115,6 +115,12 @@ function M:setup_codecomp()
                     get_rule_base_path() .. 'python/base.md'
                 }
             },
+            memory = {
+                description = 'Memory rules',
+                files = {
+                    get_rule_base_path() .. 'memory/base.md'
+                }
+            }
             bigfile = {
                 description = 'Big file read rules',
                 files = {
