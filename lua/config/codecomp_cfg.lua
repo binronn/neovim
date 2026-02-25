@@ -133,6 +133,7 @@ function M:setup_codecomp()
                 }
             }
         },
+        mcp = require('config.codecomp.mcp.base'),
         extensions = {
             vectorcode = { -- pip install VectorCode
                 ---@type VectorCode.CodeCompanion.ExtensionOpts
@@ -315,7 +316,7 @@ function M:setup_codecomp()
                 },
                 tools = {
                     -- ["calculator"] = require('config.codecomp.tools.calculator'),
-                    ["cmd_runner"] = require('config.codecomp.tools.cmd_runner')
+                    ["run_command"] = require('config.codecomp.tools.run_command')
                 }
             },
             inline = {
