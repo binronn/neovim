@@ -126,8 +126,32 @@ function M:setup_codecomp()
                     }
                 },
                 tools = {
+                    groups = {
+                        ["agent"] = {
+                            tools = {
+                                "ask_questions",
+                                "create_file",
+                                "delete_file",
+                                "file_search",
+                                "get_changed_files",
+                                "get_diagnostics",
+                                "grep_search",
+                                "insert_edit_into_file",
+                                "read_file",
+                                "cmd_runner",
+                            },
+                            opts = {
+                                collapse_tools = true,
+                                ignore_system_prompt = true,
+                                ignore_tool_system_prompt = true,
+                            },
+                        },
+                    },
+                    ["run_command"] = {
+                        enabled = false
+                    },
                     -- ["calculator"] = require('config.codecomp.tools.calculator'),
-                    ["run_command"] = require('config.codecomp.tools.run_command')
+                    ["cmd_runner"] = require('config.codecomp.tools.cmd_runner'),
                 }
             },
             inline = {
