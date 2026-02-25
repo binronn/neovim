@@ -31,8 +31,8 @@ vim.g.colorscheme = 'gruvbox-material'
 ---
 
 require("lazy").setup("plugins")
-require("config.basic_cfg")
-require("config.compiles_cfg")
+require("config.basic")
+require("config.compiles")
 require("common_func")
 require("autocmd")
 require("keymaps")
@@ -42,7 +42,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	-- pattern = "*",
 	once = true,
 	callback = function()
-		require("config.basic_cfg")
+		require("config.basic")
 	end,
 })
 

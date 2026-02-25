@@ -193,7 +193,7 @@ vim.lsp.config.clangd = {
         "--function-arg-placeholders",
         "--header-insertion-decorators",
         "-j=6",
-        "--query-driver=" .. require("config.compiles_cfg").cxx_path,
+        "--query-driver=" .. require("config.compiles").cxx_path,
     },
     root_markers = { ".git", "compile_commands.json", "CMakeLists.txt" },
     capabilities = g_capabilities,

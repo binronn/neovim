@@ -461,7 +461,7 @@ function M.dressing_init()
 end
 
 function M.lualine_init()
-	local codecomp = require('config.codecomp_cfg')
+	local codecomp = require('config.codecomp')
 	require("lualine").setup {
 		options = {
 			disabled_filetypes = {"NvimTree", "aerial", "qf", "help"},
@@ -1699,8 +1699,8 @@ function M.cmake_tools_init(m, cc, cxx)
 			-- }, -- 全局编译器工具链配置
 			cmake_generate_options = { 
 				'-DCMAKE_EXPORT_COMPILE_COMMANDS=1',
-				'-DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path, --:gsub(' ', '\\ '),
-				'-DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path, --:gsub(' ', '\\ '),
+				'-DCMAKE_C_COMPILER=' .. require('config.compiles').cc_path, --:gsub(' ', '\\ '),
+				'-DCMAKE_CXX_COMPILER=' .. require('config.compiles').cxx_path, --:gsub(' ', '\\ '),
 				'-G ' .. build_type,
 			},
 			cmake_kits_path = nil,
@@ -1846,8 +1846,8 @@ function M.cmake_tools_init(m, cc, cxx)
 			if vim.g.is_win32 == 1 then
 				local c = 'CMakeGenerate ' .. 
 				' -G ' .. [[MinGW\ Makefiles]] ..
-				' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path:gsub(' ', '\\ ') ..
-				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path:gsub(' ', '\\ ') ..
+				' -DCMAKE_C_COMPILER=' .. require('config.compiles').cc_path:gsub(' ', '\\ ') ..
+				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles').cxx_path:gsub(' ', '\\ ') ..
 				' -DCMAKE_BUILD_TYPE=Debug'
 				-- print(c)
 				vim.cmd(c)
@@ -1863,8 +1863,8 @@ function M.cmake_tools_init(m, cc, cxx)
 			if vim.g.is_win32 == 1 then
 				local c = 'CMakeGenerate ' .. 
 				' -G ' .. [[MinGW\ Makefiles]] ..
-				' -DCMAKE_C_COMPILER=' .. require('config.compiles_cfg').cc_path:gsub(' ', '\\ ') ..
-				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles_cfg').cxx_path:gsub(' ', '\\ ')
+				' -DCMAKE_C_COMPILER=' .. require('config.compiles').cc_path:gsub(' ', '\\ ') ..
+				' -DCMAKE_CXX_COMPILER=' .. require('config.compiles').cxx_path:gsub(' ', '\\ ')
 				-- print(c)
 				vim.cmd(c)
 			else

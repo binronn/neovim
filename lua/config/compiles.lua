@@ -94,9 +94,9 @@ local function update_clang_llvm_version(toolchain_path, cxx_name)
     M.clangd_path = 'clangd'
     table.insert(M.clangd_param, '--query-driver=' .. query_driver)
 
-    local success, result = pcall(require, "config.lsp_cfg")
+    local success, result = pcall(require, "config.lsp")
     if success then
-        require('config.lsp_cfg').switch_clangd(M.clangd_path, query_driver)
+        require('config.lsp').switch_clangd(M.clangd_path, query_driver)
     end
 end
 

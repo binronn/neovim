@@ -67,7 +67,7 @@ local programming_filetypes = {
 	"svelte"
 }
 
-local pcfg = require("config/plugins_cfg")
+local pcfg = require("config/plugins")
 -- local ai_provider = "codecomp" -- "codecomp" or "avante"
 
 return {
@@ -423,14 +423,14 @@ return {
 			{
 				"L3MON4D3/LuaSnip",
 				config = function()
-					vim.g.luasnip = require("config/luasnip_cfg")
-					require("config/luasnip_cfg")
+					vim.g.luasnip = require("config/luasnip")
+					require("config/luasnip")
 				end
 			}, -- 代码片段引擎
 			-- "jose-elias-alvarez/null-ls.nvim" -- 代码格式化插件
 		},
 		config = function()
-			require("config/lsp_cfg")
+			require("config/lsp")
 			-- pcfg.null_ls_init()
 		end,
 		ft = programming_filetypes
@@ -479,7 +479,7 @@ return {
 			"nvim-telescope/telescope-dap.nvim"
 		},
 		config = function()
-			require("config/dap_cfg")
+			require("config/dap")
 		end
 	},
 	-- CMAKE 插件
@@ -565,9 +565,9 @@ return {
 				end
 			}
 		},
-		-- opt = require("config.codecomp_cfg").opts(),
+		-- opt = require("config.codecomp").opts(),
 		config = function()
-			local comp = require("config.codecomp_cfg"):new()
+			local comp = require("config.codecomp"):new()
 			comp:setup_codecomp()
 			comp:init()
 			nmap("<M-c>", ":CodeCompanionChat Toggle<CR>")
@@ -601,7 +601,7 @@ return {
 		-- ft = programming_filetypes,
 		config = function()
 			-- require("copilot").setup({})
-			require("config.avante_cfg")
+			require("config.avante")
 		end,
 		build = vim.g.is_unix == 1 and "make" or nil, -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- run = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows

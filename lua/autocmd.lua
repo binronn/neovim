@@ -9,8 +9,8 @@ local nmap = keymap.nmap
 ----------------------------------------------------------------
 local function get_compiler_config()
     return {
-        cc = require('config.compiles_cfg').cc_path,
-        cxx = require('config.compiles_cfg').cxx_path
+        cc = require('config.compiles').cc_path,
+        cxx = require('config.compiles').cxx_path
     }
 end
 
