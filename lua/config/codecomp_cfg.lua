@@ -17,10 +17,6 @@ local spinner_symbols = {
 }
 local spinner_symbols_len = 10
 
-local function get_rule_base_path()
-    return vim.fn.stdpath("config") .. "/lua/config/codecomp/rules/"
-end
-
 -- Initializer
 function M:init(options)
 	M.super.init(self, options)
@@ -50,21 +46,6 @@ function M:update_status()
 	else
 		return '∴' -- ∞
 	end
-end
-
-local ips = {}
-function M:get_url_ip(urlxxx)
-	ips['rm.basicbit.cn'] = '115.120.244.116'
-	if ips[urlxxx] == nil then
-
-		local handle = io.popen("ping -c 1 " .. urlxxx) -- 替换为你的域名
-		local result = handle:read("*a")
-		handle:close()
-
-		-- 使用正则表达式提取IP地址（适用于Linux）
-		ips[urlxxx] = string.match(result, "%((%d+%.%d+%.%d+%.%d+)%)")
-	end
-	return ips[urlxxx]
 end
 
 
@@ -105,181 +86,11 @@ function M:setup_codecomp()
         opts = {
             language = "中文",
         },
-        prompt_library = {
-            -- ["Generate a Commit Message"] = require('config.codecomp.prompt_library.commit_message'),
-        },
-        rules = {
-            opts = {
-                chat = {
-                    -- autoload = {'bigfile'}
-                }
-            },
-            python = {
-                description = 'Python rules',
-                files = {
-                    get_rule_base_path() .. 'python/base.md'
-                }
-            },
-            memory = {
-                description = 'Memory rules',
-                files = {
-                    get_rule_base_path() .. 'memory/base.md'
-                }
-            },
-            bigfile = {
-                description = 'Big file read rules',
-                files = {
-                    get_rule_base_path() .. 'bigfile/base.md'
-                }
-            }
-        },
+        prompt_library = require('config.codecomp.prompt_library.base'),
+        rules = require('config.codecomp.rules.base'),
         mcp = require('config.codecomp.mcp.base'),
-        extensions = {
-            vectorcode = { -- pip install VectorCode
-                ---@type VectorCode.CodeCompanion.ExtensionOpts
-                opts = {
-                    tool_group = {
-                        -- this will register a tool group called `@vectorcode_toolbox` that contains all 3 tools
-                        enabled = true,
-                        -- a list of extra tools that you want to include in `@vectorcode_toolbox`.
-                        -- if you use @vectorcode_vectorise, it'll be very handy to include
-                        -- `file_search` here.
-                        extras = {},
-                        collapse = false, -- whether the individual tools should be shown in the chat
-                    },
-                    tool_opts = {
-                        ---@type VectorCode.CodeCompanion.ToolOpts
-                        ["*"] = {},
-                        ---@type VectorCode.CodeCompanion.LsToolOpts
-                        ls = {},
-                        ---@type VectorCode.CodeCompanion.VectoriseToolOpts
-                        vectorise = {},
-                        ---@type VectorCode.CodeCompanion.QueryToolOpts
-                        query = {
-                            max_num = { chunk = -1, document = -1 },
-                            default_num = { chunk = 50, document = 10 },
-                            include_stderr = false,
-                            use_lsp = false,
-                            no_duplicate = true,
-                            chunk_mode = true,
-                            ---@type VectorCode.CodeCompanion.SummariseOpts
-                            summarise = {
-                                ---@type boolean|(fun(chat: CodeCompanion.Chat, results: VectorCode.QueryResult[]):boolean)|nil
-                                enabled = false,
-                                adapter = nil,
-                                query_augmented = true,
-                            },
-                        },
-                        files_ls = {},
-                        files_rm = {},
-                    },
-                },
-            },
-        },
-        adapters = {
-            http = {
-                dskfee = function()
-                    return require("codecompanion.adapters").extend("openai_compatible", {
-                        name = "dskfee",
-                        env = {
-                            url = "http://" .. M:get_url_ip('rm.basicbit.cn') .. ":43410",
-                            api_key = vim.fn.getenv("DSK_FEE_TKN"),
-                            chat_url = "/v1/chat/completions"
-                        },
-                        schema = { model = { default = "deepseek-chat" } }
-                    })
-                end,
-                a0pen_dsk = function()
-                    return require("codecompanion.adapters").extend("openai_compatible", {
-                        name = "open_dsk",
-                        env = {
-                            url = "https://api.deepseek.com",
-                            chat_url = "/v1/chat/completions",
-                            api_key = vim.fn.getenv("DSK")
-                        },
-                        schema = {
-                            model = {
-                                default = "deepseek-chat",
-                                choices = {
-                                    'deepseek-chat',
-                                    ["deepseek-reasoner"] = { opts = { can_reason = true } }
-                                }
-                            }
-                        }
-                    })
-                end,
-                a0pen_qwen = function()
-                    return require("codecompanion.adapters").extend("openai_compatible", {
-                        name = "qwen3.5-plus-fast",
-                        env = {
-                            url = "https://dashscope.aliyuncs.com",
-                            chat_url = "/compatible-mode/v1/chat/completions",
-                            api_key = vim.fn.getenv("QWEN_API")
-                        },
-                        schema = {
-                            model = {
-                                default = "qwen3.5-plus-2026-02-15",
-                                choices = {
-                                    ["qwen3.5-plus"] = { opts = { can_reason = true } },
-                                    'qwen3.5-plus-2026-02-15',
-                                    'qwen3.5-397b-a17b'
-                                }
-                            }
-                        }
-                    })
-                end,
-                a0pen_kimi = function()
-                    return require("codecompanion.adapters").extend("openai_compatible", {
-                        name = "kimi",
-                        env = {
-                            url = "https://api.moonshot.ai",
-                            chat_url = "/v1/chat/completions",
-                            api_key = vim.fn.getenv("KIMI")
-                        },
-                        schema = {
-                            model = {
-                                default = "kimi-k2.5",
-                            },
-                        },
-                        body = {
-                            thinking = { type = "disabled" }
-                        },
-                    })
-                end,
-                a2siliconflow = function()
-                    return require("codecompanion.adapters").extend("openai_compatible", {
-                        name = "siliconflow",
-                        env = {
-                            url = "https://api.siliconflow.cn",
-                            chat_url = "/v1/chat/completions",
-                            api_key = vim.fn.getenv("SILICONFLOW_DSK")
-                        },
-                        schema = {
-                            model = {
-                                default = "Qwen/Qwen3-30B-A3B",
-                                -- choices = {
-                                --     'deepseek-ai/DeepSeek-V3',
-                                --     ["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = true } },
-                                --     ["Qwen/Qwen3-32B"] = { opts = { can_reason = true } },
-                                --     ["Qwen/Qwen3-30B-A3B"] = { opts = { can_reason = true } },
-                                --     ["Qwen/Qwen3-Coder-480B-A35B-Instruct"] = { opts = { can_reason = true } }
-                                -- }
-                            }
-                        }
-                    })
-                end,
-                a1gemini = function()
-                    return require("codecompanion.adapters").extend("openai_compatible", {
-                        name = "gemini",
-                        env = {
-                            url = "http://localhost:8045",
-                            chat_url = "/v1/chat/completions",
-                            api_key = vim.fn.getenv("ANTHROPIC_AUTH_TOKEN")
-                        },
-                    })
-                end
-            },
-        },
+        extensions = require('config.codecomp.extensions'),
+        adapters = require('config.codecomp.adapters'),
         interactions = {
             chat = {
                 roles = {
