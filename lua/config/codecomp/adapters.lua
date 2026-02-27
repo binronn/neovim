@@ -83,6 +83,24 @@ return {
                 },
             })
         end,
+        a0pen_minimax = function()
+            return require("codecompanion.adapters").extend("openai_compatible", {
+                name = "kimi",
+                env = {
+                    url = "https://api.minimaxi.com",
+                    chat_url = '/v1/text/chatcompletion_v2',
+                    api_key = vim.fn.getenv("MINIMAX")
+                },
+                schema = {
+                    model = {
+                        default = "minimax-m2.5",
+                        choices = {
+                            ["minimax-m2.5"] = { opts = { can_reason = true } },
+                        }
+                    }
+                }
+            })
+        end,
         a2siliconflow = function()
             return require("codecompanion.adapters").extend("openai_compatible", {
                 name = "siliconflow",
@@ -111,7 +129,7 @@ return {
                     env = {
                         url = "http://localhost:8045",
                         chat_url = "/v1/chat/completions",
-                        api_key = vim.fn.getenv("ANTHROPIC_AUTH_TOKEN")
+                        api_key = vim.fn.getenv("ANTIGRAVITY2API")
                     },
                 })
             end

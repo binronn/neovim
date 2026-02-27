@@ -514,33 +514,33 @@ return {
 			require("render-markdown").setup()
 		end
 	},
-    {
-        "Davidyz/VectorCode", -- pip install VectorCode
-        version = "*", -- optional, depending on whether you're on nightly or release
-        dependencies = { "nvim-lua/plenary.nvim" },
-        config = function()
-            vim.env.PYTHONUTF8 = "1"
-            require('vectorcode').setup()
-        end,
-        build = function()
-            local uv = vim.loop
-            local function run_uv(args, on_exit)
-                local handle = uv.spawn("uv", { args = args, stdio = { nil, nil, nil } }, on_exit)
-                if handle then uv.close(handle) end
-            end
+    -- {
+    --     "Davidyz/VectorCode", -- pip install VectorCode
+    --     version = "*", -- optional, depending on whether you're on nightly or release
+    --     dependencies = { "nvim-lua/plenary.nvim" },
+    --     config = function()
+    --         vim.env.PYTHONUTF8 = "1"
+    --         require('vectorcode').setup()
+    --     end,
+    --     build = function()
+    --         local uv = vim.loop
+    --         local function run_uv(args, on_exit)
+    --             local handle = uv.spawn("uv", { args = args, stdio = { nil, nil, nil } }, on_exit)
+    --             if handle then uv.close(handle) end
+    --         end
 
-            run_uv({ "--version" }, function(code)
-                if code ~= 0 then
-                    vim.notify("uv not found. Skipping VectorCode.", vim.log.levels.WARN)
-                    return
-                end
-                run_uv({ "tool", "install", "--upgrade", "vectorcode" }, function(c)
-                    vim.notify(c == 0 and "VectorCode updated." or "VectorCode install failed.", 
-                    c == 0 and vim.log.levels.INFO or vim.log.levels.ERROR)
-                end)
-            end)
-        end,
-    },
+    --         run_uv({ "--version" }, function(code)
+    --             if code ~= 0 then
+    --                 vim.notify("uv not found. Skipping VectorCode.", vim.log.levels.WARN)
+    --                 return
+    --             end
+    --             run_uv({ "tool", "install", "--upgrade", "vectorcode" }, function(c)
+    --                 vim.notify(c == 0 and "VectorCode updated." or "VectorCode install failed.", 
+    --                 c == 0 and vim.log.levels.INFO or vim.log.levels.ERROR)
+    --             end)
+    --         end)
+    --     end,
+    -- },
 	------------------------------------------
 	----     codecompanion AI             ----
 	------------------------------------------
@@ -553,7 +553,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			-- 'echasnovski/mini.diff',
 			"nvim-treesitter/nvim-treesitter",
-			"Davidyz/VectorCode",
+			-- "Davidyz/VectorCode",
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
 				config = function()
