@@ -102,7 +102,9 @@ endif()
 # Apply Options
 # ==============================================================================
 
-target_compile_options(AppTarget PRIVATE ${CUSTOM_COMPILE_OPTIONS})
+target_compile_options(AppTarget PRIVATE ${CUSTOM_COMPILE_OPTIONS} -fms-extensions 
+    -fexceptions 
+    -fseh-exceptions)
 target_link_options(AppTarget PRIVATE ${CUSTOM_LINK_OPTIONS})
 
 # Set output file name to match Project Name
