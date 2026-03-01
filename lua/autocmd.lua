@@ -546,67 +546,202 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
 ----------------------------------------------------------------
 -- Session保存与恢复
 ----------------------------------------------------------------
+
+-- 不可恢复的插件 filetype 列表
+local session_plugin_filetypes = {
+	'NvimTree', 'aerial', 'Avante', 'AvanteInput', 'AvanteSelectedFiles',
+	'codecompanion', 'TelescopePrompt', 'qf',
+	'notify', 'noice', 'lazy', 'mason',
+	'neo-tree', 'neo-tree-popup', 'toggleterm', 'DressingInput',
+	'DressingSelect', 'lspinfo', 'fidget',
+	'Trouble', 'undotree', 'diff', 'fugitive', 'fugitiveblame', 'git',
+	'copilot-chat', 'snacks_win', 'help',
+	'alpha',        -- alpha-nvim 启动界面
+	'FTerm',        -- FTerm 浮动终端
+	'DiffviewFiles', 'DiffviewFileHistory',  -- diffview.nvim
+	'dap-repl',     -- nvim-dap
+	'dapui_watches', 'dapui_stacks', 'dapui_breakpoints',
+	'dapui_scopes', 'dapui_console',  -- nvim-dap-ui
+}
+
+-- 判断 buffer 是否是插件/特殊 buffer
+local function is_plugin_buf(buf)
+	if not vim.api.nvim_buf_is_valid(buf) then return true end
+	local ft = vim.bo[buf].filetype or ''
+	local bt = vim.bo[buf].buftype or ''
+	if vim.tbl_contains(session_plugin_filetypes, ft) then return true end
+	-- terminal / nofile / prompt / popup 等特殊 buftype
+	if bt ~= '' and bt ~= 'acwrite' then return true end
+	-- CodeCompanion 的 URI scheme
+	local name = vim.api.nvim_buf_get_name(buf)
+	if name:match('^codecompanion://') then return true end
+	return false
+end
+
 function SaveCurrentSession()
 	local wsdir = vim.g.workspace_dir2()
-	local session_file_path = wsdir .. "/Session.vim"
+	local session_dir = wsdir .. '/.vimsession'
+	if vim.fn.isdirectory(session_dir) == 0 then
+		vim.fn.mkdir(session_dir, 'p')
+	end
+	local session_file_path = session_dir .. '/Session.vim'
+	local cursor_file_path  = session_dir .. '/Session_cursor.lua'
 
-	vim.cmd("AerialClose")
-	vim.cmd("NvimTreeClose")
-
+	-- 1. 收集每个窗口中真实文件 buffer 的光标位置
+	local cursor_info = {}
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
-		local buf = vim.api.nvim_win_get_buf(win)
-		if vim.api.nvim_buf_get_option(buf, "filetype") == "Avante" then
-			vim.cmd("AvanteToggle")
-			break
+		if vim.api.nvim_win_is_valid(win) then
+			local buf = vim.api.nvim_win_get_buf(win)
+			if not is_plugin_buf(buf) then
+				local name = vim.api.nvim_buf_get_name(buf)
+				if name ~= '' then
+					local pos = vim.api.nvim_win_get_cursor(win)
+					-- 用 buffer 名 + 窗口索引作为 key, 支持同一文件多个分屏
+					table.insert(cursor_info, { name = name, row = pos[1], col = pos[2] })
+				end
+			end
 		end
 	end
 
-	local function jmp_active_buffers()
-		local all_windows = vim.api.nvim_list_wins()
-		for _, win_id in ipairs(all_windows) do
-			local bufnr = vim.api.nvim_win_get_buf(win_id)
-			vim.api.nvim_command("buffer " .. bufnr)
-			break
+	-- 2. 通过插件 API 关闭已知侧边栏
+	pcall(vim.cmd, 'AerialClose')
+	pcall(vim.cmd, 'NvimTreeClose')
+	pcall(vim.cmd, 'DiffviewClose')
+	pcall(function() require('dapui').close() end)
+
+	-- 关闭 Avante
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_is_valid(win) then
+			local buf = vim.api.nvim_win_get_buf(win)
+			local ft = vim.bo[buf].filetype or ''
+			if ft == 'Avante' or ft == 'AvanteInput' then
+				pcall(vim.cmd, 'AvanteToggle')
+				break
+			end
 		end
 	end
-	jmp_active_buffers()
 
-	vim.cmd("mksession! " .. session_file_path)
+	-- 3. 关闭所有残留的插件窗口（保留至少一个窗口）
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_is_valid(win) then
+			local buf = vim.api.nvim_win_get_buf(win)
+			if is_plugin_buf(buf) and #vim.api.nvim_list_wins() > 1 then
+				pcall(vim.api.nvim_win_close, win, true)
+			end
+		end
+	end
 
-	-- Check for Avante window and append 'AvanteToggle' to the session file if it exists
-	-- local avante_toggle_added = false
-	-- local file = io.open(session_file_path, "a")
-	-- for _, win in ipairs(vim.api.nvim_list_wins()) do
-	-- 	local buf = vim.api.nvim_win_get_buf(win)
-	-- 	if vim.api.nvim_buf_get_option(buf, "filetype") == "Avante" then
-	-- 		file:write("\nAvanteChat")
-	-- 	elseif vim.api.nvim_buf_get_option(buf, "filetype") == "NvimTree" then
-	-- 		file:write("\n lua vim.g.toggle_nvimtree()")
-	-- 	elseif vim.api.nvim_buf_get_option(buf, "filetype") == "aerial" then
-	-- 		file:write("\n vim.g.toggle_tagbar()")
-	-- 	end
-	-- end
-	-- file:close()
-	
-	-- local mark_name = wsdir:gsub("[:/\\ \\.]", "_") .. "_Session"
-	-- local mark_name = vim.g.hash_djb2(session_file_path)
-	-- print(mark_namd)
-	-- vim.cmd("silent MarkSave")
-	vim.notify("Session saved to: " .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
+	-- 4. 删除所有插件 buffer
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_is_valid(buf) and is_plugin_buf(buf) then
+			pcall(vim.api.nvim_buf_delete, buf, { force = true })
+		end
+	end
+
+	-- 5. 确保当前窗口有一个合法的 buffer
+	local cur_buf = vim.api.nvim_get_current_buf()
+	if not vim.api.nvim_buf_is_valid(cur_buf) or is_plugin_buf(cur_buf) then
+		local found = false
+		for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+			if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted and vim.bo[buf].buftype == '' then
+				vim.api.nvim_set_current_buf(buf)
+				found = true
+				break
+			end
+		end
+		if not found then
+			vim.cmd('enew')
+		end
+	end
+
+	-- 6. 临时设置 sessionoptions，避免保存隐藏的特殊 buffer
+	local saved_opts = vim.o.sessionoptions
+	vim.o.sessionoptions = 'buffers,curdir,folds,tabpages,winsize,winpos'
+
+	vim.cmd('mksession! ' .. vim.fn.fnameescape(session_file_path))
+
+	vim.o.sessionoptions = saved_opts
+
+	-- 7. 保存光标位置到伴生文件
+	local cursor_lines = { 'return ' .. vim.inspect(cursor_info) }
+	vim.fn.writefile(cursor_lines, cursor_file_path)
+
+	vim.notify('Session saved to: ' .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
 end
 
 -- 注册加载会话的命令
 function LoadSavedSession()
 	local wsdir = vim.g.workspace_dir2()
-	local session_file_path = wsdir .. "/Session.vim"
-	if vim.fn.filereadable(session_file_path) == 1 then
+	local session_dir = wsdir .. '/.vimsession'
+	local session_file_path = session_dir .. '/Session.vim'
+	local cursor_file_path  = session_dir .. '/Session_cursor.lua'
 
-		-- vim.cmd("silent! MarkLoad")
-		vim.cmd("source " .. session_file_path)
-		vim.notify("Session loaded from: " .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
-	else
-		vim.notify("No session file found at: " .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
+	if vim.fn.filereadable(session_file_path) ~= 1 then
+		vim.notify('No session file found at: ' .. session_file_path, vim.log.levels.WARN, { title = 'Session' })
+		return
 	end
+
+	-- 1. 加载 session
+	local ok, err = pcall(vim.cmd, 'source ' .. vim.fn.fnameescape(session_file_path))
+	if not ok then
+		vim.notify('Session load failed: ' .. tostring(err), vim.log.levels.ERROR, { title = 'Session' })
+		return
+	end
+
+	-- 2. 清理加载后可能残留的无效 / 空 buffer
+	vim.schedule(function()
+		for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+			if vim.api.nvim_buf_is_valid(buf) then
+				local name = vim.api.nvim_buf_get_name(buf)
+				local bt   = vim.bo[buf].buftype or ''
+				local listed = vim.bo[buf].buflisted
+				-- 删除无名且无内容的 buffer 和残留的插件 buffer
+				if is_plugin_buf(buf) then
+					pcall(vim.api.nvim_buf_delete, buf, { force = true })
+				elseif name == '' and listed and bt == '' then
+					local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+					if #lines <= 1 and (lines[1] or '') == '' then
+						pcall(vim.api.nvim_buf_delete, buf, { force = true })
+					end
+				end
+			end
+		end
+
+		-- 3. 恢复光标位置
+		if vim.fn.filereadable(cursor_file_path) == 1 then
+			local ok, cursor_info = pcall(dofile, cursor_file_path)
+			if ok and type(cursor_info) == 'table' then
+				-- 建立 buffer name -> cursor 的映射（按顺序消费，支持同文件多窗口）
+				local name_cursors = {}
+				for _, entry in ipairs(cursor_info) do
+					if not name_cursors[entry.name] then
+						name_cursors[entry.name] = {}
+					end
+					table.insert(name_cursors[entry.name], { entry.row, entry.col })
+				end
+
+				local consumed = {}
+				for _, win in ipairs(vim.api.nvim_list_wins()) do
+					if vim.api.nvim_win_is_valid(win) then
+						local buf = vim.api.nvim_win_get_buf(win)
+						local name = vim.api.nvim_buf_get_name(buf)
+						if name_cursors[name] then
+							local idx = (consumed[name] or 0) + 1
+							consumed[name] = idx
+							local pos = name_cursors[name][idx] or name_cursors[name][1]
+							if pos then
+								local line_count = vim.api.nvim_buf_line_count(buf)
+								local row = math.min(pos[1], line_count)
+								pcall(vim.api.nvim_win_set_cursor, win, { row, pos[2] })
+							end
+						end
+					end
+				end
+			end
+		end
+
+		vim.notify('Session loaded from: ' .. session_file_path, vim.log.levels.INFO, { title = 'Session' })
+	end)
 end
 
 -- 注册command用于保存和加载会话
