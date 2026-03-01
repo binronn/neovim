@@ -134,17 +134,6 @@ function M:setup_codecomp()
                 }
             },
             inline = {
-                keymaps = {
-                    accept_change = {
-                        modes = {n = "ct"},
-                    },
-                    reject_change = {
-                        modes = {n = "co"},
-                    },
-                    always_accept = {
-                        modes = { n = "cy" },
-                    },
-                },
                 adapter = "a0pen_dsk"
             },
             cmd = {
