@@ -917,7 +917,7 @@ function M.FTerm_init()
 
     local term_aider = fterm:new({
         ft = "fterm_aider",
-        cmd = "aider",
+        cmd = "aider --openai-api-base %AIDER_OPENAI_API_BASE% --openai-api-key %AIDER_OPENAI_API_KEY% --model %AIDER_OPENAI_API_MODEL%",
         dimensions = { height = 0.8, width = 0.8 },
         border = border_style,
     })

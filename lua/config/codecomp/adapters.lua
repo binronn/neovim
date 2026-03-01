@@ -88,7 +88,7 @@ return {
                 name = "kimi",
                 env = {
                     url = "https://api.minimaxi.com",
-                    chat_url = '/v1/text/chatcompletion_v2',
+                    -- chat_url = '/v1/text/chatcompletion_v2',
                     api_key = vim.fn.getenv("MINIMAX")
                 },
                 schema = {
