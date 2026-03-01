@@ -547,7 +547,7 @@ return {
 	{
 		"olimorris/codecompanion.nvim",
 		event = { 'VimEnter' },
-        branch = 'develop',
+        branch = 'main',
 		dependencies = {
 			'nvim-lualine/lualine.nvim',
 			"nvim-lua/plenary.nvim",
