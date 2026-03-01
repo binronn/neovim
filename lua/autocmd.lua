@@ -134,9 +134,9 @@ function build_project(compile_command)
     -- Check build systems
     local cmake_path = wsdir .. "/CMakeLists.txt"
     local clangd_cache_path = wsdir .. "/.cache"
-    local clangd_cache_path2 = wsdir .. "/build/.cache"
     local makefile_path = wsdir .. "/Makefile"
 	local build_dir = vim.g.is_cmake_debug and (wsdir .. "/build") or (wsdir .. "/build_release")
+    local clangd_cache_path2 = build_dir .. '.cache'
     local build_makefile = build_dir .. "/Makefile"
 
     local function run_command(cmd)
