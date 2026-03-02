@@ -14,7 +14,7 @@ opts:
 
 ## user
 
-请分析以下项目，并生成一份详细的项目架构文档：
+请分析当前项目，并生成一份详细的项目架构文档：
 
 **当前文件**: `${context.filename}`
 
@@ -27,7 +27,7 @@ opts:
 3. 读取关键的构建/配置文件（如步骤1识别的文件、Dockerfile、docker-compose.yml 等），理解项目依赖和技术栈
 4. 基于目录结构，识别核心模块/服务边界，使用 @{read_file} 读取各模块的入口文件或 README 以确认职责
 5. 若项目规模适中，使用 @{grep_search} 分析模块间的导入/引用关系，梳理依赖图
-6. 将最终分析结果通过 @{memory} 保存，键名为 `project_map_${project_name}`
+6. 将最终分析结果通过 @{memory} 保存，键名为 `project_map.md`
 
 ### 分析要求：
 

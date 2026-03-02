@@ -76,6 +76,9 @@ return {
                 schema = {
                     model = {
                         default = "kimi-k2.5",
+                        choices = {
+                            ["kimi-k2.5"] = { opts = { can_reason = true } },
+                        }
                     },
                 },
                 body = {
