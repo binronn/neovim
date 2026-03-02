@@ -8,8 +8,19 @@ end
 local function build_rules()
     local base = get_rule_base_path()
     local rules = {
-        opts = {
-            chat = {}
+        -- opts = {
+        --     chat = {
+        --         autoload = "default",
+        --         enable = true
+        --     }
+        -- },
+        group_project = {
+            description = "",
+            files = {
+                get_rule_base_path() .. 'memory/base.md',
+                get_rule_base_path() .. 'bigfile/base.md',
+                get_rule_base_path() .. 'big_project/base.md',
+            }
         }
     }
 
