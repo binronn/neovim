@@ -86,19 +86,19 @@ return {
                 },
             })
         end,
-        a0pen_minimax = function()
+        minimax = function()
             return require("codecompanion.adapters").extend("openai_compatible", {
-                name = "kimi",
+                name = "minimax",
                 env = {
                     url = "https://api.minimaxi.com",
-                    -- chat_url = '/v1/text/chatcompletion_v2',
+                    chat_url = '/v1/chat/completions',
                     api_key = vim.fn.getenv("MINIMAX")
                 },
                 schema = {
                     model = {
-                        default = "minimax-m2.5",
+                        default = "MiniMax-M2.7",
                         choices = {
-                            ["minimax-m2.5"] = { opts = { can_reason = true } },
+                            ["MiniMax-M2.7"] = { opts = { can_reason = true } },
                         }
                     }
                 }
