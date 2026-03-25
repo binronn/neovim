@@ -104,6 +104,21 @@ return {
                 }
             })
         end,
+        minimax_anthropic = function()
+            return require("codecompanion.adapters").extend("anthropic", {
+                name = "minimax",
+                -- url = 'https://api.minimax.io/anthropic',
+                url = 'https://api.minimax.io/anthropic/v1/messages',
+                env = {
+                    api_key = vim.fn.getenv("MINIMAX")
+                },
+                schema = {
+                    model = {
+                        default = "MiniMax-M2.7"
+                    }
+                }
+            })
+        end,
         a2siliconflow = function()
             return require("codecompanion.adapters").extend("openai_compatible", {
                 name = "siliconflow",
