@@ -43,5 +43,46 @@ local function build_rules()
     return rules
 end
 
-return build_rules()
+local project_rules2 = {
+    project_rules = {
+        description = "综合规则：项目分析 + 大文件 + 问题分析",
+        files = {
+            get_rule_base_path() .. 'project_big/base.md',
+            get_rule_base_path() .. 'bigfile/base.md',
+            get_rule_base_path() .. 'analysis/base.md',
+        }
+    },
+    project_big = {
+        description = "大型项目分析：上下文收集 → 深度分析 → 回应",
+        files = {
+            get_rule_base_path() .. 'project_big/base.md',
+        }
+    },
+    memory = {
+        description = "长期记忆：架构决策、任务状态、用户偏好、环境信息",
+        files = {
+            get_rule_base_path() .. 'memory/base.md',
+        }
+    },
+    bigfile = {
+        description = "大文件处理：定向查找、按需读取、禁止全量加载",
+        files = {
+            get_rule_base_path() .. 'bigfile/base.md',
+        }
+    },
+    analysis = {
+        description = "问题分析修复：审查 → 确认 → 验证",
+        files = {
+            get_rule_base_path() .. 'analysis/base.md',
+        }
+    },
+    python = {
+        description = "Python 开发规范：风格、类型、文档、测试",
+        files = {
+            get_rule_base_path() .. 'python/base.md',
+        }
+    }
+}
+
+return project_rules2
 
