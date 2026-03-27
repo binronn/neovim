@@ -7,18 +7,18 @@ return {
                 -- Keymap to save the current chat manually (when auto_save is disabled)
                 save_chat_keymap = "sc",
                 -- Save all chats by default (disable to save only manually using 'sc')
-                auto_save = true,
+                auto_save = false,
                 -- Number of days after which chats are automatically deleted (0 to disable)
-                expiration_days = 0,
+                expiration_days = 20,
                 -- Picker interface (auto resolved to a valid picker)
                 picker = "telescope", --- ("telescope", "snacks", "fzf-lua", or "default") 
                 ---Optional filter function to control which chats are shown when browsing
                 chat_filter = nil, -- function(chat_data) return boolean end
                 -- Customize picker keymaps (optional)
                 picker_keymaps = {
-                    rename = { n = "r", i = "<Nop>" },
-                    delete = { n = "d", i = "<Nop>" },
-                    duplicate = { n = "<C-y>", i = "<Nop>" },
+                    rename = { n = "r", i = "<M-r>" },
+                    delete = { n = "d", i = "<M-d>" },
+                    duplicate = { n = "<C-y>", i = "<M-y>" },
                 },
                 ---Automatically generate titles for new chats
                 auto_generate_title = true,
@@ -54,8 +54,8 @@ return {
                     browse_summaries_keymap = "gbs",
                     
                     generation_opts = {
-                        adapter = nil, -- defaults to current chat adapter
-                        model = nil, -- defaults to current chat model
+                        adapter = 'a0pen_dsk', -- defaults to current chat adapter
+                        model = 'deepseek-chat', -- defaults to current chat model
                         context_size = 90000, -- max tokens that the model supports
                         include_references = true, -- include slash command content
                         include_tool_outputs = true, -- include tool execution results
