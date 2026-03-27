@@ -562,7 +562,8 @@ return {
 							file_types = {"markdown", "codecompanion", "Avante"}
 						}
 					)
-				end
+				end,
+                "ravitemer/codecompanion-history.nvim"
 			}
 		},
 		-- opt = require("config.codecomp").opts(),
