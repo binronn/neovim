@@ -564,7 +564,6 @@ return {
 						}
 					)
 				end,
-                "ravitemer/codecompanion-history.nvim"
 			}
 		},
 		-- opt = require("config.codecomp").opts(),

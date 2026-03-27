@@ -5,4 +5,3 @@ if exists('g:vscode')
 else
 	lua require('init')
 endif
-

@@ -915,9 +915,9 @@ function M.FTerm_init()
         border = border_style,
     })
 
-    local term_aider = fterm:new({
-        ft = "fterm_aider",
-        cmd = "aider --openai-api-base %AIDER_OPENAI_API_BASE% --openai-api-key %AIDER_OPENAI_API_KEY% --model %AIDER_OPENAI_API_MODEL%",
+    local term_opencode = fterm:new({
+        ft = "fterm_opencode",
+        cmd = "opencode",
         dimensions = { height = 0.8, width = 0.8 },
         border = border_style,
     })
@@ -925,7 +925,7 @@ function M.FTerm_init()
     -- ====================================================
     -- 3. 核心逻辑：互斥切换管理器
     -- ====================================================
-    local managed_terminals = { term_main, term_claude, term_gemini, term_aider }
+    local managed_terminals = { term_main, term_claude, term_gemini, term_opencode }
 
     local function toggle_exclusive(target_term)
         vim.schedule(function()
@@ -970,7 +970,7 @@ function M.FTerm_init()
             ["fterm_bash"]   = term_main,
             ["fterm_claude"] = term_claude,
             ["fterm_gemini"] = term_gemini,
-            ["fterm_aider"]  = term_aider
+            ["fterm_opencode"]  = term_opencode
         }
 
         local target_term = term_map[current_ft]
@@ -994,8 +994,8 @@ function M.FTerm_init()
 
     map({ "n", "t" }, "<A-`>", function() toggle_exclusive(term_main) end, { desc = "Toggle Terminal" })
     map({ "n", "t" }, "<A-1>", function() toggle_exclusive(term_claude) end, { desc = "Toggle Claude" })
-    map({ "n", "t" }, "<A-2>", function() toggle_exclusive(term_gemini) end, { desc = "Toggle Gemini" })
-    map({ "n", "t" }, "<A-3>", function() toggle_exclusive(term_aider) end, { desc = "Toggle Aider" })
+    map({ "n", "t" }, "<A-2>", function() toggle_exclusive(term_opencode) end, { desc = "Toggle OpenCode" })
+    map({ "n", "t" }, "<A-3>", function() toggle_exclusive(term_gemini) end, { desc = "Toggle Gemini" })
 
     map("t", "<A-x>", smart_exit, { desc = "Kill Current FTerm" })
 end

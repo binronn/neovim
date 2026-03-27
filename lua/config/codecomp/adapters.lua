@@ -1,31 +1,42 @@
 local ips = {}
 function get_url_ip(urlxxx)
-	ips['rm.basicbit.cn'] = '115.120.244.116'
-	if ips[urlxxx] == nil then
+    ips['rm.basicbit.cn'] = '115.120.244.116'
+    if ips[urlxxx] == nil then
 
-		local handle = io.popen("ping -c 1 " .. urlxxx) -- 替换为你的域名
-		local result = handle:read("*a")
-		handle:close()
+        local handle = io.popen("ping -c 1 " .. urlxxx) -- 替换为你的域名
+        local result = handle:read("*a")
+        handle:close()
 
-		-- 使用正则表达式提取IP地址（适用于Linux）
-		ips[urlxxx] = string.match(result, "%((%d+%.%d+%.%d+%.%d+)%)")
-	end
-	return ips[urlxxx]
+        -- 使用正则表达式提取IP地址（适用于Linux）
+        ips[urlxxx] = string.match(result, "%((%d+%.%d+%.%d+%.%d+)%)")
+    end
+    return ips[urlxxx]
 end
 
 return {
-    http = {
-        dskfee = function()
-            return require("codecompanion.adapters").extend("openai_compatible", {
-                name = "dskfee",
-                env = {
-                    url = "http://" .. get_url_ip('rm.basicbit.cn') .. ":43410",
-                    api_key = vim.fn.getenv("DSK_FEE_TKN"),
-                    chat_url = "/v1/chat/completions"
+    acp = {
+        claude_code = function()
+            return require("codecompanion.adapters").extend("claude_code", {
+                defaults = {
+                    mcpServers = "inherit_from_config",
                 },
-                schema = { model = { default = "deepseek-chat" } }
+                env = {
+                    CLAUDE_CODE_OAUTH_TOKEN = vim.fn.getenv("MINIMAX"),
+                },
+                opts = {
+                    show_presets = false,
+                },
             })
         end,
+        opencode = function()
+            return require("codecompanion.adapters").extend("opencode", {
+                defaults = {
+                    mcpServers = "inherit_from_config",
+                }
+            })
+        end,
+    },
+    http = {
         a0pen_dsk = function()
             return require("codecompanion.adapters").extend("openai_compatible", {
                 name = "open_dsk",
@@ -104,21 +115,6 @@ return {
                 }
             })
         end,
-        minimax_anthropic = function()
-            return require("codecompanion.adapters").extend("anthropic", {
-                name = "minimax",
-                -- url = 'https://api.minimax.io/anthropic',
-                url = 'https://api.minimax.io/anthropic/v1/messages',
-                env = {
-                    api_key = vim.fn.getenv("MINIMAX")
-                },
-                schema = {
-                    model = {
-                        default = "MiniMax-M2.7"
-                    }
-                }
-            })
-        end,
         a2siliconflow = function()
             return require("codecompanion.adapters").extend("openai_compatible", {
                 name = "siliconflow",
@@ -128,28 +124,9 @@ return {
                     api_key = vim.fn.getenv("SILICONFLOW_DSK")
                 },
                 schema = {
-                    model = {
-                        default = "Qwen/Qwen3-30B-A3B",
-                        -- choices = {
-                            --     'deepseek-ai/DeepSeek-V3',
-                            --     ["deepseek-ai/DeepSeek-R1"] = { opts = { can_reason = true } },
-                            --     ["Qwen/Qwen3-32B"] = { opts = { can_reason = true } },
-                            --     ["Qwen/Qwen3-30B-A3B"] = { opts = { can_reason = true } },
-                            --     ["Qwen/Qwen3-Coder-480B-A35B-Instruct"] = { opts = { can_reason = true } }
-                            -- }
-                        }
-                    }
-                })
-            end,
-            a1gemini = function()
-                return require("codecompanion.adapters").extend("openai_compatible", {
-                    name = "gemini",
-                    env = {
-                        url = "http://localhost:8045",
-                        chat_url = "/v1/chat/completions",
-                        api_key = vim.fn.getenv("ANTIGRAVITY2API")
-                    },
-                })
-            end
-        },
-    }
+                    model = { default = "Qwen/Qwen3-30B-A3B" }
+                }
+            })
+        end,
+    },
+}

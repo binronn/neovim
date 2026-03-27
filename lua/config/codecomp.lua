@@ -116,7 +116,10 @@ function M:setup_codecomp()
                 show_settings = true, -- Show LLM settings at the top of the chat buffer?
                 show_token_count = true, -- Show the token count for each response?
                 start_in_insert_mode = true, -- Open the chat buffer in insert mode?
-                adapter = "a0pen_dsk",
+                adapter = {
+                    name = "opencode",
+                    model = "minimax-cn-coding-plan/MiniMax-M2.7",
+                },
                 keymaps = {
                     send = {
                         modes = {n = "<Enter>", i = "<C-s>"}
