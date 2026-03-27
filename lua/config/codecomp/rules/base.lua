@@ -47,15 +47,15 @@ local project_rules2 = {
     project_rules = {
         description = "综合规则：项目分析 + 大文件 + 问题分析",
         files = {
-            get_rule_base_path() .. 'project_big/base.md',
+            get_rule_base_path() .. 'project_analysis/base.md',
             get_rule_base_path() .. 'bigfile/base.md',
             get_rule_base_path() .. 'analysis/base.md',
         }
     },
-    project_big = {
+    project_analysis = {
         description = "大型项目分析：上下文收集 → 深度分析 → 回应",
         files = {
-            get_rule_base_path() .. 'project_big/base.md',
+            get_rule_base_path() .. 'project_analysis/base.md',
         }
     },
     memory = {
