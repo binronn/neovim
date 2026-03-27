@@ -553,6 +553,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			-- 'echasnovski/mini.diff',
 			"nvim-treesitter/nvim-treesitter",
+            "ravitemer/codecompanion-history.nvim",
 			-- "Davidyz/VectorCode",
 			{
 				"MeanderingProgrammer/render-markdown.nvim",
