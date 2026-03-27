@@ -6,7 +6,7 @@ return {
                 "C:\\Program Files\\IDA Professional 9.3\\Python313\\Lib\\site-packages\\ida_pro_mcp\\server.py",
                 "--ida-rpc",
                 "http://127.0.0.1:13337"
-            }
+            },
             tool_overrides = {
                 divide = {
                     opts = {

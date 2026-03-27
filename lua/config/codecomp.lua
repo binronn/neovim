@@ -117,8 +117,8 @@ function M:setup_codecomp()
                 show_token_count = true, -- Show the token count for each response?
                 start_in_insert_mode = true, -- Open the chat buffer in insert mode?
                 adapter = {
-                    name = "opencode",
-                    model = "minimax-cn-coding-plan/MiniMax-M2.7",
+                    name = "a0pen_dsk",
+                    model = "deepseek-chat",
                 },
                 keymaps = {
                     send = {

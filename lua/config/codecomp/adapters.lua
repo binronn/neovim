@@ -32,6 +32,23 @@ return {
             return require("codecompanion.adapters").extend("opencode", {
                 defaults = {
                     mcpServers = "inherit_from_config",
+                },
+                --[[ 
+                config.json content:
+                {
+                    "$schema": "https://opencode.ai/config.json",
+                    "model": "minimax-cn-coding-plan/MiniMax-M2.7",
+                }
+                model name form !`opencode modles`
+                config.json in
+                C:\SoftFolder\develop_env\nvim-win64\nvim-config\opencode\
+                %USERPROFILE%\.config\opencode\
+                %USERPROFILE%\.opencode\
+                --]]
+                schema = {
+                    model = {
+                        default = "minimax-cn-coding-plan/MiniMax-M2.7",
+                    }
                 }
             })
         end,
