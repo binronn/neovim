@@ -14,12 +14,13 @@ local function build_rules()
         --         enable = true
         --     }
         -- },
-        group_project = {
+        project_rules = {
             description = "",
             files = {
-                get_rule_base_path() .. 'memory/base.md',
+                -- get_rule_base_path() .. 'memory/base.md',
                 get_rule_base_path() .. 'bigfile/base.md',
-                get_rule_base_path() .. 'big_project/base.md',
+                get_rule_base_path() .. 'project_big/base.md',
+                get_rule_base_path() .. 'analysis/base.md',
             }
         }
     }

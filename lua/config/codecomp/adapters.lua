@@ -45,11 +45,6 @@ return {
                 %USERPROFILE%\.config\opencode\
                 %USERPROFILE%\.opencode\
                 --]]
-                schema = {
-                    model = {
-                        default = "minimax-cn-coding-plan/MiniMax-M2.7",
-                    }
-                }
             })
         end,
     },
