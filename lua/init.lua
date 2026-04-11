@@ -23,7 +23,7 @@ vim.g.maplocalleader = " " --- this line
 
 vim.g.is_win32 = vim.fn.has('win32')
 vim.g.is_unix = vim.fn.has('unix')
-vim.g.colorscheme = 'gruvbox-material'
+vim.g.colorscheme = 'catppuccin-mocha'
 
 if vim.g.is_win32 then
     pcall(function() vim.cmd('language en_US.UTF-8') end)

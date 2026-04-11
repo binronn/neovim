@@ -19,6 +19,7 @@ return {
             return require("codecompanion.adapters").extend("claude_code", {
                 defaults = {
                     mcpServers = "inherit_from_config",
+                    model = 'MiniMax-M2.7'
                 },
                 env = {
                     CLAUDE_CODE_OAUTH_TOKEN = vim.fn.getenv("MINIMAX"),
@@ -121,7 +122,12 @@ return {
                     model = {
                         default = "MiniMax-M2.7",
                         choices = {
-                            ["MiniMax-M2.7"] = { opts = { can_reason = true } },
+                            ["MiniMax-M2.7"] = { 
+                                opts = { 
+                                    can_reason = true,
+                                    temperature = 0.2
+                                }
+                            }
                         }
                     }
                 }
